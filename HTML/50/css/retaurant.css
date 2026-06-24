@@ -1,0 +1,95 @@
+div.header {
+    max-height: 600px;
+    background-image: url("AllOlivesLandscape.jpg");
+    overflow: hidden;
+    margin-bottom: 20px;
+
+    h1 {
+        text-align: center;
+        line-height: 600px;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 4em;
+        font-weight: 600;
+        color: rgb(139, 192, 172);
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    }
+}
+
+a {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 1em;
+    /* padding: 40px; */
+}
+
+nav,
+a {
+    a:visited {
+        color: orange;
+    }
+
+    a:hover {
+        color: blueviolet;
+    }
+
+    a:active {
+        color: maroon;
+    }
+
+    text-decoration: none;
+    text-align: center;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+div.items {
+    display: inline-block;
+    max-width: 25%;
+    margin: 15px;
+    text-align: center;
+    overflow-x: hidden;
+}
+
+div.items img {
+    max-height: 280px;
+}
+ul.itemList{
+border: 3px solid rgba(83, 48, 6, 0.801);
+border-radius: 25px;
+}
+ul.itemList li {
+    display: inline;
+}
+
+h2,
+h3 {
+    font-size: 2em;
+    font-weight: 400;
+    font-family: Arial, Helvetica, sans-serif;
+    padding: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+body {
+    background-color: rgba(255, 228, 196, 0.568);
+    max-width: 85%;
+    margin: auto;
+
+    a {
+        img {
+            display: block;
+        }
+    }
+
+    p {
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 1em;
+
+    }
+
+    img {
+        display: block;
+    }
+}

@@ -1,0 +1,41 @@
+header{
+    text-align: center;
+    color: red;
+    border: 8px solid green;
+    padding-bottom: 1em;
+    margin-bottom: 1em;
+}
+div{
+    border-bottom: 1px solid black;
+}
+img{
+    border-radius: 180;
+}
+#copy{
+    color: green;
+}
+.special{
+    font-weight: bold;
+}
+a{
+    color: red;
+    text-decoration: none;
+}
+a:visited{
+    color: lightgray;
+}
+a.active{
+    color: chartreuse;
+}
+a:hover{
+    color: blue;
+    text-decoration: underline;
+}
+a:active{
+    color: purple;
+}
+body{
+    max-width: 1200px;
+    margin: auto;
+}
+

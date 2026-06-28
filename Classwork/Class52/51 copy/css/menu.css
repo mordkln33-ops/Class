@@ -1,0 +1,21 @@
+p {
+  font-style: italic;
+}
+
+.menu-item img {
+  float: left;
+  margin: 1em;
+}
+
+.menu-item {
+  /*overflow: auto;*/
+  display: inline-block;
+}
+
+/*section {
+  clear: left;
+}*/
+
+.clear-fix {
+  clear: both;
+}

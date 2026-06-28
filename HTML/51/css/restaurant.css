@@ -1,0 +1,115 @@
+
+html {
+    background-color: #F6E3B4;
+}
+
+body {
+    max-width: 80%;
+    margin: auto;
+}
+
+h1,
+h2,
+h3 {
+    font-family: "Bungee", "Bungee Spice", sans-serif;
+    color: #3B2416;
+}
+
+.home {
+    background-image: url(../images/Quacky-Quackamole.png);
+    background-size: cover;
+    background-position: center;
+    min-height: 800px;
+
+    h1 {
+        color: #6FAF3F;
+        text-align: center;
+        font-size: 72px;
+        line-height: 1.5em;
+        text-shadow: 4px 4px 2px #1c2c10b0;
+    }
+
+    h2 {
+        text-align: center;
+        color: #F6E3B4;
+        text-shadow: 2px 2px 2px #3B2416;
+    }
+}
+header {
+    background-size: cover;
+    background-position: center;
+    min-height: 800px;
+
+    h1 {
+        color: #6FAF3F;
+        text-align: center;
+        font-size: 72px;
+        line-height: 1.5em;
+        text-shadow: 4px 4px 2px #1c2c10b0;
+    }
+
+    h2 {
+        text-align: center;
+        color: #F6E3B4;
+        text-shadow: 2px 2px 2px #3B2416;
+    }
+}
+
+nav {
+    background: #FFFFFF;
+    background: linear-gradient(360deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 0%, rgba(246, 227, 180, 1) 84%, rgba(246, 227, 180, 1) 100%);
+    font-family: "Nunito", Arial, sans-serif;
+    text-align: center;
+    padding-top: 10px;
+    padding-bottom: 20px;
+}
+
+a {
+    color: #3B2416;
+    text-decoration: none;
+    font-family: "Nunito", Arial, sans-serif;
+}
+
+a:visited {
+    color: #633d26;
+}
+
+a:hover {
+    color: #6FAF3F;
+    text-decoration: underline;
+}
+
+a:focus {
+    border: 1px solid #6FAF3F;
+}
+
+a:active {
+    color: #a5210f;
+}
+
+a.active {
+    color: #a5210f;
+}
+
+p {
+    font-family: "Nunito", Arial, sans-serif;
+    color: #3B2416;
+}
+
+.border {
+    padding: 5px;
+    border-bottom: 1.5px solid #3B2416;
+    min-height: 15px;
+}
+
+div.menuItem {
+    margin: auto;
+    text-align: center;
+    overflow: hidden;
+}
+
+.menuList li {
+    max-width: 32%;
+    display: inline-block;
+    list-style-type: none;
+}

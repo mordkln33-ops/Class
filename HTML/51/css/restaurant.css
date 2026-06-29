@@ -20,6 +20,7 @@ h3 {
 .home {
     background-image: url(../images/Quacky-Quackamole.png);
     background-size: cover;
+    background-repeat: no-repeat;
     background-position: center;
     min-height: 800px;
 
@@ -41,7 +42,7 @@ h3 {
 header {
     background-size: cover;
     background-position: center;
-    min-height: 800px;
+    min-height: 900px;
 
     h1 {
         color: #6FAF3F;
@@ -87,6 +88,8 @@ a:visited {
 a:hover {
     color: #6FAF3F;
     text-decoration: underline;
+    transform: skewX(5deg);
+    transform: skewY(-5deg);
 }
 
 a:focus {
@@ -95,6 +98,7 @@ a:focus {
 
 a:active {
     color: #a5210f;
+    
 }
 
 a.active {
@@ -137,6 +141,9 @@ div.menuItem {
     text-align: center;
     overflow: hidden;
     padding: 10px;
+    a{
+        display: block;
+    }
 }
 
 .menuItem:hover {
@@ -147,9 +154,9 @@ div.menuItem {
     border-radius: 25px;
     box-shadow: 4px 2px 4px #3B2416;
     rotate: -5deg;
-
     img {
         rotate: 10deg;
+        opacity: 75%;
     }
 }
 
@@ -169,4 +176,7 @@ span.emp {
     font-style: italic;
     font-weight: bold;
     color: #1e3809;
+}
+.clear{
+    clear: both;
 }

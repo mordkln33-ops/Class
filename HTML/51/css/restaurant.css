@@ -1,3 +1,4 @@
+@import url(https://fonts.googleapis.com/css2?family=Bungee&family=Nunito:wght@400;600;700&display=swap);
 
 html {
     background-color: #F6E3B4;
@@ -6,6 +7,7 @@ html {
 body {
     max-width: 80%;
     margin: auto;
+    overflow: auto;
 }
 
 h1,
@@ -35,6 +37,7 @@ h3 {
         text-shadow: 2px 2px 2px #3B2416;
     }
 }
+
 header {
     background-size: cover;
     background-position: center;
@@ -62,6 +65,7 @@ nav {
     text-align: center;
     padding-top: 10px;
     padding-bottom: 20px;
+    letter-spacing: .25em;
 }
 
 a {
@@ -103,13 +107,41 @@ p {
 }
 
 div.menuItem {
+    position: relative;
     margin: auto;
     text-align: center;
     overflow: hidden;
+    padding: 10px;
+}
+
+.menuItem:hover {
+    scale: 1.2;
+    z-index: 1;
+    background-color: #F6E3B4;
+    border: 1px solid #3B2416;
+    border-radius: 25px;
+    box-shadow: 4px 2px 4px #3B2416;
+    rotate: -5deg;
+
+    img {
+        rotate: 10deg;
+    }
 }
 
 .menuList li {
     max-width: 32%;
     display: inline-block;
     list-style-type: none;
+}
+
+video {
+    max-height: 250px;
+    float: left;
+    padding-right: 10px;
+}
+
+span.emp {
+    font-style: italic;
+    font-weight: bold;
+    color: #1e3809;
 }

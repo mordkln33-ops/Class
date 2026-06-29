@@ -177,6 +177,14 @@ span.emp {
     font-weight: bold;
     color: #1e3809;
 }
+span.homeheader{
+    display: inline-block;
+}
+span.homeheader:hover{
+transform: translateY(-15px);
+text-shadow: 0px 15px 2px #3B2416;
+cursor: url(../images/avocado-s.png), pointer;
+}
 .clear{
     clear: both;
 }

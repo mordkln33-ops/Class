@@ -88,8 +88,6 @@ a:visited {
 a:hover {
     color: #6FAF3F;
     text-decoration: underline;
-    transform: skewX(5deg);
-    transform: skewY(-5deg);
 }
 
 a:focus {
@@ -141,22 +139,24 @@ div.menuItem {
     text-align: center;
     overflow: hidden;
     padding: 10px;
-    a{
-        display: block;
-    }
 }
 
 .menuItem:hover {
-    scale: 1.2;
+    scale: 1.1;
     z-index: 1;
     background-color: #F6E3B4;
     border: 1px solid #3B2416;
-    border-radius: 25px;
-    box-shadow: 4px 2px 4px #3B2416;
-    rotate: -5deg;
+    border-radius: 15px;
+    box-shadow: 2px 1px 1px #3B2416;
+    rotate: -2deg;
+    cursor: url(../images/avocado-s.png), grab;
+    h3{
+        transform: skewY(3deg);
+    }
     img {
-        rotate: 10deg;
-        opacity: 75%;
+        rotate: 3deg;
+        opacity: 90%;
+        cursor: url(../images/avocado-s.png), grab;
     }
 }
 

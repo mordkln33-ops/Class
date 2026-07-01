@@ -1,0 +1,466 @@
+html {
+    background-color: #F6E3B4;
+}
+
+body {
+    max-width: 90%;
+    margin: auto;
+}
+
+/* Tablet */
+@media (width > 600px) and (width <= 900px) {
+    body {
+        max-width: 95%;
+        margin: auto;
+    }
+}
+
+h1,
+h2,
+h3 {
+    font-family: "Bungee", "Bungee Spice", sans-serif;
+    color: #3B2416;
+}
+@media (width <= 900px){
+    h3{
+        text-align: center;
+    }
+}
+header {
+    width: 100%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    min-height: 800px;
+
+    h1 {
+        color: #6FAF3F;
+        text-align: center;
+        font-size: 5em;
+        line-height: 1.25em;
+        text-shadow: 4px 4px 2px #1c2c10b0;
+    }
+
+    h2 {
+        text-align: center;
+        color: #F6E3B4;
+        font-size: 2em;
+        text-shadow: 2px 2px 2px #3B2416;
+    }
+}
+
+/* Tablet */
+@media (width > 600px) and (width <= 900px) {
+    header {
+        min-height: 650px;
+
+        h1 {
+            font-size: 4em;
+        }
+
+        h2 {
+            font-size: 1.75em;
+        }
+    }
+}
+
+/* Mobile */
+@media (width <= 600px) {
+    header {
+        width: 100%;
+        min-height: 500px;
+
+        h1 {
+            font-size: 3em;
+        }
+
+        h2 {
+            font-size: 1.5em;
+        }
+    }
+}
+
+.home {
+    background-image: url(../images/Quacky-Quackamole.png);
+}
+
+header.abouth {
+    min-height: 100px;
+
+    h1 {
+        color: #253f11;
+        text-align: center;
+        font-size: 3rem;
+    }
+}
+
+/* Tablet */
+@media (width > 600px) and (width <= 900px) {
+    header.abouth {
+        h1 {
+            font-size: 2.5rem;
+        }
+    }
+}
+
+/* Mobile */
+@media (width <= 600px) {
+    header.abouth {
+        h1 {
+            font-size: 2rem;
+        }
+    }
+}
+
+nav {
+    background: #FFFFFF;
+    background: linear-gradient(360deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 0%, rgba(246, 227, 180, 1) 84%, rgba(246, 227, 180, 1) 100%);
+    font-family: "Nunito", Arial, sans-serif;
+    text-align: center;
+    padding-top: 10px;
+    padding-bottom: 20px;
+    letter-spacing: .25em;
+}
+
+/* Tablet */
+@media (width > 600px) and (width <= 900px) {
+    nav {
+        letter-spacing: .15em;
+        padding-bottom: 15px;
+    }
+}
+
+/* Mobile */
+@media (width <= 600px) {
+    nav {
+        letter-spacing: .08em;
+        padding-bottom: 12px;
+    }
+}
+
+a {
+    color: #3B2416;
+    text-decoration: none;
+    font-family: "Nunito", Arial, sans-serif;
+}
+
+a:visited {
+    color: #633d26;
+}
+
+a:hover {
+    color: #6FAF3F;
+    text-decoration: underline;
+}
+
+a:focus {
+    border: 1px solid #6FAF3F;
+}
+
+a:active {
+    color: #a5210f;
+}
+
+a.active {
+    color: #a5210f;
+}
+
+p {
+    font-family: "Nunito", Arial, sans-serif;
+    color: #3B2416;
+}
+
+p.abouts {
+    display: block;
+    margin-top: 0;
+    margin-right: 10px;
+    padding-right: 20px;
+}
+
+/* Tablet */
+@media (width > 600px) and (width <= 900px) {
+    p.abouts {
+        margin-right: 5%;
+        margin-left: 5%;
+        padding-right: 0;
+        line-height: 1.5;
+    }
+}
+
+/* Mobile */
+@media (width <= 600px) {
+    p.abouts {
+        display: block;
+        margin-right: 5%;
+        margin-left: 5%;
+        margin-top: 0;
+        padding: 1px;
+    }
+}
+
+img.abouti {
+    display: inline-block;
+    max-width: 35%;
+    vertical-align: top;
+    margin-right: 15px;
+}
+
+/* Tablet */
+@media (width > 600px) and (width <= 900px) {
+    img.abouti {
+        display: block;
+        max-width: 70%;
+        margin: 0 auto 20px auto;
+    }
+}
+
+/* Mobile */
+@media (width <= 600px) {
+    img.abouti {
+        display: block;
+        box-sizing: border-box;
+        max-width: 90%;
+        margin: auto;
+    }
+}
+
+div.about {
+    display: inline-block;
+    vertical-align: top;
+    max-width: 55%;
+}
+
+/* Tablet */
+@media (width > 600px) and (width <= 900px) {
+    div.about {
+        display: block;
+        max-width: 85%;
+        text-align: center;
+        margin: auto;
+    }
+}
+
+/* Mobile */
+@media (width <= 600px) {
+    div.about {
+        min-width: 90%;
+        text-align: center;
+        margin: auto;
+        margin-top: 10px;
+        padding-top: 0;
+    }
+}
+
+.border {
+    padding: 2px;
+    border-bottom: 1.5px solid #3B2416;
+    max-width: 90%;
+}
+
+/* Tablet */
+@media (width > 600px) and (width <= 900px) {
+    .border {
+        max-width: 90%;
+        margin: auto;
+    }
+}
+
+/* Mobile */
+@media (width <= 600px) {
+    .border {
+        padding: 5px;
+        border-bottom: 1.5px solid #3B2416;
+        max-width: 90%;
+        margin: auto;
+    }
+}
+
+div.menuItem {
+    position: relative;
+    margin: auto;
+    text-align: center;
+    overflow: hidden;
+    padding: 10px;
+}
+
+/* Tablet */
+@media (width > 600px) and (width <= 900px) {
+    div.menuItem {
+        padding: 8px;
+    }
+}
+
+/* Mobile */
+@media (width <= 600px) {
+    div.menuItem {
+        padding: 0px;
+    }
+}
+
+.menuItem:hover {
+    scale: 1.1;
+    z-index: 1;
+    background-color: #F6E3B4;
+    border: 1px solid #3B2416;
+    border-radius: 15px;
+    box-shadow: 2px 1px 1px #3B2416;
+    rotate: -2deg;
+    cursor: url(../images/avocado-s.png), grab;
+
+    h3 {
+        transform: skewY(3deg);
+    }
+
+    img {
+        rotate: 3deg;
+        opacity: 90%;
+        cursor: url(../images/avocado-s.png), grab;
+    }
+}
+
+ul.menuList {
+    max-width: 100%;
+    margin: auto;
+    padding: 0;
+}
+
+.menuList li {
+    width: 33%;
+    display: inline-block;
+    list-style-type: none;
+    box-sizing: border-box;
+    padding: 5px;
+
+    a {
+        display: block;
+    }
+}
+
+/* Tablet */
+@media (width > 600px) and (width <= 900px) {
+    .menuList li {
+        width: 48%;
+        padding: 8px;
+        box-sizing: border-box;
+    }
+}
+
+/* Mobile */
+@media (width <= 600px) {
+    .menuList li {
+        margin-left: 5%;
+        margin-right: 5%;
+        padding: 0;
+        width: 90%;
+        box-sizing: border-box;
+    }
+}
+
+video {
+    max-height: 250px;
+    float: inline-start;
+    padding-right: 10px;
+}
+
+/* Tablet */
+@media (width > 600px) and (width <= 900px) {
+    video {
+        max-width: 45%;
+        max-height: 225px;
+        margin-right: 15px;
+        margin-bottom: 10px;
+    }
+}
+
+/* Mobile */
+@media (width <= 600px) {
+    video {
+        max-width: 85%;
+        margin-right: 7.5%;
+        margin-left: 7.5%;
+        margin-top: 10px;
+        margin-bottom: 10px;
+        box-sizing: border-box;
+    }
+}
+
+span.emp {
+    font-style: italic;
+    font-weight: bold;
+    color: #1e3809;
+}
+
+span.homeheader {
+    display: inline-block;
+}
+
+span.homeheader:hover {
+    transform: translateY(-15px);
+    text-shadow: 0px 15px 2px #3B2416;
+    cursor: url(../images/avocado-s.png), pointer;
+}
+
+.clear {
+    clear: both;
+}
+
+.chat {
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+    font-size: 1.1rem;
+
+    img {
+        border-radius: 180px;
+        box-shadow: 0px 0px 50px #3b241678;
+    }
+
+    p {
+        margin-left: 2rem;
+        margin-bottom: -.2rem;
+        padding-top: 0;
+        position: absolute;
+        bottom: .1rem;
+        right: 2rem;
+        background-color: #f6e3b4da;
+        text-align: center;
+        border-radius: 25px;
+    }
+}
+
+/* Tablet */
+@media (width > 600px) and (width <= 900px) {
+    .chat {
+        img {
+            max-width: 95px;
+        }
+
+        p {
+            scale: .9;
+            right: 1.5rem;
+        }
+    }
+}
+
+/* Mobile */
+@media (width <= 600px) {
+    .chat {
+        img {
+            max-width: 75px;
+        }
+
+        p {
+            scale: .75;
+            position: absolute;
+            bottom: -1rem;
+            background-color: #f6e3b4da;
+            text-align: center;
+            border-radius: 25px;
+        }
+    }
+}
+
+.chat:hover {
+    opacity: 0%;
+    cursor: url(../images/oops.png), wait;
+}

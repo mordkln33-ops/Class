@@ -170,6 +170,10 @@ a.active {
     color: #a5210f;
 }
 
+a[href$=".pdf"] {
+    color: #6FAF3F;
+}
+
 p {
     font-family: "Nunito", Arial, sans-serif;
     color: #3B2416;
@@ -471,7 +475,7 @@ span.homeheader:hover {
     cursor: url(../images/oops.png), wait;
 }
 
-table {
+section.menu>table {
     table-layout: auto;
     width: 100%;
     color: #3B2416;
@@ -513,4 +517,14 @@ table[menu="cocktails"] th {
 table[menu="drinks"] tr:nth-child(2n),
 table[menu="drinks"] th {
     background-color: #F2B70535;
+}
+
+.menu~div p {
+    padding: 5px;
+    color: #6FAF3F;
+}
+
+form {
+    color: #3B2416;
+    font-family: "Nunito", Arial, sans-serif;
 }

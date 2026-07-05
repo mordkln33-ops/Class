@@ -3,11 +3,17 @@
 
 html {
     background-color: #F6E3B4;
+    color: #3B2416;
+    text-decoration: none;
+    font-family: "Nunito", Arial, sans-serif;
 }
 
 body {
     max-width: 90%;
     margin: auto;
+    color: #3B2416;
+    text-decoration: none;
+    font-family: "Nunito", Arial, sans-serif;
 }
 
 /* Tablet */

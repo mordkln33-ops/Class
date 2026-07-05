@@ -470,3 +470,47 @@ span.homeheader:hover {
     opacity: 0%;
     cursor: url(../images/oops.png), wait;
 }
+
+table {
+    table-layout: auto;
+    width: 100%;
+    color: #3B2416;
+    font-family: "Nunito", Arial, sans-serif;
+    margin-top: 25px;
+}
+
+th {
+    text-align: left;
+    padding-left: 5px;
+    font-family: "Bungee", "Bungee Spice", sans-serif;
+    color: #3B2416;
+}
+
+td {
+    padding-left: 5px;
+}
+
+table[menu="meat"] tr:nth-child(2n),
+table[menu="meat"] th {
+    background-color: #a5210f35;
+}
+
+table[menu="fish"] tr:nth-child(2n),
+table[menu="fish"] th {
+    background-color: #a5210f35;
+}
+
+table[menu="dairy"] tr:nth-child(2n),
+table[menu="dairy"] th {
+    background-color: #a5210f35;
+}
+
+table[menu="cocktails"] tr:nth-child(2n),
+table[menu="cocktails"] th {
+    background-color: #F2B70535;
+}
+
+table[menu="drinks"] tr:nth-child(2n),
+table[menu="drinks"] th {
+    background-color: #F2B70535;
+}

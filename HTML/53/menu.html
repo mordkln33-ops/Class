@@ -8,14 +8,31 @@
     <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
+    <style>
+        header {
+            background-image: url(images/Menu.png);
+        }
+    </style>
     <title>Quack Menu</title>
 </head>
+<header>
+    <nav>
+        <a href="index.html">Home</a>
+        |
+        <a href="new-items.html">New Items</a>
+        |
+        <a href="menu.html">Menu</a>
+        |
+        <a href="about.html">About</a>
+    </nav>
+</header>
 
 <body>
-    <section id="dairy-menu">
-        <h2>🥑 Dairy Delights</h2>
-
-        <table>
+    <section>
+        <table menu="dairy">
+            <caption>
+                <h2>Dairy Delights</h2>
+            </caption>
             <thead>
                 <tr>
                     <th>Item</th>
@@ -60,10 +77,11 @@
         </table>
     </section>
 
-    <section id="meat-menu">
-        <h2>🌮 Meat Lovers</h2>
-
-        <table>
+    <section>
+        <table menu="meat">
+            <caption>
+                <h2>Meat Lovers</h2>
+            </caption>
             <thead>
                 <tr>
                     <th>Item</th>
@@ -75,18 +93,18 @@
             <tbody>
                 <tr>
                     <td>The Quacking Carnitas Burrito</td>
-                    <td>Slow-roasted pulled pork, cilantro rice, black beans, cheese, salsa verde, and fresh guacamole
+                    <td>Slow-roasted pulled pork, cilantro rice, black beans, cheese, salsa verde, and fresh
+                        guacamole
                         wrapped in a giant tortilla.</td>
-                    <td>$15.99</td>
+                    <td>$15.99
+                    </td>
                 </tr>
-
                 <tr>
                     <td>Duck Yeah! Steak Tacos</td>
                     <td>Three grilled steak tacos topped with avocado crema, cotija cheese, pickled onions, and
                         cilantro.</td>
                     <td>$16.49</td>
                 </tr>
-
                 <tr>
                     <td>Cluckin' Chicken Enchiladas</td>
                     <td>Three chicken enchiladas covered in house enchilada sauce, melted cheese, and served with
@@ -96,11 +114,11 @@
 
                 <tr>
                     <td>The Mighty Molcajete Fajitas</td>
-                    <td>Sizzling grilled chicken and steak with peppers and onions, served with tortillas, rice, beans,
+                    <td>Sizzling grilled chicken and steak with peppers and onions, served with tortillas, rice,
+                        beans,
                         and guacamole.</td>
                     <td>$20.99</td>
                 </tr>
-
                 <tr>
                     <td>Quack Attack Chorizo Bowl</td>
                     <td>Mexican rice, spicy chorizo, roasted vegetables, black beans, queso fresco, and creamy
@@ -111,10 +129,11 @@
         </table>
     </section>
 
-    <section id="fish-menu">
-        <h2>🐟 From the Pond</h2>
-
-        <table>
+    <section>
+        <table menu="fish">
+            <caption>
+                <h2>From the Pond</h2>
+            </caption>
             <thead>
                 <tr>
                     <th>Item</th>
@@ -160,10 +179,11 @@
         </table>
     </section>
 
-    <section id="cocktails">
-        <h2>🍹 Quacky Cocktails</h2>
-
-        <table>
+    <section>
+        <table menu="cocktails">
+            <caption>
+                <h2>Quacky Cocktails</h2>
+            </caption>
             <thead>
                 <tr>
                     <th>Beverage</th>
@@ -200,10 +220,11 @@
         </table>
     </section>
 
-    <section id="drinks">
-        <h2>🥤 Duckling Drinks</h2>
-
-        <table>
+    <section>
+        <table menu="drinks">
+            <caption>
+                <h2>Duckling Drinks</h2>
+            </caption>
             <thead>
                 <tr>
                     <th>Beverage</th>
@@ -240,6 +261,7 @@
             </tbody>
         </table>
     </section>
+    &copy; The Duck
 </body>
 
 </html>

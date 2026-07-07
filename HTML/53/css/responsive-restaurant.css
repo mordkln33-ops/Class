@@ -476,7 +476,7 @@ span.homeheader:hover {
 }
 
 section.menu>table {
-    table-layout: auto;
+    table-layout: fixed;
     width: 100%;
     color: #3B2416;
     font-family: "Nunito", Arial, sans-serif;

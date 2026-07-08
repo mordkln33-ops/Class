@@ -328,6 +328,8 @@ div.menuItem {
 }
 
 ul.menuList {
+    display: flex;
+    flex-wrap: wrap;
     max-width: 100%;
     margin: auto;
     padding: 0;
@@ -496,27 +498,27 @@ td {
 
 table[menu="meat"] tr:nth-child(2n),
 table[menu="meat"] th {
-    background-color: #a5210f35;
+    background-color: #D94A3850;
 }
 
 table[menu="fish"] tr:nth-child(2n),
 table[menu="fish"] th {
-    background-color: #a5210f35;
+    background-color: #6FAF3F50;
 }
 
 table[menu="dairy"] tr:nth-child(2n),
 table[menu="dairy"] th {
-    background-color: #a5210f35;
+    background-color: #C9E77D50;
 }
 
 table[menu="cocktails"] tr:nth-child(2n),
 table[menu="cocktails"] th {
-    background-color: #F2B70535;
+    background-color: #F2B70550;
 }
 
 table[menu="drinks"] tr:nth-child(2n),
 table[menu="drinks"] th {
-    background-color: #F2B70535;
+    background-color: #FFF8E750;
 }
 
 .menu~div p {

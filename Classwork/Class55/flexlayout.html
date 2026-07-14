@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        ul {
+            list-style: none;
+            padding: 0;
+
+            display: flex;
+            justify-content: space-around;
+        }
+
+        article {
+            margin-bottom: 20px;
+        }
+
+        .columns {
+            display: flex;
+            gap: 1em;
+        }
+
+        .columns section {
+            flex: 1;
+        }
+
+        .grid {
+            display: flex;
+            gap: 1em;
+            flex-wrap: wrap;
+        }
+
+        .grid section {
+            flex: 1 1 16em;
+        }
+
+        .with-sidebar {
+            display: flex;
+            gap: 1em;
+        }
+
+        .with-sidebar aside {
+            flex: 1 1 30%;
+        }
+
+        .with-sidebar section {
+            flex: 1 1 70%;
+        }
+    </style>
+    <title>Document</title>
+</head>
+
+<body>
+    <nav>
+        <ul>
+            <li>Home</li>
+            <li>Menu</li>
+            <li>Contact</li>
+            <li>About</li>
+        </ul>
+    </nav>
+    <article class="columns">
+        <section>Lorem ipsum dolor sit amet consectetur adipisicing elit. Explicabo exercitationem accusamus doloribus
+            minus expedita mollitia quisquam repudiandae fuga quis eveniet, magnam maiores repellendus perferendis
+            aperiam? Doloremque nam voluptate impedit sit.</section>
+        <section>Illo incidunt perferendis aut exercitationem, quasi itaque non, eligendi enim architecto, accusamus
+            alias nemo aliquid repellat culpa. Eius tenetur soluta sunt, unde, dolores quo ex, aperiam consequuntur
+            velit consectetur ipsa! Lorem ipsum dolor sit amet consectetur adipisicing elit. Quos, alias natus nihil
+            reiciendis ad id quia pariatur cum doloribus incidunt laudantium eligendi distinctio facere. Perspiciatis
+            necessitatibus soluta quis nesciunt iusto?</section>
+        <section>Impedit nesciunt harum laboriosam necessitatibus cumque rem error doloremque asperiores molestias
+            dignissimos corrupti, eum expedita eius, temporibus aliquid eligendi quam vero molestiae ex! Rem blanditiis
+            illum quam! Debitis, architecto repudiandae!</section>
+    </article>
+    <article class="grid">
+        <section>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Ut, odit quam. Deleniti impedit aperiam
+            cupiditate rerum. Possimus quasi recusandae dicta et, cum rem, quis libero minus quas assumenda veniam quam.
+        </section>
+        <section>Reiciendis facilis, fuga nobis amet ex atque cum repudiandae, ad esse, incidunt ea quae error
+            repellendus officiis ullam eveniet. Vel ullam, cupiditate ratione repellat adipisci odit voluptatibus
+            dolorum commodi ipsam.</section>
+        <section>Pariatur rerum quod quam natus illo nobis totam illum quibusdam. Perferendis, voluptas odit! Officia
+            quae veniam fuga asperiores soluta aperiam, et a! Modi aspernatur atque fugit veniam labore doloribus
+            corrupti!</section>
+        <section>Dolorum doloremque unde reprehenderit ipsam optio, sequi similique eos amet fuga esse facere, rem quo.
+            Ullam nihil nesciunt qui illum amet? Quod id eaque totam provident! Autem inventore excepturi ab.</section>
+        <section>Consequatur tenetur aliquam, dicta eveniet odit ab iure tempore corrupti molestias unde itaque totam
+            laborum similique, dolorum voluptatem corporis commodi exercitationem esse officia soluta aperiam vitae vero
+            odio ad. Veniam.</section>
+    </article>
+    <article class="with-sidebar">
+        <aside>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Dicta fugit porro maxime aspernatur odio eos
+            vitae, minus adipisci ratione quibusdam rerum, optio molestias laborum minima illo. Dolorem maxime maiores
+            sed.</aside>
+        <section>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Expedita quis mollitia dolorem temporibus
+            accusantium neque voluptatem? Quam vitae illum est doloremque deleniti iure aliquid, maiores eligendi ea.
+            Beatae, nobis excepturi?</section>
+    </article>
+</body>
+
+</html>

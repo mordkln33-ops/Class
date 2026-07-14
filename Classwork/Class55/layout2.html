@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            display: grid;
+            gap: 1em;
+            grid-template-areas:
+                'header'
+                'sidebar'
+                'main'
+                'footer'
+        }
+
+        @media screen and (width > 600px) {
+            body {
+                grid-template-columns: 1fr 1fr;
+
+                grid-template-areas:
+                    'header header'
+                    'sidebar main'
+                    'footer footer';
+            }
+        }
+
+        @media screen and (width > 900px) {
+            body {
+                grid-template-columns: 1fr 2fr 2fr 1fr;
+
+                grid-template-areas:
+                    '. header header .'
+                    'sidebar main main main'
+                    '. footer footer .';
+            }
+        }
+
+        header {
+            grid-area: header;
+        }
+
+        footer {
+            grid-area: footer;
+        }
+
+        aside {
+            grid-area: sidebar;
+        }
+
+        article {
+            grid-area: main;
+        }
+    </style>
+</head>
+
+<body>
+    <header> - Header - Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo, dolorum totam illum doloribus
+        deserunt a
+        repellat molestias enim explicabo excepturi ex aliquam, vel quasi autem exercitationem quisquam. Corrupti,
+        explicabo quia.</header>
+    <aside> - Aside - Lorem ipsum dolor sit amet consectetur adipisicing elit. Vero, minima excepturi eveniet quasi
+        debitis natus
+        dolores odit voluptatem veniam aut in minus incidunt illo fugit quos, expedita aperiam ipsa officia?</aside>
+    <article> - Article - Lorem ipsum dolor sit amet consectetur adipisicing elit. Maxime ea doloremque nihil dolores
+        ab, atque
+        voluptatum veniam quis, sunt quasi distinctio quibusdam vitae a. Culpa, sequi earum! Nam, temporibus incidunt.
+    </article>
+    <footer> - Footer - Lorem ipsum dolor sit amet consectetur adipisicing elit. Obcaecati, accusamus quo. Eos dolorum
+        fugit amet
+        consectetur, voluptatibus exercitationem minus maxime atque omnis quos incidunt corrupti dolores mollitia? Et,
+        expedita dicta.</footer>
+</body>
+
+</html>

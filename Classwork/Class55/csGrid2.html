@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            display: grid;
+            gap: 1em;
+
+            grid-template-columns: minmax(min-content, max-content) 1fr 1fr;
+
+            grid-template-rows: 100px 200px;
+
+            grid-auto-rows: 75px;
+        }
+
+        div:nth-child(odd) {
+            background-color: aliceblue;
+        }
+
+        div:nth-child(even) {
+            background-color: antiquewhite;
+        }
+    </style>
+    <title>Document</title>
+</head>
+
+<body>
+    <div>1 Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sint fugiat nobis dolor rem nostrum debitis
+        repudiandae vel assumenda! Nihil pariatur non libero rem natus veniam unde dicta, quaerat sunt nostrum.</div>
+    <div>2</div>
+    <div>3</div>
+    <div>4</div>
+    <div>5</div>
+    <div>6</div>
+    <div>7</div>
+    <div>8</div>
+</body>
+
+</html>

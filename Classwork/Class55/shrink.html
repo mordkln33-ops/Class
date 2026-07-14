@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        hr{
+            margin: 15px;
+        }
+        body {
+            display: grid;
+            grid-template-columns: 1fr minmax(min-content, max-content) 1fr;
+
+            h1,
+            h2,
+            hr,
+            header,
+            img {
+                grid-column-start: 2;
+            }
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>
+            PCS Shrinking Demo
+        </h1>
+        <h2>
+            Multiple levels of shrinking
+        </h2>
+    </header>
+    <hr>
+    <img src="../../HTML/53/images/Burrito-s.png" alt="whocares">
+</body>
+
+</html>

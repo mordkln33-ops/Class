@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        .dice {
+            width: 100px;
+            height: 100px;
+            border: 1px solid black;
+            margin: 5px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+
+            grid-template-areas:
+                'dot-2 . dot-4'
+                'dot-7 dot dot-6'
+                'dot-5 . dot-3'
+            ;
+        }
+
+        .dot {
+            background-color: black;
+            border-radius: 50%;
+            margin: 2px;
+            grid-area: dot;
+        }
+
+        .two {
+            grid-area: dot-2;
+        }
+
+        .three {
+            grid-area: dot-3;
+        }
+
+        .four {
+
+            grid-area: dot-4;
+        }
+
+        .five {
+            grid-area: dot-5;
+        }
+
+        .six {
+            grid-area: dot-6;
+        }
+
+        .seven {
+            grid-area: dot-7;
+        }
+    </style>
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="dice one">
+        <div class="dot"></div>
+    </div>
+    <div class="dice">
+        <div class="dot three"></div>
+        <div class="dot two"></div>
+    </div>
+    <div class="dice three">
+        <div class="dot"></div>
+        <div class="dot two"></div>
+        <div class="dot three"></div>
+    </div>
+    <div class="dice">
+        <div class="dot two"></div>
+        <div class="dot three"></div>
+        <div class="dot four"></div>
+        <div class="dot five"></div>
+    </div>
+    <div class="dice">
+        <div class="dot"></div>
+        <div class="dot two"></div>
+        <div class="dot three"></div>
+        <div class="dot four"></div>
+        <div class="dot five"></div>
+    </div>
+    <div class="dice">
+        <div class="dot two"></div>
+        <div class="dot three"></div>
+        <div class="dot four"></div>
+        <div class="dot five"></div>
+        <div class="dot six"></div>
+        <div class="dot seven"></div>
+    </div>
+</body>
+
+</html>

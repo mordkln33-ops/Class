@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Horizontal Integer Number Line</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="page-shell horizontal-layout">
+    <section class="panel horizontal-gauge-panel" aria-label="Horizontal number line from negative 20 to positive 20">
+      <div class="horizontal-gauge-wrap">
+        <div class="horizontal-track">
+          <div class="horizontal-fill" id="horizontalFill"></div>
+        </div>
+        <div class="horizontal-labels" id="horizontalLabels"></div>
+      </div>
+    </section>
+
+    <section class="panel controls-panel">
+      <h1>Integer Operations</h1>
+      <p class="subtitle">The same operation system, displayed on a horizontal number line.</p>
+
+      <div class="value-card">
+        <span>Current value</span>
+        <strong id="currentValue">0</strong>
+      </div>
+
+      <form class="math-form" id="addForm">
+        <label for="addInput">Add</label>
+        <input id="addInput" type="number" step="1" placeholder="Enter an integer" required>
+        <button type="submit">Submit</button>
+      </form>
+
+      <form class="math-form" id="subtractForm">
+        <label for="subtractInput">Subtract</label>
+        <input id="subtractInput" type="number" step="1" placeholder="Enter an integer" required>
+        <button type="submit">Submit</button>
+      </form>
+
+      <p class="range-note">The fill always begins at −20 and extends to the current value. The math can continue beyond the displayed range.</p>
+      <a class="page-link" href="index.html">← View vertical version</a>
+    </section>
+
+    <aside class="panel history-panel">
+      <h2>History</h2>
+      <ul class="history-list" id="historyList">
+        <li data-placeholder>Operations will appear here.</li>
+      </ul>
+    </aside>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

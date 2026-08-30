@@ -1,0 +1,15 @@
+button{
+    width: 50px;
+    height: 1.em;
+    margin: 10px;
+}
+.buttons{
+margin: auto;
+padding: 5px;
+border: 2px saddlebrown;
+background-color: antiquewhite;
+display: flex;
+flex-direction: row;
+flex-wrap: wrap;
+
+}

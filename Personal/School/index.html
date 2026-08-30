@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vertical Integer Number Line</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="page-shell">
+    <section class="panel gauge-panel" aria-label="Vertical number line from negative 20 to positive 20">
+      <div class="vertical-gauge">
+        <div class="vertical-scale" id="verticalScale"></div>
+        <div class="vertical-track">
+          <div class="vertical-fill" id="verticalFill"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel controls-panel">
+      <h1>Integer Operations</h1>
+      <p class="subtitle">Use the two fields below to move the value up or down the number line.</p>
+
+      <div class="value-card">
+        <span>Current value</span>
+        <strong id="currentValue">0</strong>
+      </div>
+
+      <form class="math-form" id="addForm">
+        <label for="addInput">Add</label>
+        <input id="addInput" type="number" step="1" placeholder="Enter an integer" required>
+        <button type="submit">Submit</button>
+      </form>
+
+      <form class="math-form" id="subtractForm">
+        <label for="subtractInput">Subtract</label>
+        <input id="subtractInput" type="number" step="1" placeholder="Enter an integer" required>
+        <button type="submit">Submit</button>
+      </form>
+
+      <p class="range-note">The math can go beyond the displayed range. The graph itself is capped at −20 and +20.</p>
+      <a class="page-link" href="horizontal.html">View horizontal version →</a>
+    </section>
+
+    <aside class="panel history-panel">
+      <h2>History</h2>
+      <ul class="history-list" id="historyList">
+        <li data-placeholder>Operations will appear here.</li>
+      </ul>
+    </aside>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

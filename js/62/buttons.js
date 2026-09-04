@@ -17,7 +17,7 @@ theButton.addEventListener('click', buttonCreator)
 let count = 0;
 
 const buttonCreator2 = e => {
-    if (e.target.matches('button')) {
+    if (e.target.nodeName ==='button') {
         const newButton = document.createElement('button');
         newButton.textContent = ++count;
         buttonDiv.appendChild(newButton);

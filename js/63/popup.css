@@ -1,0 +1,119 @@
+/* Pop-up window */
+
+.popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    width: 400px;
+    max-width: 90%;
+    padding: 2rem;
+
+    color: white;
+    font-family: Arial, sans-serif;
+
+    background: rgba(20, 25, 40, 0.8);
+    border: 1px solid rgba(100, 240, 255, 0.4);
+    border-radius: 16px;
+
+    box-shadow:
+        0 0 25px rgba(100, 240, 255, 0.25),
+        0 15px 40px rgba(0, 0, 0, 0.5);
+
+    backdrop-filter: blur(15px);
+    z-index: 1000;
+}
+
+.popup button {
+    padding: 0.7rem 1.2rem;
+
+    color: #071016;
+    font-weight: bold;
+
+    background: #63f3ff;
+    border: none;
+    border-radius: 8px;
+
+    cursor: pointer;
+}
+
+.popup button:hover,
+.tech-form button:hover {
+    background: #9b7cff;
+    color: white;
+}
+
+
+/* Form */
+
+.tech-form {
+    width: 500px;
+    width: 80%;
+    padding: 2rem;
+    margin: auto;
+    margin-top: 20vh;
+    color: white;
+    font-family: Arial, sans-serif;
+
+    background: rgba(20, 25, 40, 0.8);
+    border: 1px solid rgba(100, 240, 255, 0.4);
+    border-radius: 16px;
+
+    box-shadow: 0 0 25px rgba(100, 240, 255, 0.2);
+    backdrop-filter: blur(15px);
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.tech-form label {
+    display: block;
+    margin-bottom: 0.4rem;
+
+    font-weight: bold;
+}
+
+.tech-form input,
+.tech-form select,
+.tech-form textarea {
+    width: 100%;
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+
+    color: white;
+    font: inherit;
+
+    background: rgba(5, 10, 25, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 8px;
+
+    box-sizing: border-box;
+}
+
+.tech-form input:focus,
+.tech-form select:focus,
+.tech-form textarea:focus {
+    border-color: #63f3ff;
+    outline: none;
+    box-shadow: 0 0 8px rgba(99, 243, 255, 0.4);
+}
+
+.tech-form textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.tech-form button {
+    padding: 0.7rem 1.2rem;
+
+    color: #071016;
+    font-weight: bold;
+
+    background: #63f3ff;
+    border: none;
+    border-radius: 8px;
+    margin: auto;
+    cursor: pointer;
+}

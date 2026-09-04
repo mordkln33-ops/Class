@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Visual Fraction Explorer</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script src="./script.js" defer></script>
+</head>
+
+<body>
+  <main class="app">
+    <section class="controls-panel">
+      <div class="controls-inner">
+        <div>
+          <div class="eyebrow">Interactive Math Model</div>
+          <h1>Visual Fraction Explorer</h1>
+          <p class="intro">
+            Enter a fraction to see it represented visually, or use the calculator
+            to add, subtract, multiply, or divide two fractions.
+          </p>
+        </div>
+
+        <section class="control-card">
+          <h2>Show a Fraction</h2>
+
+          <div class="direct-entry">
+            <div class="fraction-input large-fraction">
+              <input id="resultNumerator" type="number" value="3" aria-label="Numerator">
+              <div class="fraction-line"></div>
+              <input id="resultDenominator" type="number" value="4" aria-label="Denominator">
+            </div>
+
+            <button id="showFraction" class="primary-button" type="button">
+              Show Fraction
+            </button>
+          </div>
+
+          <p id="directMessage" class="message" aria-live="polite"></p>
+        </section>
+
+        <section class="control-card">
+          <h2>Fraction Calculator</h2>
+
+          <div class="calculator">
+            <div class="fraction-input">
+              <input id="num1" type="number" value="1" aria-label="First numerator">
+              <div class="fraction-line"></div>
+              <input id="den1" type="number" value="2" aria-label="First denominator">
+            </div>
+
+            <select id="operation" aria-label="Operation">
+              <option value="+">+</option>
+              <option value="-">−</option>
+              <option value="*">×</option>
+              <option value="/">÷</option>
+            </select>
+
+            <div class="fraction-input">
+              <input id="num2" type="number" value="1" aria-label="Second numerator">
+              <div class="fraction-line"></div>
+              <input id="den2" type="number" value="4" aria-label="Second denominator">
+            </div>
+          </div>
+
+          <button id="calculate" class="primary-button full-button" type="button">
+            Calculate &amp; Visualize
+          </button>
+
+          <p id="calcMessage" class="message" aria-live="polite"></p>
+        </section>
+      </div>
+    </section>
+
+    <section class="visual-panel" aria-label="Visual fraction model">
+      <div id="fractionModel" class="fraction-model"></div>
+
+      <div class="result-overlay">
+        <div>
+          <span>Fraction</span>
+          <strong id="fractionDisplay">3/4</strong>
+        </div>
+
+        <div class="overlay-divider"></div>
+
+        <div>
+          <span>Decimal</span>
+          <strong id="decimalDisplay">0.75</strong>
+        </div>
+      </div>
+
+      <div id="negativeBadge" class="negative-badge">
+        Negative result
+      </div>
+    </section>
+  </main>
+</body>
+</html>

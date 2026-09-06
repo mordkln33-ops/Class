@@ -20,9 +20,22 @@
     --stage-bg:      #16242f;
     --strip-empty-1: #2c3f4f;
     --strip-empty-2: #223543;
+
+    /* A — the original amount (aquamarine) */
     --fill-1:        #b6ffe8;   /* aquamarine highlight */
     --fill-2:        #7fffd4;   /* aquamarine           */
     --fill-3:        #3fd8b0;   /* aquamarine shade     */
+
+    /* B — the part being added on / the second fraction.
+       Same family, shifted far enough round to read as "not A". */
+    --add-1:         #cfe4ff;
+    --add-2:         #7fb8ff;
+    --add-3:         #3f7fd8;
+
+    /* R — the part being taken away */
+    --rem-1:         #ffc9c4;
+    --rem-2:         #ff7a6b;
+    --rem-3:         #d83f30;
 
     --radius: 12px;
     --shadow: 0 1px 2px rgba(21, 43, 62, .08), 0 6px 18px rgba(21, 43, 62, .07);
@@ -259,7 +272,14 @@ body {
     min-height: 1.2em;
     font-size: .92rem;
     font-weight: 600;
+    line-height: 1.5;
     color: var(--danger);
+}
+
+/* the same line doubles as plain narration of what just happened */
+.message.info {
+    font-weight: 500;
+    color: var(--ink-soft);
 }
 
 /* ============================================================
@@ -272,45 +292,168 @@ body {
     overflow: hidden;
 }
 
-/* strips fill the stage edge to edge: no empty space, ever */
+/* the drawing fills the stage edge to edge: no empty space, ever */
 .strips {
-    display: flex;
+    position: relative;
+    display: grid;
     width: 100%;
     height: 100%;
 }
 
 /* a single equal portion of the whole */
-.strip {
-    flex: 1 1 0;
+.cell {
+    position: relative;
     min-width: 0;
-    height: 100%;
+    min-height: 0;
     background: linear-gradient(180deg, var(--strip-empty-1), var(--strip-empty-2));
-    /* 3D bevel: light on the left edge, shadow on the right */
+    transition: background .35s ease, box-shadow .35s ease;
+    /* stagger the fill so it reads left to right */
+    transition-delay: calc(var(--i, 0) * 14ms);
+}
+
+/* ---------- bar mode: one whole cut into equal parts ---------- */
+
+/* 3D bevel: light on the left edge, shadow on the right */
+.mode-bar .cell {
     box-shadow:
         inset  3px 0 0 rgba(255, 255, 255, .10),
         inset -3px 0 0 rgba(0, 0, 0, .38),
         inset  0 3px 0 rgba(255, 255, 255, .06),
         inset  0 -6px 10px rgba(0, 0, 0, .30);
-    transition: background .35s ease, box-shadow .35s ease, transform .35s ease;
 }
 
-.strip.filled {
+.mode-bar .cell.fill-a {
     background: linear-gradient(180deg,
-                var(--fill-1) 0%,
-                var(--fill-2) 45%,
-                var(--fill-3) 100%);
+                var(--fill-1) 0%, var(--fill-2) 45%, var(--fill-3) 100%);
     box-shadow:
         inset  4px 0 0 rgba(255, 255, 255, .75),
         inset -4px 0 0 rgba(0, 90, 74, .45),
         inset  0 5px 0 rgba(255, 255, 255, .55),
         inset  0 -10px 14px rgba(0, 92, 76, .40),
         0 0 22px rgba(127, 255, 212, .28);
-    transform: scaleY(1.001);   /* nudges the strip above its neighbours */
     z-index: 1;
 }
 
-/* stagger the fill so the animation reads left to right */
-.strips .strip { transition-delay: calc(var(--i, 0) * 22ms); }
+/* the part that was added on */
+.mode-bar .cell.fill-b {
+    background: linear-gradient(180deg,
+                var(--add-1) 0%, var(--add-2) 45%, var(--add-3) 100%);
+    box-shadow:
+        inset  4px 0 0 rgba(255, 255, 255, .75),
+        inset -4px 0 0 rgba(0, 50, 110, .45),
+        inset  0 5px 0 rgba(255, 255, 255, .55),
+        inset  0 -10px 14px rgba(0, 52, 112, .40),
+        0 0 22px rgba(127, 184, 255, .28);
+    z-index: 1;
+}
+
+/* the part that was taken away */
+.mode-bar .cell.fill-remove {
+    background: linear-gradient(180deg,
+                var(--rem-1) 0%, var(--rem-2) 45%, var(--rem-3) 100%);
+    box-shadow:
+        inset  4px 0 0 rgba(255, 255, 255, .7),
+        inset -4px 0 0 rgba(110, 20, 12, .45),
+        inset  0 5px 0 rgba(255, 255, 255, .5),
+        inset  0 -10px 14px rgba(112, 22, 14, .42),
+        0 0 22px rgba(255, 122, 107, .3);
+    z-index: 1;
+}
+
+/* taken away past zero — red, but hollow, since it was never there */
+.mode-bar .cell.fill-short {
+    background:
+        repeating-linear-gradient(135deg,
+            rgba(255, 122, 107, .55) 0 10px,
+            rgba(255, 122, 107, .12) 10px 20px),
+        linear-gradient(180deg, var(--strip-empty-1), var(--strip-empty-2));
+    box-shadow:
+        inset 0 0 0 2px rgba(255, 122, 107, .65),
+        inset 0 -6px 10px rgba(0, 0, 0, .3);
+    z-index: 1;
+}
+
+/* ---------- grid mode: columns × rows for multiplying ---------- */
+
+.mode-grid .cell {
+    box-shadow:
+        inset -1px 0 0 rgba(255, 255, 255, .10),
+        inset  0 -1px 0 rgba(255, 255, 255, .10);
+}
+
+/* first fraction — vertical boxes, shaded down whole columns */
+.mode-grid .cell.col {
+    background-image:
+        linear-gradient(rgba(127, 255, 212, .40), rgba(127, 255, 212, .40)),
+        linear-gradient(180deg, var(--strip-empty-1), var(--strip-empty-2));
+    box-shadow:
+        inset  3px 0 0 rgba(127, 255, 212, .75),
+        inset -3px 0 0 rgba(127, 255, 212, .75),
+        inset  0 -1px 0 rgba(255, 255, 255, .10);
+}
+
+/* second fraction — horizontal boxes, shaded across whole rows */
+.mode-grid .cell.row {
+    background-image:
+        linear-gradient(rgba(127, 184, 255, .40), rgba(127, 184, 255, .40)),
+        linear-gradient(180deg, var(--strip-empty-1), var(--strip-empty-2));
+    box-shadow:
+        inset 0  3px 0 rgba(127, 184, 255, .75),
+        inset 0 -3px 0 rgba(127, 184, 255, .75),
+        inset -1px 0 0 rgba(255, 255, 255, .10);
+}
+
+/* both shadings land here, so both washes are painted and blend */
+.mode-grid .cell.col.row {
+    background-image:
+        linear-gradient(rgba(127, 255, 212, .42), rgba(127, 255, 212, .42)),
+        linear-gradient(rgba(127, 184, 255, .55), rgba(127, 184, 255, .55)),
+        linear-gradient(180deg, var(--strip-empty-1), var(--strip-empty-2));
+    box-shadow:
+        inset  3px 0 0 rgba(127, 255, 212, .6),
+        inset -3px 0 0 rgba(127, 255, 212, .6),
+        inset 0  3px 0 rgba(127, 184, 255, .6),
+        inset 0 -3px 0 rgba(127, 184, 255, .6);
+    z-index: 1;
+}
+
+/* when an improper fraction pushes the grid past one whole */
+.whole-box {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    border: 2px dashed rgba(255, 255, 255, .5);
+    pointer-events: none;
+}
+
+/* the border drawn round the shared space — that rectangle is the answer */
+.share-box {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 3;
+    border: 3px solid #ffffff;
+    border-radius: 3px;
+    pointer-events: none;
+    box-shadow:
+        0 0 0 2px rgba(8, 20, 28, .55),
+        0 0 26px rgba(255, 255, 255, .35);
+}
+
+.share-tag {
+    position: absolute;
+    right: 5px;
+    bottom: 5px;
+    padding: 4px 9px;
+    font-size: .8rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    color: #0d1c26;
+    background: #ffffff;
+    border-radius: 0 0 6px 0;
+}
 
 /* ---------- floating readout on the stage ---------- */
 
@@ -318,10 +461,12 @@ body {
     position: absolute;
     top: 22px;
     left: 50%;
+    z-index: 4;
     transform: translateX(-50%);
+    max-width: calc(100% - 36px);
     display: flex;
-    align-items: center;
-    gap: 20px;
+    flex-direction: column;
+    gap: 12px;
     padding: 14px 26px;
     color: #eaf6ff;
     background: rgba(10, 22, 30, .68);
@@ -330,6 +475,12 @@ body {
     backdrop-filter: blur(8px);
     box-shadow: 0 10px 30px rgba(0, 0, 0, .35);
     pointer-events: none;
+}
+
+.overlay-main {
+    display: flex;
+    align-items: center;
+    gap: 20px;
 }
 
 .overlay-frac {
@@ -368,6 +519,51 @@ body {
     font-size: .78rem;
     letter-spacing: .04em;
     color: #9db6c6;
+    max-width: 40ch;
+    line-height: 1.4;
+}
+
+/* ---------- legend: which colour is which piece ---------- */
+
+.overlay-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 18px;
+    padding-top: 11px;
+    border-top: 1px solid rgba(255, 255, 255, .18);
+}
+
+.legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: .8rem;
+    font-variant-numeric: tabular-nums;
+    color: #d6e6f2;
+    white-space: nowrap;
+}
+
+.swatch {
+    width: 15px;
+    height: 15px;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, .35);
+    flex: none;
+}
+
+.swatch.sw-a      { background: linear-gradient(180deg, var(--fill-1), var(--fill-3)); }
+.swatch.sw-b      { background: linear-gradient(180deg, var(--add-1),  var(--add-3)); }
+.swatch.sw-remove { background: linear-gradient(180deg, var(--rem-1),  var(--rem-3)); }
+.swatch.sw-short  {
+    background: repeating-linear-gradient(135deg,
+        rgba(255, 122, 107, .8) 0 4px, rgba(255, 122, 107, .15) 4px 8px);
+}
+.swatch.sw-both   {
+    background:
+        linear-gradient(rgba(127, 255, 212, .55), rgba(127, 255, 212, .55)),
+        linear-gradient(rgba(127, 184, 255, .8),  rgba(127, 184, 255, .8)),
+        #22394a;
+    border-color: #ffffff;
 }
 
 /* ---------- narrow screens: stack, visual on top ---------- */
@@ -384,5 +580,5 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .strip { transition: none; }
+    .cell { transition: none; }
 }

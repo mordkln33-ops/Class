@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Graphing Explorer — Algebra 1</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="app-header">
+  <div class="brand">
+    <span class="brand-logo" aria-hidden="true">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 3v18h18"/><path d="M19 7L11 15l-3-3-4 4"/>
+      </svg>
+    </span>
+    <div class="brand-text">
+      <h1>Graphing Explorer</h1>
+      <p>Plot points &middot; build lines &middot; read the table</p>
+    </div>
+  </div>
+  <div class="header-actions">
+    <button id="helpBtn" class="btn btn-ghost" type="button">
+      <span aria-hidden="true">?</span> How it works
+    </button>
+    <button id="clearBtn" class="btn btn-ghost btn-danger" type="button">Clear all</button>
+  </div>
+</header>
+
+<main class="layout">
+
+  <!-- ===== TOP LEFT: type in a point or a line ===== -->
+  <section class="panel panel-input" aria-labelledby="eqHeading">
+    <div class="panel-head">
+      <h2 id="eqHeading">Type It In</h2>
+      <span class="panel-hint">a point or a line</span>
+    </div>
+    <div class="panel-body">
+
+      <form id="ptForm" class="mini-form" autocomplete="off">
+        <label class="eq-label" for="ptInput">Point as an ordered pair <code>(x, y)</code></label>
+        <p id="ptError" class="eq-error" role="alert"></p>
+        <div class="eq-row">
+          <input id="ptInput" class="eq-input" type="text" placeholder="(3, 4)" aria-describedby="ptError">
+          <button id="ptBtn" class="btn btn-plot" type="submit">Plot it</button>
+        </div>
+      </form>
+
+      <div class="form-divider" role="separator"></div>
+
+      <form id="eqForm" class="mini-form" autocomplete="off">
+        <label class="eq-label" for="eqInput">Line in slope-intercept form <code>y = mx + b</code></label>
+        <p id="eqError" class="eq-error" role="alert"></p>
+        <div class="eq-row">
+          <input id="eqInput" class="eq-input" type="text" placeholder="y = 2x + 1" aria-describedby="eqError">
+          <button class="btn btn-primary" type="submit">Graph it</button>
+        </div>
+      </form>
+
+    </div>
+  </section>
+
+  <!-- ===== LEFT, UNDER THE INPUTS: equations + tables ===== -->
+  <section class="panel panel-lines" aria-labelledby="linesHeading">
+    <div class="panel-head">
+      <h2 id="linesHeading">Equations &amp; Tables</h2>
+      <div id="carouselNav" class="carousel-nav" hidden>
+        <button id="prevPage" class="nav-btn" type="button" aria-label="Previous lines">&#8249;</button>
+        <div id="pageDots" class="page-dots"></div>
+        <button id="nextPage" class="nav-btn" type="button" aria-label="Next lines">&#8250;</button>
+      </div>
+    </div>
+
+    <div class="panel-body">
+      <div id="linesEmpty" class="empty-state">
+        <div class="empty-icon" aria-hidden="true">📈</div>
+        <p class="empty-title">No lines yet</p>
+        <p class="empty-sub">Click two grid corners on the graph, then say <strong>Yes</strong> when asked to draw a line. The equation and its table of values will show up right here.</p>
+      </div>
+      <div id="cardsViewport" class="cards-viewport" hidden>
+        <div id="cardsTrack" class="cards-track"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== TOP RIGHT: the graph ===== -->
+  <section class="panel panel-graph" aria-labelledby="graphHeading">
+    <div class="panel-head">
+      <h2 id="graphHeading">Coordinate Plane</h2>
+      <p class="panel-hint">Click a corner to plot a point &middot; drag a point to move it</p>
+    </div>
+    <div class="panel-body graph-body">
+      <div class="graph-stage" id="graphStage">
+        <svg id="graph" role="application" aria-label="Interactive coordinate plane from negative 10 to 10 on both axes"></svg>
+        <div id="overlay" class="graph-overlay"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== BOTTOM RIGHT: all coordinate pairs ===== -->
+  <section class="panel panel-points" aria-labelledby="pointsHeading">
+    <div class="panel-head">
+      <h2 id="pointsHeading">Points on the Graph</h2>
+      <span id="pointsCount" class="badge">0 points</span>
+    </div>
+    <div class="panel-body">
+      <div id="pointsField" class="points-field" aria-live="polite"></div>
+    </div>
+  </section>
+
+</main>
+
+<div id="modalRoot" class="modal-root" aria-hidden="true"></div>
+
+<script src="script.js"></script>
+</body>
+</html>

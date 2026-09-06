@@ -14,7 +14,7 @@
             <header class="panel-header">
                 <h1>Fraction Visualizer</h1>
                 <p class="subtitle">Type a fraction, watch it fill. Then add, subtract,
-                    multiply or divide two fractions and see the result.</p>
+                    multiply or divide two fractions and see how the answer is built.</p>
             </header>
 
             <!-- Single fraction -->
@@ -46,6 +46,10 @@
                         <dd id="simpleOut">3/4</dd>
                     </div>
                 </dl>
+
+                <p class="hint">Submit simplifies whatever is in this fraction, redraws
+                    the picture in one colour, and copies the answer down into the first
+                    fraction of the equation below.</p>
             </div>
 
             <!-- Two-fraction calculator -->
@@ -83,8 +87,9 @@
                     <button class="btn btn-primary" type="submit">Calculate</button>
                 </form>
 
-                <p class="hint">The answer replaces the fraction above, updates the
-                    decimal, and becomes the first fraction here so you can keep going.</p>
+                <p class="hint">Calculate leaves this first fraction alone and draws the
+                    working out on the right — unsimplified, in two colours — while the
+                    fraction above becomes the answer.</p>
             </div>
 
             <p id="message" class="message" role="status" aria-live="polite"></p>
@@ -95,15 +100,18 @@
             <div id="strips" class="strips"></div>
 
             <div class="overlay">
-                <div class="overlay-frac">
-                    <span id="ovNum">3</span>
-                    <span class="overlay-bar"></span>
-                    <span id="ovDen">4</span>
+                <div class="overlay-main">
+                    <div class="overlay-frac">
+                        <span id="ovNum">3</span>
+                        <span class="overlay-bar"></span>
+                        <span id="ovDen">4</span>
+                    </div>
+                    <div class="overlay-meta">
+                        <span id="ovDecimal">0.75</span>
+                        <span id="ovNote" class="overlay-note"></span>
+                    </div>
                 </div>
-                <div class="overlay-meta">
-                    <span id="ovDecimal">0.75</span>
-                    <span id="ovNote" class="overlay-note"></span>
-                </div>
+                <div id="ovLegend" class="overlay-legend" hidden></div>
             </div>
         </section>
 

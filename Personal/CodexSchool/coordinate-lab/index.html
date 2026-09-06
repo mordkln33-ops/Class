@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#123c55">
+  <title>Coordinate Lab · Algebra 1</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <main class="workspace">
+    <section class="equations-panel" aria-labelledby="page-title">
+      <header class="page-header">
+        <div><p class="eyebrow">ALGEBRA 1 / COORDINATE LAB</p><h1 id="page-title">From points to lines.</h1></div>
+        <span class="lesson-badge">x, y</span>
+      </header>
+      <div class="panel-heading"><h2>Your equations &amp; tables</h2><span id="line-count">0 lines</span></div>
+      <div id="empty-state" class="empty-state">
+        <span class="step-number">01</span>
+        <h3>Start with a point.</h3>
+        <p>Click where two grid lines cross. Each point has an address: <strong>(x, y)</strong>.</p>
+        <div class="coordinate-key"><div><b>x</b><span>Move left or right</span></div><div><b>y</b><span>Move down or up</span></div></div>
+        <p>Add a second point to create a line. Its equation and value table will appear here.</p>
+      </div>
+      <div id="cards" class="cards" aria-label="Line equations and value tables"></div>
+      <nav id="carousel" class="carousel" aria-label="Equation pages" hidden>
+        <button id="previous-page" class="icon-button" aria-label="Previous equations">←</button>
+        <span id="page-indicator" aria-live="polite"></span>
+        <button id="next-page" class="icon-button" aria-label="Next equations">→</button>
+      </nav>
+    </section>
+
+    <section class="graph-panel" aria-label="Interactive coordinate graph">
+      <div class="graph-toolbar"><div><strong>The coordinate plane</strong><span>−10 to 10 on each axis</span></div><button id="connect-points" class="small-button" disabled>Connect points</button></div>
+      <svg id="graph" tabindex="0" role="application" aria-label="Coordinate graph. Click a grid intersection to add a point. Arrow keys move the grid cursor; Enter adds a point. Tab to a point, use arrow keys to move it, or press Delete to remove it." xmlns="http://www.w3.org/2000/svg">
+        <defs><clipPath id="plot-clip"><rect id="clip-rect"/></clipPath></defs>
+        <g id="grid-layer"></g><g id="line-layer" clip-path="url(#plot-clip)"></g><g id="hover-layer" pointer-events="none"></g><g id="point-layer"></g><g id="label-layer" pointer-events="none"></g><g id="cursor-layer" pointer-events="none"></g>
+      </svg>
+      <div id="point-actions" class="point-actions" hidden><strong id="selected-point"></strong><p id="delete-note"></p><button id="delete-point" class="delete-button">Delete point</button><button id="close-actions" class="quiet-button" aria-label="Close point options">Close</button></div>
+      <div id="hover-tooltip" class="hover-tooltip" role="status" hidden></div>
+    </section>
+
+    <section class="latest-panel" aria-labelledby="latest-heading">
+      <p class="eyebrow" id="latest-heading">LATEST POINT</p>
+      <output id="latest-point" class="latest-point" aria-live="polite">( —, — )</output>
+      <p id="latest-description">Click a grid intersection to begin.</p>
+    </section>
+    <section class="help-panel" aria-label="Graph instructions">
+      <div class="help-item"><span>1</span><p><strong>Plot.</strong> Click an intersection. Add two points, then choose “Create line.”</p></div>
+      <div class="help-item"><span>2</span><p><strong>Explore.</strong> Hover near a line to match its coordinates to its table.</p></div>
+      <div class="help-item"><span>3</span><p><strong>Change.</strong> Drag a point to move it. Click a point to delete it.</p></div>
+      <p id="status" class="status" role="status" aria-live="polite">Ready for your first point.</p>
+    </section>
+  </main>
+
+  <dialog id="line-dialog" aria-labelledby="dialog-title" aria-describedby="dialog-description">
+    <form method="dialog" id="line-form">
+      <p class="eyebrow">CONNECT TWO POINTS</p><h2 id="dialog-title">Create a line?</h2>
+      <p id="dialog-description">A line passes through both points and continues in both directions.</p>
+      <div class="pair-selectors"><label>First point<select id="first-point"></select></label><label>Second point<select id="second-point"></select></label></div>
+      <p id="pair-preview" class="pair-preview"></p>
+      <p id="dialog-error" class="dialog-error" role="alert"></p>
+      <div class="dialog-buttons"><button value="cancel" class="secondary-button">Keep points only</button><button value="create" class="primary-button">Create line</button></div>
+    </form>
+  </dialog>
+</body>
+</html>

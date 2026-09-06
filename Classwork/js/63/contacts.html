@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      table {
+        border-collapse: collapse;
+        width: 80%;
+        margin: auto;
+      }
+
+      th,
+      td {
+        border: 1px solid black;
+        padding: 0.5em;
+      }
+
+      .form-group label {
+        display: inline-block;
+        width: 3em;
+      }
+
+      .form-group {
+        margin-bottom: 0.5em;
+      }
+
+      #addContact {
+        display: none;
+
+        background-color: lightcyan;
+        border: 1px solid black;
+        padding: 1em;
+        height: 8.5em;
+        width: 15em;
+
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        margin-top: -4.25em;
+        margin-left: -7.5em;
+      }
+
+      #add {
+        margin-top: 1em;
+      }
+    </style>
+  </head>
+  <body>
+    <table id="contactsTable">
+      <thead>
+        <tr>
+          <th>first</th>
+          <th>last</th>
+          <th>email</th>
+          <th>phone</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td colspan="5">no contacts loaded</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <button id="add">add contact</button>
+
+    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Illum sapiente a accusamus mollitia. Hic itaque aliquid omnis voluptate totam earum consectetur sint minima fugiat accusamus perferendis dolores velit maiores iste repellat cumque, numquam, est nulla optio aliquam, quibusdam possimus porro. Sequi architecto sed placeat perferendis facere, impedit eum eligendi repellat ad a fugit doloribus unde obcaecati, eos non suscipit numquam, odit omnis natus iure necessitatibus pariatur? Aut dignissimos, eligendi doloremque quisquam libero accusamus dolorum facilis ex necessitatibus corrupti mollitia deserunt quae temporibus. Aliquid fugit magni velit quibusdam quis, nulla repellendus delectus dicta veniam cumque dolorum ea totam, nesciunt corrupti laboriosam.</p>
+
+    <form id="addContact">
+      <div class="form-group">
+        <label for="first">first:</label>
+        <input id="first" />
+      </div>
+      <div class="form-group">
+        <label for="last">last:</label>
+        <input id="last" required/>
+      </div>
+      <div class="form-group">
+        <label for="email">email:</label>
+        <input id="email" />
+      </div>
+      <div class="form-group">
+        <label for="phone">phone:</label>
+        <input id="phone" />
+      </div>
+      <button>add</button>
+      <button type="reset">reset</button>
+      <button type="button" id="cancel">cancel</button>
+    </form>
+    <script src="contacts.js" type="module"></script>
+  </body>
+</html>

@@ -1,0 +1,388 @@
+/* ============================================================
+   Fraction Visualizer
+   Left half: controls.  Right half: the visual container.
+   ============================================================ */
+
+:root {
+    /* surfaces */
+    --bg:            #eef2f6;
+    --card:          #ffffff;
+    --line:          #d8e0e8;
+    --ink:           #1b2b39;
+    --ink-soft:      #5c7288;
+
+    /* accents */
+    --accent:        #1f6feb;
+    --accent-dark:   #1858bd;
+    --danger:        #c0392b;
+
+    /* the visual stage */
+    --stage-bg:      #16242f;
+    --strip-empty-1: #2c3f4f;
+    --strip-empty-2: #223543;
+    --fill-1:        #b6ffe8;   /* aquamarine highlight */
+    --fill-2:        #7fffd4;   /* aquamarine           */
+    --fill-3:        #3fd8b0;   /* aquamarine shade     */
+
+    --radius: 12px;
+    --shadow: 0 1px 2px rgba(21, 43, 62, .08), 0 6px 18px rgba(21, 43, 62, .07);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    font-family: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+    color: var(--ink);
+    background: var(--bg);
+}
+
+/* ---------- overall 50 / 50 split ---------- */
+
+.app {
+    display: grid;
+    grid-template-columns: 50% 50%;
+    height: 100vh;
+}
+
+/* ============================================================
+   LEFT PANEL
+   ============================================================ */
+
+.panel {
+    padding: 34px 40px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+.panel-header h1 {
+    margin: 0 0 6px;
+    font-size: 1.9rem;
+    letter-spacing: -.02em;
+}
+
+.subtitle {
+    margin: 0;
+    max-width: 46ch;
+    color: var(--ink-soft);
+    font-size: .95rem;
+    line-height: 1.5;
+}
+
+.card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 22px 24px 24px;
+}
+
+.card-title {
+    margin: 0 0 18px;
+    font-size: .78rem;
+    font-weight: 700;
+    letter-spacing: .09em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+}
+
+/* ---------- the fraction template (input over bar over input) ---------- */
+
+.frac {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+.frac-input {
+    width: 92px;
+    padding: 10px 6px;
+    font: inherit;
+    font-size: 1.5rem;
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+    color: var(--ink);
+    background: #f7fafc;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    transition: border-color .15s, box-shadow .15s;
+}
+
+.frac-input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(31, 111, 235, .18);
+}
+
+.frac-input.invalid {
+    border-color: var(--danger);
+    box-shadow: 0 0 0 3px rgba(192, 57, 43, .15);
+}
+
+/* hide spinners so the fraction reads cleanly */
+.frac-input::-webkit-outer-spin-button,
+.frac-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.frac-input { -moz-appearance: textfield; appearance: textfield; }
+
+.frac-bar {
+    width: 100%;
+    height: 3px;
+    border-radius: 2px;
+    background: var(--ink);
+}
+
+.frac-sm .frac-input {
+    width: 66px;
+    padding: 7px 4px;
+    font-size: 1.15rem;
+}
+
+/* ---------- single fraction form ---------- */
+
+.fraction-form {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    flex-wrap: wrap;
+}
+
+.btn {
+    font: inherit;
+    font-weight: 600;
+    padding: 11px 22px;
+    border: 0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background .15s, transform .08s, box-shadow .15s;
+}
+
+.btn-primary {
+    color: #fff;
+    background: var(--accent);
+    box-shadow: 0 2px 6px rgba(31, 111, 235, .3);
+}
+
+.btn-primary:hover  { background: var(--accent-dark); }
+.btn-primary:active { transform: translateY(1px); }
+.btn:focus-visible  { outline: 3px solid rgba(31, 111, 235, .4); outline-offset: 2px; }
+
+/* ---------- readout ---------- */
+
+.readout {
+    display: flex;
+    gap: 12px;
+    margin: 22px 0 0;
+    padding-top: 18px;
+    border-top: 1px dashed var(--line);
+    flex-wrap: wrap;
+}
+
+.readout-item {
+    flex: 1 1 110px;
+    background: #f4f8fb;
+    border-radius: 9px;
+    padding: 10px 14px;
+}
+
+.readout-item dt {
+    font-size: .7rem;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+}
+
+.readout-item dd {
+    margin: 4px 0 0;
+    font-size: 1.3rem;
+    font-variant-numeric: tabular-nums;
+}
+
+/* ---------- calculator row ---------- */
+
+.calc-form {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.op-select {
+    font: inherit;
+    font-size: 1rem;
+    padding: 10px 12px;
+    color: var(--ink);
+    background: #f7fafc;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.op-select:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(31, 111, 235, .18);
+}
+
+.equals {
+    font-size: 1.4rem;
+    color: var(--ink-soft);
+}
+
+.calc-result {
+    min-width: 74px;
+    padding: 8px 14px;
+    font-size: 1.3rem;
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+    background: #eaf7f2;
+    border: 1px solid #bfe8da;
+    border-radius: 8px;
+}
+
+.hint {
+    margin: 16px 0 0;
+    font-size: .84rem;
+    line-height: 1.5;
+    color: var(--ink-soft);
+}
+
+.message {
+    margin: 0;
+    min-height: 1.2em;
+    font-size: .92rem;
+    font-weight: 600;
+    color: var(--danger);
+}
+
+/* ============================================================
+   RIGHT STAGE — the whole half is the container
+   ============================================================ */
+
+.stage {
+    position: relative;
+    background: var(--stage-bg);
+    overflow: hidden;
+}
+
+/* strips fill the stage edge to edge: no empty space, ever */
+.strips {
+    display: flex;
+    width: 100%;
+    height: 100%;
+}
+
+/* a single equal portion of the whole */
+.strip {
+    flex: 1 1 0;
+    min-width: 0;
+    height: 100%;
+    background: linear-gradient(180deg, var(--strip-empty-1), var(--strip-empty-2));
+    /* 3D bevel: light on the left edge, shadow on the right */
+    box-shadow:
+        inset  3px 0 0 rgba(255, 255, 255, .10),
+        inset -3px 0 0 rgba(0, 0, 0, .38),
+        inset  0 3px 0 rgba(255, 255, 255, .06),
+        inset  0 -6px 10px rgba(0, 0, 0, .30);
+    transition: background .35s ease, box-shadow .35s ease, transform .35s ease;
+}
+
+.strip.filled {
+    background: linear-gradient(180deg,
+                var(--fill-1) 0%,
+                var(--fill-2) 45%,
+                var(--fill-3) 100%);
+    box-shadow:
+        inset  4px 0 0 rgba(255, 255, 255, .75),
+        inset -4px 0 0 rgba(0, 90, 74, .45),
+        inset  0 5px 0 rgba(255, 255, 255, .55),
+        inset  0 -10px 14px rgba(0, 92, 76, .40),
+        0 0 22px rgba(127, 255, 212, .28);
+    transform: scaleY(1.001);   /* nudges the strip above its neighbours */
+    z-index: 1;
+}
+
+/* stagger the fill so the animation reads left to right */
+.strips .strip { transition-delay: calc(var(--i, 0) * 22ms); }
+
+/* ---------- floating readout on the stage ---------- */
+
+.overlay {
+    position: absolute;
+    top: 22px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 14px 26px;
+    color: #eaf6ff;
+    background: rgba(10, 22, 30, .68);
+    border: 1px solid rgba(255, 255, 255, .14);
+    border-radius: 14px;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, .35);
+    pointer-events: none;
+}
+
+.overlay-frac {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 1.5rem;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.15;
+}
+
+.overlay-bar {
+    width: 100%;
+    min-width: 34px;
+    height: 2px;
+    margin: 3px 0;
+    background: currentColor;
+}
+
+.overlay-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    border-left: 1px solid rgba(255, 255, 255, .2);
+    padding-left: 20px;
+}
+
+#ovDecimal {
+    font-size: 1.9rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--fill-2);
+}
+
+.overlay-note {
+    font-size: .78rem;
+    letter-spacing: .04em;
+    color: #9db6c6;
+}
+
+/* ---------- narrow screens: stack, visual on top ---------- */
+
+@media (max-width: 900px) {
+    .app {
+        grid-template-columns: 1fr;
+        grid-template-rows: 40vh 1fr;
+        height: auto;
+        min-height: 100vh;
+    }
+    .stage { order: -1; }
+    .panel { padding: 24px 20px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .strip { transition: none; }
+}

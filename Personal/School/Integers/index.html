@@ -1,55 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vertical Integer Number Line</title>
+  <title>Number Line — Vertical</title>
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
-  <main class="page-shell">
-    <section class="panel gauge-panel" aria-label="Vertical number line from negative 20 to positive 20">
-      <div class="vertical-gauge">
-        <div class="vertical-scale" id="verticalScale"></div>
-        <div class="vertical-track">
-          <div class="vertical-fill" id="verticalFill"></div>
+
+<body class="layout-vertical">
+  <main class="page">
+
+    <!-- ---------- LEFT: the vertical number line ---------- -->
+    <section class="gauge-area" aria-label="Vertical number line from negative 20 to positive 20">
+      <div class="gauge gauge-vertical">
+        <div class="scale scale-vertical" id="verticalScale"></div>
+        <div class="track track-vertical">
+          <div class="fill fill-vertical" id="verticalFill"></div>
+          <span class="zero-line zero-line-vertical"></span>
         </div>
       </div>
     </section>
 
-    <section class="panel controls-panel">
-      <h1>Integer Operations</h1>
-      <p class="subtitle">Use the two fields below to move the value up or down the number line.</p>
+    <!-- ---------- CENTER: the two operations ---------- -->
+    <section class="panel controls">
+      <header>
+        <h1>Number Line</h1>
+        <p class="subtitle">Add to or subtract from the running value and watch the
+          fill move along the scale.</p>
+      </header>
 
       <div class="value-card">
-        <span>Current value</span>
-        <strong id="currentValue">0</strong>
+        <span class="value-label">Current value</span>
+        <strong id="currentValue" class="value-number">0</strong>
+        <span id="rangeNote" class="value-note"></span>
       </div>
 
-      <form class="math-form" id="addForm">
+      <form class="op-form" id="addForm" novalidate>
         <label for="addInput">Add</label>
-        <input id="addInput" type="number" step="1" placeholder="Enter an integer" required>
-        <button type="submit">Submit</button>
+        <div class="op-row">
+          <input id="addInput" type="number" step="any" placeholder="e.g. 5 or −3" required>
+          <button class="btn btn-add" type="submit">Submit</button>
+        </div>
       </form>
 
-      <form class="math-form" id="subtractForm">
+      <form class="op-form" id="subtractForm" novalidate>
         <label for="subtractInput">Subtract</label>
-        <input id="subtractInput" type="number" step="1" placeholder="Enter an integer" required>
-        <button type="submit">Submit</button>
+        <div class="op-row">
+          <input id="subtractInput" type="number" step="any" placeholder="e.g. 5 or −3" required>
+          <button class="btn btn-sub" type="submit">Submit</button>
+        </div>
       </form>
 
-      <p class="range-note">The math can go beyond the displayed range. The graph itself is capped at −20 and +20.</p>
-      <a class="page-link" href="horizontal.html">View horizontal version →</a>
+      <p class="footnote">The fill runs from −20 up to the current value, and turns red
+        below zero. The math keeps going past the ends of the scale — the fill just
+        stops at −20 or +20.</p>
+
+      <a class="page-link" href="horizontal.html">Horizontal version →</a>
     </section>
 
-    <aside class="panel history-panel">
-      <h2>History</h2>
-      <ul class="history-list" id="historyList">
-        <li data-placeholder>Operations will appear here.</li>
-      </ul>
+    <!-- ---------- RIGHT: history ---------- -->
+    <aside class="panel history" aria-label="History">
+      <div class="history-head">
+        <h2>History</h2>
+        <button class="btn btn-ghost" id="clearHistory" type="button">Clear</button>
+      </div>
+      <ol class="history-list" id="historyList">
+        <li class="history-empty" data-placeholder>No operations yet.</li>
+      </ol>
     </aside>
+
   </main>
 
   <script src="script.js"></script>
 </body>
+
 </html>

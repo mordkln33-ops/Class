@@ -1,359 +1,459 @@
+/* ============================================================
+   Number Line — shared styles for the vertical and horizontal pages
+   ============================================================ */
+
 :root {
-  --bg: #f5f7fa;
-  --panel: #ffffff;
-  --text: #1e2430;
-  --muted: #6b7280;
-  --border: #cfd5df;
-  --accent: #44617b;
-  --positive: #111111;
-  --negative: #c73a3a;
-  --shadow: 0 10px 28px rgba(24, 39, 58, 0.08);
+  --bg-1:      #f7f9fc;
+  --bg-2:      #eef2f7;
+  --panel:     #ffffff;
+  --ink:       #1e2430;
+  --muted:     #6b7684;
+  --line:      #dfe5ec;
+  --accent:    #3f6183;
+  --positive:  #111111;   /* fill at or above zero */
+  --negative:  #c73a3a;   /* fill below zero       */
+  --shadow:    0 8px 24px rgba(24, 39, 58, .08);
+  --radius:    14px;
 }
 
-* {
-  box-sizing: border-box;
+* { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  margin: 0;
 }
 
 body {
-  margin: 0;
-  min-height: 100vh;
-  font-family: Arial, Helvetica, sans-serif;
-  color: var(--text);
-  background: linear-gradient(135deg, #f7f9fc, #edf1f6);
+  font-family: "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+  color: var(--ink);
+  background: linear-gradient(135deg, var(--bg-1), var(--bg-2));
+  overflow: hidden;             /* only the history panel scrolls */
 }
 
-a {
-  color: var(--accent);
-}
+h1, h2 { margin: 0; }
 
-.page-shell {
-  min-height: 100vh;
-  display: grid;
-  grid-template-columns: minmax(220px, 20vw) minmax(340px, 1fr) minmax(260px, 24vw);
-  gap: 28px;
-  align-items: center;
-  padding: 32px;
-}
+a { color: var(--accent); }
 
-.page-shell.horizontal-layout {
+/* ============================================================
+   Page skeletons
+   ============================================================ */
+
+.page {
   height: 100vh;
-  min-height: 100vh;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  grid-template-rows: minmax(0, 1fr) minmax(0, 2fr);
-  gap: 22px;
-  padding: 22px;
-  align-items: stretch;
-  overflow: hidden;
+  display: grid;
+  gap: 24px;
+  padding: 24px;
+}
+
+/* vertical page: number line | controls | history */
+.layout-vertical .page {
+  grid-template-columns: auto minmax(320px, 1fr) minmax(270px, 24%);
+  align-items: center;
+}
+
+/* horizontal page: number line across the top third,
+   controls and history sharing the bottom two thirds */
+.layout-horizontal .page {
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 2fr;
+}
+
+.layout-horizontal .gauge-area {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
 }
 
 .panel {
-  background: rgba(255, 255, 255, 0.94);
-  border: 1px solid #e1e6ed;
-  border-radius: 16px;
+  min-height: 0;                /* lets inner areas scroll, not the page */
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
   box-shadow: var(--shadow);
+  padding: 26px 28px;
 }
 
-.gauge-panel {
-  height: 80vh;
-  min-height: 560px;
-  padding: 20px 16px 20px 12px;
-  display: flex;
-  align-items: stretch;
-  justify-content: center;
-}
+/* ============================================================
+   The number line itself
+   ============================================================ */
 
-.vertical-gauge {
-  width: 100%;
-  position: relative;
+/* vertical: a 20% × 80% block, with the scale in a gutter beside it */
+.gauge-vertical {
   display: grid;
-  grid-template-columns: 50px 1fr;
-  gap: 10px;
+  grid-template-columns: 46px 20vw;
+  gap: 8px;
+  height: 80vh;
 }
 
-.vertical-scale {
+.gauge-horizontal {
+  width: 80vw;
+}
+
+.track {
   position: relative;
-  height: 100%;
-}
-
-.vertical-scale .tick-label {
-  position: absolute;
-  right: 0;
-  transform: translateY(50%);
-  font-size: 11px;
-  color: var(--muted);
-  line-height: 1;
-}
-
-.vertical-track {
-  position: relative;
-  height: 100%;
-  border: 2px solid #252b34;
-  border-radius: 10px;
   overflow: hidden;
   background:
-    repeating-linear-gradient(
-      to bottom,
-      rgba(67, 77, 91, 0.08) 0,
-      rgba(67, 77, 91, 0.08) 1px,
+    repeating-linear-gradient(var(--grid-dir, to bottom),
+      rgba(67, 77, 91, .10) 0,
+      rgba(67, 77, 91, .10) 1px,
       transparent 1px,
-      transparent 2.5%
-    ),
+      transparent 2.5%),
     #fff;
+  border: 2px solid #242a33;
+  border-radius: 10px;
+  box-shadow: inset 0 1px 3px rgba(24, 39, 58, .10);
 }
 
-.vertical-track::after {
-  content: "";
+.track-vertical {
+  --grid-dir: to bottom;
+  width: 100%;
+  height: 100%;
+}
+
+.track-horizontal {
+  --grid-dir: to right;
+  width: 100%;
+  height: 20vh;
+}
+
+/* the fill always starts at the low end of the scale */
+.fill {
   position: absolute;
+  background: var(--positive);
+  z-index: 2;
+  transition: height .35s ease, width .35s ease, background-color .25s ease;
+}
+
+.fill.is-negative { background: var(--negative); }
+
+.fill-vertical {
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 50%;
+}
+
+.fill-horizontal {
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 50%;
+}
+
+/* zero marker, drawn over the fill so it stays visible either way */
+.zero-line {
+  position: absolute;
+  z-index: 3;
+  background: #8b97a6;
+}
+
+.zero-line-vertical {
   left: 0;
   right: 0;
   top: 50%;
-  border-top: 2px solid #7f8b9a;
-  z-index: 3;
+  height: 2px;
 }
 
-.vertical-fill {
+.zero-line-horizontal {
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 2px;
+}
+
+/* ---------- tick marks and numbers ---------- */
+
+.scale { position: relative; }
+
+.scale-vertical { height: 100%; }
+
+.scale-horizontal {
+  height: 30px;
+  margin-top: 6px;
+}
+
+.tick {
   position: absolute;
-  left: 0;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  line-height: 1;
+  color: var(--muted);
+}
+
+.scale-vertical .tick {
   right: 0;
-  height: 0;
-  background: var(--positive);
-  transition: height 0.35s ease, top 0.35s ease, background-color 0.25s ease;
-  z-index: 2;
+  transform: translateY(-50%);
 }
 
-.controls-panel,
-.history-panel {
-  padding: 28px;
+.scale-horizontal .tick {
+  top: 0;
+  flex-direction: column;
+  gap: 4px;
+  transform: translateX(-50%);
 }
 
-.controls-panel h1,
-.history-panel h2 {
-  margin-top: 0;
+.tick-line { background: #a7b1bd; }
+
+.scale-vertical .tick-line  { width: 7px;  height: 1px; }
+.scale-horizontal .tick-line { width: 1px; height: 7px; }
+
+.tick.is-major { color: var(--ink); font-weight: 700; font-size: 11px; }
+.tick.is-major .tick-line { background: #4c5563; }
+.scale-vertical .tick.is-major .tick-line  { width: 13px; height: 2px; }
+.scale-horizontal .tick.is-major .tick-line { width: 2px; height: 13px; }
+
+/* ============================================================
+   Controls
+   ============================================================ */
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow-y: auto;
+}
+
+.controls h1 {
+  font-size: 1.6rem;
+  letter-spacing: -.01em;
 }
 
 .subtitle {
-  margin: -8px 0 24px;
+  margin: 6px 0 0;
   color: var(--muted);
   line-height: 1.5;
+  font-size: .94rem;
 }
 
 .value-card {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto;
   align-items: baseline;
-  justify-content: space-between;
-  padding: 14px 16px;
-  margin-bottom: 22px;
-  background: #f7f9fb;
-  border: 1px solid #e3e8ef;
+  gap: 4px 12px;
+  padding: 14px 18px;
+  background: #f6f9fc;
+  border: 1px solid var(--line);
   border-radius: 12px;
 }
 
-.value-card strong {
-  font-size: 2rem;
+.value-label {
+  font-size: .74rem;
+  font-weight: 700;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: var(--muted);
 }
 
-.math-form {
+.value-number {
+  font-size: 2.1rem;
+  font-variant-numeric: tabular-nums;
+  transition: color .25s ease;
+}
+
+.value-number.is-negative { color: var(--negative); }
+
+.value-note {
+  grid-column: 1 / -1;
+  font-size: .8rem;
+  color: var(--muted);
+  min-height: 1em;
+}
+
+.op-form label {
+  display: block;
+  margin-bottom: 7px;
+  font-weight: 700;
+  font-size: .95rem;
+}
+
+.op-row {
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 10px;
-  margin: 14px 0;
 }
 
-.math-form label {
-  grid-column: 1 / -1;
-  font-weight: 700;
-}
-
-.math-form input {
+.op-row input {
   width: 100%;
-  padding: 11px 12px;
-  border: 1px solid #b9c2ce;
-  border-radius: 9px;
+  padding: 11px 13px;
+  font: inherit;
   font-size: 1rem;
+  color: var(--ink);
+  background: #fff;
+  border: 1px solid #c3ccd8;
+  border-radius: 9px;
   outline: none;
+  transition: border-color .15s, box-shadow .15s;
 }
 
-.math-form input:focus {
+.op-row input:focus {
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(68, 97, 123, 0.12);
+  box-shadow: 0 0 0 3px rgba(63, 97, 131, .15);
 }
 
-button {
+.btn {
+  font: inherit;
+  font-weight: 700;
+  padding: 10px 20px;
   border: 0;
   border-radius: 9px;
-  padding: 0 18px;
-  font-weight: 700;
-  cursor: pointer;
   color: #fff;
   background: var(--accent);
-  transition: transform 0.15s ease, opacity 0.15s ease;
+  cursor: pointer;
+  transition: transform .12s ease, filter .15s ease;
 }
 
-button:hover {
-  transform: translateY(-1px);
+.btn:hover  { filter: brightness(1.08); }
+.btn:active { transform: translateY(1px); }
+.btn:focus-visible { outline: 3px solid rgba(63, 97, 131, .35); outline-offset: 2px; }
+
+.btn-sub { background: #7a5560; }
+
+.btn-ghost {
+  padding: 5px 12px;
+  font-size: .8rem;
+  font-weight: 600;
+  color: var(--muted);
+  background: transparent;
+  border: 1px solid var(--line);
 }
 
-button:active {
-  transform: translateY(0);
+.btn-ghost:hover { color: var(--ink); background: #f2f5f9; }
+
+.footnote {
+  margin: 0;
+  color: var(--muted);
+  font-size: .86rem;
+  line-height: 1.5;
 }
 
 .page-link {
-  display: inline-block;
-  margin-top: 18px;
-  font-size: 0.95rem;
+  margin-top: auto;
+  font-size: .92rem;
+  text-decoration: none;
+  font-weight: 600;
 }
 
-.history-panel {
-  align-self: stretch;
-  max-height: calc(100vh - 64px);
+.page-link:hover { text-decoration: underline; }
+
+/* ============================================================
+   History — the list scrolls, the page does not
+   ============================================================ */
+
+.history {
   display: flex;
   flex-direction: column;
   overflow: hidden;
 }
 
+.history-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+.history-head h2 {
+  font-size: .82rem;
+  font-weight: 700;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
 .history-list {
-  list-style: none;
-  padding: 0 8px 0 0;
-  margin: 0;
   flex: 1;
   min-height: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
+  margin: 0;
+  padding: 4px 10px 0 0;
+  list-style: none;
 }
 
-.history-list li {
-  padding: 12px 0;
-  border-bottom: 1px solid #e7ebf0;
-  line-height: 1.4;
-}
-
-.history-list li:first-child {
-  color: var(--muted);
-}
-
-/* Horizontal page */
-.horizontal-layout .horizontal-gauge-panel {
-  grid-column: 1 / -1;
-  grid-row: 1;
-  width: 80vw;
-  height: 100%;
-  min-height: 0;
-  justify-self: center;
-  padding: 18px 26px;
+.history-item {
   display: flex;
-  align-items: center;
+  align-items: baseline;
+  gap: 10px;
+  padding: 11px 2px;
+  border-bottom: 1px solid #eef1f5;
+  font-size: .95rem;
+  font-variant-numeric: tabular-nums;
+  animation: slide-in .25s ease;
 }
 
-.horizontal-layout .controls-panel {
-  grid-column: 1;
-  grid-row: 2;
-  min-height: 0;
-  overflow-y: auto;
+.history-op {
+  flex: 0 0 auto;
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border-radius: 6px;
+  font-size: .85rem;
+  font-weight: 700;
+  color: #fff;
+  background: var(--accent);
 }
 
-.horizontal-layout .history-panel {
-  grid-column: 2;
-  grid-row: 2;
-  min-height: 0;
-  max-height: none;
-}
+.history-item.is-sub .history-op { background: #7a5560; }
 
-.horizontal-gauge-wrap {
-  width: 100%;
-}
+.history-result { font-weight: 700; }
+.history-result.is-negative { color: var(--negative); }
 
-.horizontal-track {
-  position: relative;
-  height: 20vh;
-  max-height: 180px;
-  min-height: 100px;
-  border: 2px solid #252b34;
-  border-radius: 10px;
-  overflow: hidden;
-  background:
-    repeating-linear-gradient(
-      to right,
-      rgba(67, 77, 91, 0.08) 0,
-      rgba(67, 77, 91, 0.08) 1px,
-      transparent 1px,
-      transparent 2.5%
-    ),
-    #fff;
-}
-
-.horizontal-track::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 50%;
-  border-left: 2px solid #7f8b9a;
-  z-index: 3;
-}
-
-.horizontal-fill {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 0;
-  background: var(--positive);
-  transition: width 0.35s ease, left 0.35s ease, background-color 0.25s ease;
-  z-index: 2;
-}
-
-.horizontal-labels {
-  position: relative;
-  height: 34px;
-  margin-top: 7px;
-}
-
-.horizontal-labels .tick-label {
-  position: absolute;
-  transform: translateX(-50%);
-  font-size: 10px;
+.history-flag {
+  display: block;
+  margin-top: 3px;
+  font-size: .76rem;
   color: var(--muted);
-  white-space: nowrap;
 }
 
-.range-note {
-  margin-top: 14px;
+.history-empty {
+  padding: 12px 2px;
   color: var(--muted);
-  font-size: 0.9rem;
+  font-size: .92rem;
 }
 
-@media (max-width: 980px) {
-  .page-shell,
-  .page-shell.horizontal-layout {
+@keyframes slide-in {
+  from { opacity: 0; transform: translateY(-5px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ============================================================
+   Narrow screens: stack and let the page scroll
+   ============================================================ */
+
+@media (max-width: 950px) {
+  body { overflow: auto; }
+
+  .page,
+  .layout-vertical .page,
+  .layout-horizontal .page {
     height: auto;
     min-height: 100vh;
     grid-template-columns: 1fr;
     grid-template-rows: auto;
-    align-items: start;
-    overflow: visible;
   }
 
-  .gauge-panel {
-    height: 70vh;
+  .layout-horizontal .gauge-area { grid-column: 1; }
+
+  .gauge-vertical {
+    height: 65vh;
+    grid-template-columns: 46px minmax(0, 1fr);
   }
 
-  .horizontal-layout .horizontal-gauge-panel,
-  .horizontal-layout .controls-panel,
-  .horizontal-layout .history-panel {
-    grid-column: 1;
-    grid-row: auto;
-    width: 100%;
-  }
+  .gauge-horizontal { width: 100%; }
 
-  .horizontal-layout .horizontal-gauge-panel {
-    min-height: 280px;
-  }
+  .track-horizontal { height: 130px; }
 
-  .horizontal-track {
-    height: 150px;
-    min-height: 150px;
-  }
+  .history { max-height: 55vh; }
+}
 
-  .history-panel {
-    max-height: 45vh;
-  }
+@media (prefers-reduced-motion: reduce) {
+  .fill { transition: none; }
+  .history-item { animation: none; }
 }

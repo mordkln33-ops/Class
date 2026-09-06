@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fraction Visualizer</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <main class="app">
+
+        <!-- ============ LEFT: controls ============ -->
+        <section class="panel">
+            <header class="panel-header">
+                <h1>Fraction Visualizer</h1>
+                <p class="subtitle">Type a fraction, watch it fill. Then add, subtract,
+                    multiply or divide two fractions and see the result.</p>
+            </header>
+
+            <!-- Single fraction -->
+            <div class="card">
+                <h2 class="card-title">Show a fraction</h2>
+
+                <form id="fractionForm" class="fraction-form" novalidate>
+                    <div class="frac">
+                        <input id="numerator" class="frac-input" type="number"
+                               value="3" step="1" aria-label="Numerator">
+                        <span class="frac-bar"></span>
+                        <input id="denominator" class="frac-input" type="number"
+                               value="4" step="1" min="1" aria-label="Denominator">
+                    </div>
+                    <button class="btn btn-primary" type="submit">Submit</button>
+                </form>
+
+                <dl class="readout">
+                    <div class="readout-item">
+                        <dt>Decimal</dt>
+                        <dd id="decimalOut">0.75</dd>
+                    </div>
+                    <div class="readout-item">
+                        <dt>Percent</dt>
+                        <dd id="percentOut">75%</dd>
+                    </div>
+                    <div class="readout-item">
+                        <dt>Simplified</dt>
+                        <dd id="simpleOut">3/4</dd>
+                    </div>
+                </dl>
+            </div>
+
+            <!-- Two-fraction calculator -->
+            <div class="card">
+                <h2 class="card-title">Operate on two fractions</h2>
+
+                <form id="calcForm" class="calc-form" novalidate>
+                    <div class="frac frac-sm">
+                        <input id="aNum" class="frac-input" type="number" value="1"
+                               step="1" aria-label="First fraction numerator">
+                        <span class="frac-bar"></span>
+                        <input id="aDen" class="frac-input" type="number" value="2"
+                               step="1" aria-label="First fraction denominator">
+                    </div>
+
+                    <select id="operation" class="op-select" aria-label="Operation">
+                        <option value="add">+ &nbsp;add</option>
+                        <option value="sub">− &nbsp;subtract</option>
+                        <option value="mul">× &nbsp;multiply</option>
+                        <option value="div">÷ &nbsp;divide</option>
+                    </select>
+
+                    <div class="frac frac-sm">
+                        <input id="bNum" class="frac-input" type="number" value="1"
+                               step="1" aria-label="Second fraction numerator">
+                        <span class="frac-bar"></span>
+                        <input id="bDen" class="frac-input" type="number" value="3"
+                               step="1" aria-label="Second fraction denominator">
+                    </div>
+
+                    <span class="equals">=</span>
+
+                    <output id="calcResult" class="calc-result">?</output>
+
+                    <button class="btn btn-primary" type="submit">Calculate</button>
+                </form>
+
+                <p class="hint">The answer replaces the fraction above, updates the
+                    decimal, and becomes the first fraction here so you can keep going.</p>
+            </div>
+
+            <p id="message" class="message" role="status" aria-live="polite"></p>
+        </section>
+
+        <!-- ============ RIGHT: visual ============ -->
+        <section class="stage" aria-label="Fraction visual">
+            <div id="strips" class="strips"></div>
+
+            <div class="overlay">
+                <div class="overlay-frac">
+                    <span id="ovNum">3</span>
+                    <span class="overlay-bar"></span>
+                    <span id="ovDen">4</span>
+                </div>
+                <div class="overlay-meta">
+                    <span id="ovDecimal">0.75</span>
+                    <span id="ovNote" class="overlay-note"></span>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,121 +1,200 @@
+/* ============================================================
+   Number Line — shared behaviour for the vertical and horizontal pages.
+
+   The running value is unlimited; only the drawing is clamped to the
+   scale. The fill always spans from the low end (-20) to the current
+   value, and is black at or above zero, red below it.
+   ============================================================ */
+
 'use strict';
 
-const MIN_VALUE = -20;
-const MAX_VALUE = 20;
-let currentValue = 0;
+var MIN_VALUE = -20;
+var MAX_VALUE = 20;
+var SPAN = MAX_VALUE - MIN_VALUE;
 
-const currentValueText = document.querySelector('#currentValue');
-const historyList = document.querySelector('#historyList');
-const addForm = document.querySelector('#addForm');
-const subtractForm = document.querySelector('#subtractForm');
-const addInput = document.querySelector('#addInput');
-const subtractInput = document.querySelector('#subtractInput');
+var currentValue = 0;
 
-const verticalFill = document.querySelector('#verticalFill');
-const verticalScale = document.querySelector('#verticalScale');
-const horizontalFill = document.querySelector('#horizontalFill');
-const horizontalLabels = document.querySelector('#horizontalLabels');
+/* ---------- elements (each page has one of the two gauges) ---------- */
+var valueText = document.getElementById('currentValue');
+var rangeNote = document.getElementById('rangeNote');
+var historyList = document.getElementById('historyList');
+var clearButton = document.getElementById('clearHistory');
 
-function makeVerticalLabels() {
-  if (!verticalScale) return;
+var addForm = document.getElementById('addForm');
+var subtractForm = document.getElementById('subtractForm');
+var addInput = document.getElementById('addInput');
+var subtractInput = document.getElementById('subtractInput');
 
-  for (let value = MIN_VALUE; value <= MAX_VALUE; value++) {
-    const label = document.createElement('span');
-    label.className = 'tick-label';
-    label.textContent = value;
+var verticalScale = document.getElementById('verticalScale');
+var verticalFill = document.getElementById('verticalFill');
+var horizontalScale = document.getElementById('horizontalScale');
+var horizontalFill = document.getElementById('horizontalFill');
 
-    // +20 at the top, -20 at the bottom.
-    const percentFromTop = ((MAX_VALUE - value) / (MAX_VALUE - MIN_VALUE)) * 100;
-    label.style.top = `${percentFromTop}%`;
-    label.style.transform = 'translateY(-50%)';
-    verticalScale.appendChild(label);
+/* ============================================================
+   Helpers
+   ============================================================ */
+
+/* Real minus sign for anything shown on screen. */
+function pretty(number) {
+  var rounded = Math.round(number * 100) / 100;
+  return String(rounded).replace('-', '−');
+}
+
+/* ============================================================
+   Building the scale: every whole number from -20 to +20
+   ============================================================ */
+
+function buildScale(container, isVertical) {
+  if (!container) { return; }
+
+  for (var value = MIN_VALUE; value <= MAX_VALUE; value++) {
+    var tick = document.createElement('span');
+    tick.className = 'tick' + (value % 5 === 0 ? ' is-major' : '');
+
+    var number = document.createElement('span');
+    number.className = 'tick-num';
+    number.textContent = pretty(value);
+
+    var line = document.createElement('span');
+    line.className = 'tick-line';
+
+    if (isVertical) {
+      /* +20 at the top, -20 at the bottom; number sits left of the line */
+      tick.style.top = ((MAX_VALUE - value) / SPAN) * 100 + '%';
+      tick.appendChild(number);
+      tick.appendChild(line);
+    } else {
+      /* -20 at the left, +20 at the right; line sits above the number */
+      tick.style.left = ((value - MIN_VALUE) / SPAN) * 100 + '%';
+      tick.appendChild(line);
+      tick.appendChild(number);
+    }
+
+    container.appendChild(tick);
   }
 }
 
-function makeHorizontalLabels() {
-  if (!horizontalLabels) return;
+/* ============================================================
+   Drawing the current value
+   ============================================================ */
 
-  for (let value = MIN_VALUE; value <= MAX_VALUE; value++) {
-    const label = document.createElement('span');
-    label.className = 'tick-label';
-    label.textContent = value;
+function render() {
+  var isNegative = currentValue < 0;
 
-    const percentFromLeft = ((value - MIN_VALUE) / (MAX_VALUE - MIN_VALUE)) * 100;
-    label.style.left = `${percentFromLeft}%`;
-    horizontalLabels.appendChild(label);
-  }
-}
-
-function updateGauge() {
-  currentValueText.textContent = currentValue;
-
-  // The math value can go beyond the displayed number line.
-  // Only the visual fill is limited to the visible range of -20 through +20.
-  const displayedValue = Math.max(MIN_VALUE, Math.min(MAX_VALUE, currentValue));
-
-  // The fill always starts at the lowest displayed value (-20)
-  // and extends up to the current displayed value.
-  // -20 = 0% filled, 0 = 50% filled, +20 = 100% filled.
-  const fillPercent = ((displayedValue - MIN_VALUE) / (MAX_VALUE - MIN_VALUE)) * 100;
-  const fillColor = currentValue < 0 ? 'var(--negative)' : 'var(--positive)';
+  /* the drawing stops at the ends of the scale, the value does not */
+  var drawn = Math.max(MIN_VALUE, Math.min(MAX_VALUE, currentValue));
+  var percent = ((drawn - MIN_VALUE) / SPAN) * 100;
 
   if (verticalFill) {
-    verticalFill.style.height = `${fillPercent}%`;
-    verticalFill.style.top = `${100 - fillPercent}%`;
-    verticalFill.style.backgroundColor = fillColor;
+    verticalFill.style.height = percent + '%';
+    verticalFill.classList.toggle('is-negative', isNegative);
   }
-
   if (horizontalFill) {
-    horizontalFill.style.width = `${fillPercent}%`;
-    horizontalFill.style.left = '0';
-    horizontalFill.style.backgroundColor = fillColor;
+    horizontalFill.style.width = percent + '%';
+    horizontalFill.classList.toggle('is-negative', isNegative);
   }
-}
 
-function addHistory(operation, enteredValue, oldValue, newValue, note = '') {
-  const placeholder = historyList.querySelector('[data-placeholder]');
-  if (placeholder) placeholder.remove();
+  valueText.textContent = pretty(currentValue);
+  valueText.classList.toggle('is-negative', isNegative);
 
-  const item = document.createElement('li');
-  const symbol = operation === 'Add' ? '+' : '−';
-
-  item.textContent = `${oldValue} ${symbol} (${enteredValue}) = ${newValue}${note}`;
-  historyList.prepend(item);
-}
-
-function processOperation(operation, enteredValue) {
-  if (!Number.isFinite(enteredValue)) return;
-
-  const oldValue = currentValue;
-  currentValue = operation === 'Add'
-    ? oldValue + enteredValue
-    : oldValue - enteredValue;
-
-  let note = '';
   if (currentValue > MAX_VALUE) {
-    note = ' — graph capped at +20';
+    rangeNote.textContent = 'Past the top of the scale — fill held at +20.';
   } else if (currentValue < MIN_VALUE) {
-    note = ' — graph capped at −20';
+    rangeNote.textContent = 'Past the bottom of the scale — fill held at −20.';
+  } else {
+    rangeNote.textContent = '';
   }
-
-  addHistory(operation, enteredValue, oldValue, currentValue, note);
-  updateGauge();
 }
 
-addForm.addEventListener('submit', event => {
+/* ============================================================
+   History
+   ============================================================ */
+
+function addHistory(operation, entered, before, after) {
+  var placeholder = historyList.querySelector('[data-placeholder]');
+  if (placeholder) { placeholder.remove(); }
+
+  var isAdd = operation === 'add';
+
+  var item = document.createElement('li');
+  item.className = 'history-item' + (isAdd ? ' is-add' : ' is-sub');
+
+  var badge = document.createElement('span');
+  badge.className = 'history-op';
+  badge.textContent = isAdd ? '+' : '−';
+  badge.setAttribute('aria-label', isAdd ? 'Add' : 'Subtract');
+
+  var body = document.createElement('span');
+  body.className = 'history-body';
+
+  /* e.g.  0 + (−3) = −3   */
+  body.appendChild(document.createTextNode(
+    pretty(before) + ' ' + (isAdd ? '+' : '−') +
+    ' (' + pretty(entered) + ') = '
+  ));
+
+  var result = document.createElement('strong');
+  result.className = 'history-result' + (after < 0 ? ' is-negative' : '');
+  result.textContent = pretty(after);
+  body.appendChild(result);
+
+  if (after > MAX_VALUE || after < MIN_VALUE) {
+    var flag = document.createElement('span');
+    flag.className = 'history-flag';
+    flag.textContent = 'off the scale — fill held at ' +
+      (after > MAX_VALUE ? '+20' : '−20');
+    body.appendChild(flag);
+  }
+
+  item.appendChild(badge);
+  item.appendChild(body);
+
+  historyList.prepend(item);      /* newest first */
+  historyList.scrollTop = 0;
+}
+
+/* ============================================================
+   Operations
+   ============================================================ */
+
+function operate(operation, input) {
+  var entered = Number(input.value);
+
+  if (input.value.trim() === '' || !Number.isFinite(entered)) {
+    input.focus();
+    return;
+  }
+
+  var before = currentValue;
+
+  /* subtracting a negative adds, adding a negative subtracts */
+  currentValue = operation === 'add' ? before + entered : before - entered;
+
+  addHistory(operation, entered, before, currentValue);
+  render();
+
+  input.value = '';
+  input.focus();
+}
+
+addForm.addEventListener('submit', function (event) {
   event.preventDefault();
-  processOperation('Add', Number(addInput.value));
-  addInput.value = '';
-  addInput.focus();
+  operate('add', addInput);
 });
 
-subtractForm.addEventListener('submit', event => {
+subtractForm.addEventListener('submit', function (event) {
   event.preventDefault();
-  processOperation('Subtract', Number(subtractInput.value));
-  subtractInput.value = '';
-  subtractInput.focus();
+  operate('subtract', subtractInput);
 });
 
-makeVerticalLabels();
-makeHorizontalLabels();
-updateGauge();
+if (clearButton) {
+  clearButton.addEventListener('click', function () {
+    historyList.innerHTML =
+      '<li class="history-empty" data-placeholder>No operations yet.</li>';
+  });
+}
+
+/* ---------- start ---------- */
+buildScale(verticalScale, true);
+buildScale(horizontalScale, false);
+render();

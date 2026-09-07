@@ -1,0 +1,1555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>R&rdquo;H Flight Info</title>
+<meta name="description" content="A private list where family and friends share their Rosh Hashanah flight times to and from Eretz Yisroel, so people on the same flight can travel together.">
+<meta name="rating" content="general">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<!-- No ads, no trackers, no third-party scripts, no images, no outside links.
+     Fonts are the ones already on your device. The only server this page
+     talks to is its own database at kjkawrotbpvnczobpqdm.supabase.co. -->
+<style>
+/* ---------------------------------------------------------------
+   Palette — warm ivory ground, deep indigo ink, gilt accents.
+   --------------------------------------------------------------- */
+:root{
+  --paper:      #fcf9f3;
+  --paper-2:    #fffdf8;
+  --surface:    rgba(255,255,255,.8);
+  --surface-2:  #ffffff;
+  --gold:       #8a6a24;   /* accent that carries text weight on ivory */
+  --gold-soft:  #6d5219;   /* deeper still, for headings */
+  --gold-line:  #d9bd7c;   /* decorative hairlines and fills */
+  --gold-deep:  #a8823c;
+  --text:       #1c1e35;
+  --muted:      #545a76;   /* 7:1 on ivory — readable, not decorative grey */
+  --line:       rgba(138,106,36,.26);
+  --line-soft:  rgba(28,30,53,.10);
+  --danger:     #b3261e;
+  --danger-ink: #8c1d18;
+  --ok:         #146c43;
+  --radius:     14px;
+  /* Device fonts only — nothing is fetched from a font service, so the page
+     renders identically on a filtered network. */
+  --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
+  --sans:  -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  color-scheme: light;
+}
+
+*,*::before,*::after{ box-sizing:border-box; }
+
+html,body{ height:100%; }
+body{
+  margin:0;
+  font-family:var(--sans);
+  font-size:16px;
+  line-height:1.6;
+  color:var(--text);
+  background:var(--paper);
+  background-image:
+    radial-gradient(1100px 620px at 12% -12%, rgba(122,134,212,.15), transparent 62%),
+    radial-gradient(900px 520px at 92% 0%,  rgba(216,178,105,.26), transparent 60%),
+    radial-gradient(1200px 800px at 50% 118%, rgba(190,162,214,.16), transparent 65%),
+    linear-gradient(180deg, var(--paper-2) 0%, var(--paper) 55%);
+  background-attachment:fixed;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* Faint gilt bloom — the "excitement", kept well under the content. */
+body::before{
+  content:""; position:fixed; inset:0; pointer-events:none; z-index:0; opacity:.6;
+  background-image:
+    radial-gradient(520px 300px at 20% 16%, rgba(226,203,148,.32), transparent 70%),
+    radial-gradient(420px 260px at 79% 9%,  rgba(206,190,236,.28), transparent 70%),
+    radial-gradient(620px 340px at 58% 94%, rgba(226,203,148,.24), transparent 72%);
+}
+
+.wrap{ position:relative; z-index:1; max-width:1180px; margin:0 auto; padding:clamp(24px,5vw,56px) clamp(16px,4vw,32px) 80px; }
+
+/* ---------------- Masthead ---------------- */
+.masthead{ text-align:center; margin-bottom:clamp(24px,4vw,40px); animation:rise .7s cubic-bezier(.2,.7,.3,1) both; }
+.eyebrow{
+  margin:0 0 10px; font-size:11px; font-weight:600; letter-spacing:.26em; text-transform:uppercase;
+  color:var(--gold);
+}
+h1{
+  margin:0; font-family:var(--serif); font-weight:600;
+  font-size:clamp(38px,7vw,64px); line-height:1.05; letter-spacing:.01em;
+  background:linear-gradient(180deg,#23263f 4%, var(--gold-soft) 62%, var(--gold-deep) 112%);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+.rule{
+  width:min(320px,72%); height:1px; margin:20px auto 0;
+  background:linear-gradient(90deg,transparent,var(--gold-deep),transparent);
+}
+
+/* ---------------- Buttons ---------------- */
+.actions{ display:flex; flex-wrap:wrap; justify-content:center; gap:12px; margin-top:26px; }
+.btn{
+  font-family:var(--sans); font-size:14px; font-weight:600; letter-spacing:.02em;
+  display:inline-flex; align-items:center; gap:8px;
+  padding:11px 22px; border-radius:999px; cursor:pointer;
+  border:1px solid var(--line); background:var(--surface); color:var(--text);
+  box-shadow:0 1px 2px rgba(28,30,53,.05);
+  transition:transform .18s ease, box-shadow .25s ease, background .2s ease, border-color .2s ease;
+}
+.btn:hover{
+  background:var(--surface-2); border-color:var(--gold-line); transform:translateY(-1px);
+  box-shadow:0 7px 20px -9px rgba(138,106,36,.6);
+}
+.btn:active{ transform:translateY(0); }
+.btn:focus-visible{ outline:2px solid var(--gold); outline-offset:3px; }
+.btn-primary{
+  border-color:#b08f45; color:#2a1f08;
+  background:linear-gradient(135deg,#f6e4b8,#dcb96e 52%,#c19a49);
+  box-shadow:0 7px 22px -9px rgba(176,143,69,.85);
+}
+.btn-primary:hover{ box-shadow:0 11px 28px -9px rgba(176,143,69,1); background:linear-gradient(135deg,#fbeecd,#e3c583 52%,#c9a455); }
+.btn-ghost{ background:transparent; }
+.btn[disabled]{ opacity:.45; cursor:not-allowed; transform:none; }
+.btn-sm{ padding:6px 15px; font-size:13px; }
+
+/* ---------------- Table ---------------- */
+.panel{
+  border:1px solid var(--line); border-radius:var(--radius);
+  background:linear-gradient(180deg,#ffffff,#fdfbf6);
+  box-shadow:0 24px 60px -34px rgba(45,38,20,.42), 0 1px 3px rgba(28,30,53,.06);
+  overflow:hidden;
+  animation:rise .8s .1s cubic-bezier(.2,.7,.3,1) both;
+}
+.panel-head{
+  display:flex; align-items:baseline; justify-content:space-between; gap:16px;
+  padding:16px 20px; border-bottom:1px solid var(--line-soft);
+}
+.panel-head h2{ margin:0; font-family:var(--serif); font-size:24px; font-weight:600; letter-spacing:.02em; }
+.count{ font-size:12.5px; color:var(--muted); letter-spacing:.07em; text-transform:uppercase; }
+
+.table-scroll{ overflow-x:auto; }
+table{ width:100%; border-collapse:collapse; min-width:820px; }
+thead th{
+  position:sticky; top:0; z-index:2;
+  text-align:left; font-size:11.5px; font-weight:700; letter-spacing:.11em; text-transform:uppercase;
+  color:var(--gold); background:#f3ecdd;
+  padding:13px 18px; border-bottom:1px solid var(--line); white-space:nowrap;
+}
+tbody td{ padding:15px 18px; border-bottom:1px solid var(--line-soft); vertical-align:top; font-size:15.5px; }
+tbody tr{ transition:background .18s ease; }
+tbody tr:nth-child(even){ background:rgba(28,30,53,.022); }
+tbody tr:hover{ background:rgba(216,178,105,.16); }
+tbody tr:last-child td{ border-bottom:none; }
+
+.flight-day{ font-weight:600; }
+.flight-meta{ color:var(--muted); font-size:14px; margin-top:3px; }
+.name-cell{ font-weight:600; }
+.sr-only{ position:absolute; width:1px; height:1px; margin:-1px; padding:0; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0; }
+.phone{ color:var(--text); font-variant-numeric:tabular-nums; white-space:nowrap; text-decoration:none; border-bottom:1px dotted var(--gold-deep); }
+.phone:hover{ color:var(--gold-soft); }
+.empty-val{ color:var(--muted); opacity:.6; }
+.comment-cell{ color:var(--muted); max-width:280px; }
+
+/* Notices (sample-data banner, load errors) */
+.notice{
+  display:flex; flex-wrap:wrap; align-items:baseline; gap:6px 10px;
+  padding:11px 20px; font-size:13px; color:var(--gold-soft);
+  border-bottom:1px solid var(--line); background:rgba(216,178,105,.16);
+}
+.notice[hidden]{ display:none; }
+.notice strong{ font-weight:700; letter-spacing:.04em; }
+.notice span{ color:var(--muted); }
+.notice.bad{ background:rgba(179,38,30,.07); color:var(--danger-ink); border-bottom-color:rgba(179,38,30,.28); }
+.notice.bad span{ color:#8f4a44; }
+.notice code{ background:rgba(28,30,53,.09); padding:1px 6px; border-radius:5px; font-size:12px; }
+
+tbody tr.is-sample td{ opacity:.74; }
+
+.state{ padding:56px 24px; text-align:center; color:var(--muted); }
+.state strong{ display:block; font-family:var(--serif); font-size:24px; color:var(--text); margin-bottom:6px; font-weight:600; }
+.state.error strong{ color:var(--danger); }
+.state code{ background:rgba(28,30,53,.09); padding:2px 6px; border-radius:5px; font-size:12px; }
+
+/* ---------------- Dialogs ---------------- */
+dialog{
+  width:min(660px,calc(100vw - 32px)); padding:0; border:none; color:var(--text);
+  border-radius:18px; background:transparent;
+}
+dialog::backdrop{ background:rgba(40,34,24,.44); backdrop-filter:blur(4px); }
+.sheet{
+  border:1px solid var(--line); border-radius:18px; overflow:hidden;
+  background:linear-gradient(180deg,#ffffff,#fdfbf5);
+  box-shadow:0 40px 100px -40px rgba(45,38,20,.55), 0 2px 6px rgba(28,30,53,.09);
+}
+dialog[open] .sheet{ animation:pop .32s cubic-bezier(.2,.8,.3,1) both; }
+.sheet-head{ padding:20px 24px 16px; border-bottom:1px solid var(--line-soft); }
+.sheet-head h2{ margin:0; font-family:var(--serif); font-size:27px; font-weight:600; letter-spacing:.02em; }
+.sheet-head p{ margin:4px 0 0; font-size:13px; color:var(--muted); }
+.sheet-body{ padding:20px 24px; max-height:min(62vh,620px); overflow-y:auto; }
+.sheet-foot{
+  display:flex; justify-content:flex-end; gap:10px; padding:16px 24px;
+  border-top:1px solid var(--line-soft); background:#faf6ec;
+}
+.sheet-foot .spacer{ margin-right:auto; }
+
+/* ---------------- Form ---------------- */
+fieldset{ border:none; margin:0 0 22px; padding:0; }
+fieldset:last-of-type{ margin-bottom:0; }
+legend{ padding:0; width:100%; }
+.legend-inner{
+  display:flex; align-items:center; gap:12px; width:100%;
+  font-family:var(--serif); font-size:21px; font-weight:600; color:var(--gold-soft); margin-bottom:14px;
+}
+.legend-inner::after{ content:""; flex:1; height:1px; background:linear-gradient(90deg,var(--line),transparent); }
+.legend-inner .opt{ font-family:var(--sans); font-size:11px; font-weight:600; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); }
+
+.grid{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px 16px; }
+.field{ display:flex; flex-direction:column; gap:6px; min-width:0; }
+.field.full{ grid-column:1 / -1; }
+@media (max-width:560px){ .grid{ grid-template-columns:1fr; } }
+
+label.lbl{ font-size:12px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); }
+label.lbl .req{ color:var(--gold); margin-left:3px; }
+
+input[type=text],input[type=tel],select,textarea{
+  width:100%; font-family:var(--sans); font-size:15px; color:var(--text);
+  padding:10px 12px; border-radius:10px;
+  border:1px solid rgba(28,30,53,.2); background:#fff;
+  transition:border-color .18s ease, box-shadow .18s ease, background .18s ease;
+}
+input::placeholder,textarea::placeholder{ color:#9aa0b8; }
+textarea{ resize:vertical; min-height:64px; }
+select{
+  appearance:none; padding-right:36px; cursor:pointer;
+  background-image:linear-gradient(45deg,transparent 50%,var(--gold) 50%),linear-gradient(135deg,var(--gold) 50%,transparent 50%);
+  background-position:calc(100% - 19px) 51%, calc(100% - 13px) 51%;
+  background-size:6px 6px, 6px 6px; background-repeat:no-repeat;
+}
+select option{ background:#fff; color:var(--text); }
+input:focus,select:focus,textarea:focus{
+  outline:none; border-color:var(--gold); background:#fff;
+  box-shadow:0 0 0 3px rgba(216,178,105,.32);
+}
+input:disabled{ opacity:.45; }
+
+/* Segmented AM / PM */
+.segment{ position:relative; display:flex; gap:0; border:1px solid rgba(28,30,53,.2); border-radius:10px; overflow:hidden; background:#fff; }
+.segment input{ position:absolute; opacity:0; width:0; height:0; }
+.segment label{
+  flex:1; text-align:center; padding:10px 8px; cursor:pointer; font-size:14px; font-weight:600;
+  letter-spacing:.08em; color:var(--muted); transition:background .18s ease, color .18s ease;
+}
+.segment label + label{ border-left:1px solid rgba(28,30,53,.14); }
+.segment input:checked + label{
+  color:#2a1f08; background:linear-gradient(135deg,#f4e1b6,#d9bd7c);
+}
+.segment input:focus-visible + label{ outline:2px solid var(--gold); outline-offset:-2px; }
+
+.hint{ font-size:12px; color:var(--muted); }
+.err{ font-size:12.5px; color:var(--danger); min-height:0; }
+.form-error{
+  display:none; margin-bottom:16px; padding:10px 14px; border-radius:10px; font-size:13.5px;
+  border:1px solid rgba(179,38,30,.35); background:rgba(179,38,30,.07); color:var(--danger-ink);
+}
+.form-error.show{ display:block; }
+
+/* ---------------- Matches ---------------- */
+.match-section + .match-section{ margin-top:26px; }
+.match-title{
+  display:flex; align-items:center; gap:10px; margin:0 0 4px;
+  font-family:var(--serif); font-size:21px; font-weight:600; color:var(--gold-soft);
+}
+.badge{
+  font-family:var(--sans); font-size:11px; font-weight:700; letter-spacing:.08em;
+  padding:2px 9px; border-radius:999px; border:1px solid var(--line); color:var(--gold); background:rgba(216,178,105,.16);
+}
+.match-sub{ margin:0 0 12px; font-size:12.5px; color:var(--muted); }
+.group{
+  border:1px solid var(--line-soft); border-left:3px solid var(--gold-line); border-radius:10px;
+  padding:12px 14px; background:#fffdf8; margin-bottom:10px;
+}
+.group-head{ font-size:12px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--gold); margin-bottom:8px; display:flex; align-items:center; gap:10px; }
+.trav{ display:flex; flex-wrap:wrap; align-items:baseline; gap:8px; padding:5px 0; border-top:1px solid rgba(28,30,53,.07); }
+.group .trav:first-of-type{ border-top:none; }
+.trav .t-name{ font-weight:600; }
+.trav .t-meta{ font-size:14px; color:var(--muted); }
+.trav .tags{ margin-left:auto; display:flex; flex-wrap:wrap; gap:6px; }
+.gap-tag{
+  font-size:11px; font-weight:700; letter-spacing:.06em; white-space:nowrap;
+  padding:2px 9px; border-radius:999px; color:var(--gold-soft); background:rgba(216,178,105,.22); border:1px solid var(--line);
+}
+.gap-tag.alt{ color:var(--danger-ink); background:rgba(179,38,30,.09); border-color:rgba(179,38,30,.32); }
+.gap-tag.dim{ color:var(--muted); background:rgba(28,30,53,.06); border-color:var(--line-soft); }
+.none{ font-size:13.5px; color:var(--muted); font-style:italic; padding:8px 2px; }
+
+/* ---------------- Match picker (step 1) ---------------- */
+.pick-tools{ display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin:0 0 14px; }
+.pick-tools input{ flex:1 1 220px; }
+.pick-tools .pick-hint{ font-size:12px; color:var(--muted); }
+.pick-wrap{ border:1px solid var(--line-soft); border-radius:12px; overflow-x:auto; background:#fff; }
+table.pick{ min-width:600px; }
+table.pick thead th{ background:#f6f0e3; padding:10px 14px; }
+table.pick tbody td{ padding:11px 14px; }
+tr.pick-row{ cursor:pointer; }
+tr.pick-row:hover{ background:rgba(216,178,105,.2); }
+tr.pick-row:focus-visible{ outline:none; background:rgba(216,178,105,.24); box-shadow:inset 0 0 0 2px var(--gold); }
+.pick-chev{ width:1%; text-align:right; color:var(--gold); font-weight:700; white-space:nowrap; }
+.pick-empty{ padding:26px; text-align:center; color:var(--muted); font-style:italic; }
+
+/* ---------------- Selected traveler (step 2) ---------------- */
+.hero{
+  display:flex; flex-wrap:wrap; align-items:baseline; gap:4px 14px;
+  padding:14px 16px; margin:0 0 22px; border-radius:12px;
+  border:1px solid var(--line);
+  background:linear-gradient(135deg,rgba(216,178,105,.24),rgba(216,178,105,.08));
+}
+.hero .h-name{ font-family:var(--serif); font-size:25px; font-weight:600; line-height:1.15; }
+.hero .h-meta{ font-size:13px; color:var(--muted); }
+.hero .h-meta b{ color:var(--text); font-weight:600; }
+.hero .h-meta + .h-meta::before{ content:"·"; margin-right:14px; color:var(--gold-deep); }
+
+/* ---------------- Contact line ---------------- */
+.contact{
+  margin:20px 0 0; text-align:center; font-size:15px; color:var(--muted);
+  animation:rise .85s .12s cubic-bezier(.2,.7,.3,1) both;
+}
+.contact a{
+  color:var(--gold); font-weight:600; text-decoration:none; white-space:nowrap;
+  border-bottom:1px dotted var(--gold-line);
+}
+.contact a:hover{ color:var(--gold-soft); border-bottom-style:solid; }
+
+/* ---------------- About / network filters ---------------- */
+.about{ margin-top:22px; animation:rise .9s .15s cubic-bezier(.2,.7,.3,1) both; }
+.about details{
+  border:1px solid var(--line); border-radius:var(--radius); overflow:hidden;
+  background:linear-gradient(180deg,#ffffff,#fdfbf6);
+  box-shadow:0 14px 36px -28px rgba(45,38,20,.55);
+}
+.about summary{
+  display:flex; align-items:center; gap:10px; cursor:pointer; list-style:none;
+  padding:15px 20px; font-family:var(--serif); font-size:21px; font-weight:600; color:var(--gold-soft);
+}
+.about summary::-webkit-details-marker{ display:none; }
+.about summary::after{ content:"\25BE"; margin-left:auto; font-size:14px; color:var(--gold); transition:transform .2s ease; }
+.about details[open] summary::after{ transform:rotate(180deg); }
+.about summary:hover{ background:rgba(216,178,105,.12); }
+.about summary:focus-visible{ outline:2px solid var(--gold); outline-offset:-2px; }
+.about-body{ padding:16px 20px 22px; border-top:1px solid var(--line-soft); }
+.about-body h3{ font-family:var(--serif); font-size:19px; font-weight:600; margin:20px 0 7px; color:var(--text); }
+.about-body h3:first-child{ margin-top:0; }
+.about-body p{ margin:0 0 11px; max-width:72ch; }
+.about-body ul{ margin:0 0 11px; padding-left:4px; max-width:72ch; list-style:none; }
+.about-body li{ margin-bottom:5px; display:flex; gap:9px; align-items:baseline; }
+.tick{ color:var(--ok); font-weight:700; flex:none; }
+.host{
+  display:inline-block; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  font-size:14px; padding:4px 10px; border-radius:7px; word-break:break-all;
+  background:rgba(28,30,53,.06); border:1px solid var(--line-soft); color:var(--text);
+}
+
+/* ---------------- Toast ---------------- */
+#toast{
+  position:fixed; left:50%; bottom:28px; transform:translate(-50%,24px); z-index:99;
+  padding:12px 22px; border-radius:999px; font-size:14px; font-weight:600;
+  border:1px solid var(--line); background:#fff; color:var(--text);
+  box-shadow:0 18px 44px -18px rgba(45,38,20,.55), 0 2px 6px rgba(28,30,53,.1);
+  opacity:0; pointer-events:none;
+  transition:opacity .25s ease, transform .25s ease;
+}
+#toast.show{ opacity:1; transform:translate(-50%,0); }
+#toast.ok{ border-color:rgba(20,108,67,.45); color:var(--ok); }
+#toast.bad{ border-color:rgba(179,38,30,.45); color:var(--danger); }
+
+@keyframes rise{ from{ opacity:0; transform:translateY(16px); } to{ opacity:1; transform:none; } }
+@keyframes pop{ from{ opacity:0; transform:translateY(10px) scale(.97); } to{ opacity:1; transform:none; } }
+@media (prefers-reduced-motion:reduce){ *{ animation:none !important; transition:none !important; } }
+
+/* ---------------- Responsive ---------------- */
+
+/* Tablet — trim the generous spacing. */
+@media screen and (max-width:900px){
+  thead th{ padding:11px 14px; }
+  tbody td{ padding:12px 14px; }
+  .sheet-body{ padding:18px; }
+  .sheet-head,.sheet-foot{ padding-left:18px; padding-right:18px; }
+}
+
+/* Phone — the table stops being a table and becomes a stack of cards,
+   each cell labelled by its column so nothing needs sideways scrolling. */
+@media screen and (max-width:720px){
+  body{ font-size:14.5px; }
+  .table-scroll{ overflow-x:visible; }
+  table,table.pick{ min-width:0; }
+  table,tbody,tr,td{ display:block; }
+  thead{ position:absolute; width:1px; height:1px; margin:-1px; padding:0; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0; }
+  tbody tr,
+  tbody tr:nth-child(even){
+    margin:12px; padding:2px 0; border:1px solid var(--line-soft); border-radius:12px;
+    background:#fff; box-shadow:0 1px 2px rgba(28,30,53,.05);
+  }
+  tbody tr:hover{ background:rgba(216,178,105,.14); }
+  .pick-wrap{ overflow-x:visible; background:transparent; border:none; }
+  tr.pick-row{ border-color:var(--line) !important; }
+  .pick-chev{ display:none; }
+  tbody td,
+  tbody tr:last-child td{
+    display:grid; grid-template-columns:96px minmax(0,1fr); gap:4px 12px; align-items:baseline;
+    padding:9px 14px; border-bottom:1px solid rgba(28,30,53,.07);
+  }
+  tbody td::before{
+    content:attr(data-label);
+    font-size:10px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--gold);
+  }
+  tbody td:last-child{ border-bottom:none; }
+  .comment-cell{ max-width:none; }
+  .panel-head{ padding:14px 16px; }
+  .group .trav{ gap:2px 8px; }
+  .trav .tags{ margin-left:0; }
+}
+
+/* Small phone — full-width controls, tighter type. */
+@media screen and (max-width:480px){
+  .wrap{ padding-left:12px; padding-right:12px; }
+  .actions{ gap:9px; }
+  .actions .btn{ flex:1 1 100%; justify-content:center; }
+  .panel-head{ flex-direction:column; align-items:flex-start; gap:2px; }
+  dialog{ width:calc(100vw - 16px); }
+  .sheet-body{ max-height:68vh; padding:16px; }
+  .sheet-head,.sheet-foot{ padding-left:16px; padding-right:16px; }
+  .sheet-head h2{ font-size:23px; }
+  .sheet-foot{ flex-direction:column-reverse; }
+  .sheet-foot .btn{ width:100%; justify-content:center; }
+  tbody td{ grid-template-columns:1fr; gap:2px; }
+  #toast{ left:12px; right:12px; bottom:14px; transform:translateY(20px); text-align:center; }
+  #toast.show{ transform:translateY(0); }
+}
+
+/* Short viewport (landscape phone) — keep dialog footers reachable. */
+@media screen and (max-height:560px){
+  .sheet-body{ max-height:52vh; }
+  .masthead{ margin-bottom:20px; }
+}
+
+/* ---------------- Print ---------------- */
+@media print{
+  @page{ size:landscape; margin:14mm; }
+  body{ background:#fff !important; color:#000; font-size:11pt; }
+  body::before{ display:none; }
+  .wrap{ max-width:none; padding:0; }
+  .actions,.col-edit,.panel-head .count,#toast,dialog,.about{ display:none !important; }
+  .masthead{ margin-bottom:14px; animation:none; }
+  .eyebrow{ color:#555; }
+  h1{ -webkit-text-fill-color:#000; color:#000; background:none; text-shadow:none; font-size:26pt; }
+  .rule{ background:#000; opacity:.3; }
+  .panel{ border:1px solid #999; border-radius:0; box-shadow:none; background:#fff; animation:none; }
+  .panel-head{ border-color:#999; }
+  .panel-head h2{ color:#000; }
+  .notice{ background:#f4f4f4 !important; color:#000; border-bottom:1px solid #999; }
+  .notice span{ color:#333; }
+  tbody tr.is-sample td{ opacity:1; }
+  .table-scroll{ overflow:visible; }
+  table{ min-width:0; }
+  thead th{ background:#eee !important; color:#000; border-bottom:1px solid #666; position:static; }
+  tbody td{ border-bottom:1px solid #ddd; color:#000; }
+  tbody tr{ break-inside:avoid; }
+  tbody tr:nth-child(even){ background:#fafafa !important; }
+  .flight-meta,.comment-cell,.empty-val{ color:#444; }
+  .phone{ color:#000; border:none; }
+  .contact{ color:#000; margin-top:12px; font-size:10pt; animation:none; }
+  .contact a{ color:#000; border:none; font-weight:600; }
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header class="masthead">
+    <p class="eyebrow">Yom Tov Travel Board</p>
+    <h1>R&rdquo;H Flight Info</h1>
+    <div class="rule"></div>
+    <div class="actions">
+      <button type="button" class="btn btn-primary" id="addBtn">&#43;&nbsp; Add</button>
+      <button type="button" class="btn" id="matchBtn">Find a Match</button>
+      <button type="button" class="btn btn-ghost" id="printBtn">Print</button>
+    </div>
+  </header>
+
+  <section class="panel" aria-labelledby="tableHeading">
+    <div class="panel-head">
+      <h2 id="tableHeading">Travelers</h2>
+      <span class="count" id="rowCount">Loading&hellip;</span>
+    </div>
+
+    <div id="notice" class="notice" hidden></div>
+
+    <div id="tableState" class="state"><strong>Loading flights&hellip;</strong>One moment.</div>
+
+    <div class="table-scroll" id="tableScroll" hidden>
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Flight</th>
+            <th scope="col">Name</th>
+            <th scope="col">Phone Number</th>
+            <th scope="col">Return Flight</th>
+            <th scope="col">Comments</th>
+            <th scope="col" class="col-edit">Edit</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <p class="contact">
+    For comments or questions, contact Mordechai Klein:
+    <a href="tel:3476313563">347-631-3563</a> or
+    <a href="mailto:mordkln33@gmail.com">mordkln33@gmail.com</a>
+  </p>
+
+  <section class="about" aria-labelledby="aboutTitle">
+    <details>
+      <summary id="aboutTitle">About this page &amp; network filters</summary>
+      <div class="about-body">
+        <p>This is a private list where family and friends write down their Rosh Hashanah flight
+           times to and from Eretz Yisroel, so that people on the same flight can arrange to travel
+           together. It is not a public website and it is not listed in search engines.</p>
+
+        <h3>What this page does not do</h3>
+        <ul>
+          <li><span class="tick">&#10003;</span><span>No advertisements of any kind.</span></li>
+          <li><span class="tick">&#10003;</span><span>No tracking, no analytics, no cookies.</span></li>
+          <li><span class="tick">&#10003;</span><span>No images, video, or audio &mdash; the page is text only.</span></li>
+          <li><span class="tick">&#10003;</span><span>No links out to any other website &mdash; only a phone number and email address for the person running the list.</span></li>
+          <li><span class="tick">&#10003;</span><span>No chat, no messaging between strangers, no file uploads.</span></li>
+          <li><span class="tick">&#10003;</span><span>No accounts, passwords, or payments.</span></li>
+          <li><span class="tick">&#10003;</span><span>No outside scripts or web fonts &mdash; it uses only the fonts already on your device.</span></li>
+        </ul>
+
+        <h3>For whoever manages your filter</h3>
+        <p>Besides the server this page is served from, it connects to exactly one other address &mdash;
+           its database:</p>
+        <p><span class="host" id="aboutHost"></span></p>
+        <p>Allowing that one address is enough for the page to work. Nothing else is ever requested,
+           so no other domain needs to be opened up.</p>
+
+        <h3>What gets stored</h3>
+        <p>Only what people type into the form: name, phone number, flight day, time, airline and
+           airport, and an optional comment. Anyone with the link can read, add, and edit entries, so treat it the
+           way you would a shared paper list &mdash; put in a phone number only if you are happy for
+           everyone on the list to see it.</p>
+      </div>
+    </details>
+  </section>
+
+</div>
+
+<!-- ============ Add / Edit ============ -->
+<dialog id="entryDialog" aria-labelledby="entryTitle">
+  <form method="dialog" class="sheet" id="entryForm" novalidate>
+    <div class="sheet-head">
+      <h2 id="entryTitle">Add a Flight</h2>
+      <p id="entrySub">Fields marked <span style="color:var(--gold)">&#42;</span> are required.</p>
+    </div>
+
+    <div class="sheet-body">
+      <div class="form-error" id="formError" role="alert"></div>
+
+      <fieldset>
+        <legend><span class="legend-inner">Traveler</span></legend>
+        <div class="grid">
+          <div class="field">
+            <label class="lbl" for="f_name">Name <span class="req">&#42;</span></label>
+            <input type="text" id="f_name" name="name" autocomplete="name" required maxlength="80" placeholder="Full name">
+          </div>
+          <div class="field">
+            <label class="lbl" for="f_phone">Phone Number <span class="req">&#42;</span></label>
+            <input type="tel" id="f_phone" name="phone" inputmode="numeric" autocomplete="tel" required
+                   maxlength="24" placeholder="5551234567">
+            <span class="hint">Digits only &mdash; at least 7.</span>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend><span class="legend-inner">To E&rdquo;Y</span></legend>
+        <div class="grid">
+          <div class="field">
+            <label class="lbl" for="f_to_day">Day <span class="req">&#42;</span></label>
+            <select id="f_to_day" name="to_day" required></select>
+          </div>
+          <div class="field">
+            <label class="lbl" for="f_to_time">Time <span class="req">&#42;</span></label>
+            <select id="f_to_time" name="to_time" required></select>
+            <input type="text" id="f_to_time_custom" placeholder="e.g. 9:45" maxlength="8" hidden
+                   aria-label="Custom departure time">
+          </div>
+          <div class="field">
+            <span class="lbl" id="lbl_to_ampm">AM or PM <span class="req">&#42;</span></span>
+            <div class="segment" role="radiogroup" aria-labelledby="lbl_to_ampm">
+              <input type="radio" id="f_to_am" name="to_ampm" value="AM"><label for="f_to_am">AM</label>
+              <input type="radio" id="f_to_pm" name="to_ampm" value="PM"><label for="f_to_pm">PM</label>
+            </div>
+          </div>
+          <div class="field">
+            <label class="lbl" for="f_to_airline">Airline <span class="req">&#42;</span></label>
+            <input type="text" id="f_to_airline" name="to_airline" required maxlength="60" placeholder="e.g. El Al">
+          </div>
+          <div class="field full">
+            <label class="lbl" for="f_to_airport">Airport <span class="req">&#42;</span></label>
+            <select id="f_to_airport" name="to_airport" required></select>
+            <span class="hint">The airport you are leaving from.</span>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend><span class="legend-inner">From E&rdquo;Y <span class="opt">Optional</span></span></legend>
+        <div class="grid">
+          <div class="field">
+            <label class="lbl" for="f_from_day">Day</label>
+            <select id="f_from_day" name="from_day"></select>
+          </div>
+          <div class="field">
+            <label class="lbl" for="f_from_time">Time</label>
+            <select id="f_from_time" name="from_time"></select>
+            <input type="text" id="f_from_time_custom" placeholder="e.g. 3:15" maxlength="8" hidden
+                   aria-label="Custom return time">
+          </div>
+          <div class="field">
+            <span class="lbl" id="lbl_from_ampm">AM or PM</span>
+            <div class="segment" role="radiogroup" aria-labelledby="lbl_from_ampm">
+              <input type="radio" id="f_from_am" name="from_ampm" value="AM"><label for="f_from_am">AM</label>
+              <input type="radio" id="f_from_pm" name="from_ampm" value="PM"><label for="f_from_pm">PM</label>
+            </div>
+          </div>
+          <div class="field">
+            <label class="lbl" for="f_from_airline">Airline</label>
+            <input type="text" id="f_from_airline" name="from_airline" maxlength="60" placeholder="e.g. El Al">
+          </div>
+          <div class="field full">
+            <label class="lbl" for="f_from_airport">Airport</label>
+            <select id="f_from_airport" name="from_airport"></select>
+            <span class="hint">The airport you are landing at.</span>
+          </div>
+          <div class="field full" style="align-items:flex-start">
+            <button type="button" class="btn btn-sm btn-ghost" id="clearReturn">Clear return flight</button>
+          </div>
+          <div class="field full">
+            <label class="lbl" for="f_comments">Comments</label>
+            <textarea id="f_comments" name="comments" maxlength="300" rows="2"
+                      placeholder="Anything worth knowing &mdash; car, luggage, meeting point&hellip;"></textarea>
+          </div>
+        </div>
+      </fieldset>
+    </div>
+
+    <div class="sheet-foot">
+      <button type="button" class="btn btn-ghost" id="entryCancel">Cancel</button>
+      <button type="submit" class="btn btn-primary" id="entrySubmit">Submit</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- ============ Duplicate confirm ============ -->
+<dialog id="confirmDialog" aria-labelledby="confirmTitle">
+  <div class="sheet">
+    <div class="sheet-head">
+      <h2 id="confirmTitle">Already on the list</h2>
+    </div>
+    <div class="sheet-body"><p id="confirmMsg" style="margin:0"></p></div>
+    <div class="sheet-foot">
+      <button type="button" class="btn btn-ghost" id="confirmNo">Go back</button>
+      <button type="button" class="btn btn-primary" id="confirmYes">Add anyway</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- ============ Matches ============ -->
+<dialog id="matchDialog" aria-labelledby="matchTitle" style="width:min(880px,calc(100vw - 32px))">
+  <div class="sheet">
+    <div class="sheet-head">
+      <h2 id="matchTitle">Find a Match</h2>
+      <p id="matchSub">Pick a traveler to see who they can travel with.</p>
+    </div>
+    <div class="sheet-body" id="matchBody"></div>
+    <div class="sheet-foot">
+      <button type="button" class="btn btn-ghost spacer" id="matchBack" hidden>&#8592;&nbsp; Back to list</button>
+      <button type="button" class="btn btn-primary" id="matchClose">Close</button>
+    </div>
+  </div>
+</dialog>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ============================ Config ============================ */
+  var SUPABASE_URL = "https://kjkawrotbpvnczobpqdm.supabase.co";
+  var SUPABASE_KEY = "sb_publishable_txbDxRIZHgWAQ4C3f-i0_Q_G9LPhmSo";
+  var TABLE        = "rh_flights";
+
+  var TO_DAYS   = ["Monday September 7", "Tuesday September 8", "Wednesday September 9", "Thursday September 10"];
+  var FROM_DAYS = ["Motzei R”H", "Monday September 14", "Tuesday September 15", "Wednesday September 16"];
+  var NEAR_WINDOW = 60; // minutes
+
+  // Airports handling international flights in the tri-state area and
+  // Pennsylvania. Grouped by state; the value stored is the IATA code.
+  var AIRPORTS = [
+    ["New York", [
+      ["JFK", "JFK — John F. Kennedy International"],
+      ["LGA", "LGA — LaGuardia"],
+      ["SWF", "SWF — New York Stewart International"]
+    ]],
+    ["New Jersey", [
+      ["EWR", "EWR — Newark Liberty International"],
+      ["ACY", "ACY — Atlantic City International"]
+    ]],
+    ["Connecticut", [
+      ["BDL", "BDL — Bradley International"]
+    ]],
+    ["Pennsylvania", [
+      ["PHL", "PHL — Philadelphia International"],
+      ["PIT", "PIT — Pittsburgh International"],
+      ["ABE", "ABE — Lehigh Valley International"],
+      ["AVP", "AVP — Wilkes-Barre/Scranton International"],
+      ["MDT", "MDT — Harrisburg International"]
+    ]]
+  ];
+
+  /* ============================ Elements ============================ */
+  var $ = function (id) { return document.getElementById(id); };
+  var tbody       = $("tbody"),
+      tableScroll = $("tableScroll"),
+      tableState  = $("tableState"),
+      notice      = $("notice"),
+      rowCount    = $("rowCount"),
+      entryDialog = $("entryDialog"),
+      entryForm   = $("entryForm"),
+      formError   = $("formError"),
+      matchDialog = $("matchDialog"),
+      matchBody   = $("matchBody"),
+      confirmDlg  = $("confirmDialog"),
+      toastEl     = $("toast");
+
+  var rows = [];          // real rows from Supabase
+  var loadError = "";     // last load failure, shown as a banner
+  var editingId = null;   // null => adding
+  var lastFocus = null;   // restore focus when a dialog closes
+
+  /* ============================ Helpers ============================ */
+
+  // "12:00" .. "11:30" on a 12-hour clock, half-hour steps.
+  function halfHourTimes() {
+    var out = [], h, m;
+    for (h = 0; h < 12; h++) {
+      for (m = 0; m < 60; m += 30) {
+        out.push((h === 0 ? 12 : h) + ":" + (m === 0 ? "00" : "30"));
+      }
+    }
+    return out;
+  }
+  var TIMES = halfHourTimes();
+
+  // "9:45" + "PM" -> minutes past midnight (0-1439)
+  function toMinutes(time, ampm) {
+    var p = String(time).split(":");
+    var h = parseInt(p[0], 10) % 12;
+    var m = parseInt(p[1], 10) || 0;
+    return h * 60 + m + (ampm === "PM" ? 720 : 0);
+  }
+
+  // Accepts 9, 9:45, 9.45, 0945 -> "9:45"; null when unparseable.
+  function normalizeTime(raw) {
+    var s = String(raw == null ? "" : raw).trim().replace(/\s+/g, "");
+    var m = s.match(/^(\d{1,2})(?:[:.]?(\d{2}))?$/);
+    if (!m) return null;
+    var h = parseInt(m[1], 10), mm = m[2] ? parseInt(m[2], 10) : 0;
+    if (h === 0) h = 12;
+    if (h < 1 || h > 12 || mm < 0 || mm > 59) return null;
+    return h + ":" + (mm < 10 ? "0" + mm : String(mm));
+  }
+
+  function digits(s) { return String(s == null ? "" : s).replace(/\D/g, ""); }
+
+  function formatPhone(s) {
+    var d = digits(s);
+    if (d.length === 10) return "(" + d.slice(0, 3) + ") " + d.slice(3, 6) + "-" + d.slice(6);
+    if (d.length === 11 && d.charAt(0) === "1") return "1 (" + d.slice(1, 4) + ") " + d.slice(4, 7) + "-" + d.slice(7);
+    return s;
+  }
+
+  function esc(s) {
+    return String(s == null ? "" : s)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+  }
+
+  function dayIndex(day, list) {
+    var i = list.indexOf(day);
+    return i === -1 ? 999 : i;
+  }
+
+  function toast(msg, kind) {
+    toastEl.textContent = msg;
+    toastEl.className = "show " + (kind || "");
+    clearTimeout(toast._t);
+    toast._t = setTimeout(function () { toastEl.className = ""; }, 3200);
+  }
+
+  function fillSelect(sel, values, placeholder, withOther) {
+    sel.innerHTML = "";
+    var opt = document.createElement("option");
+    opt.value = ""; opt.textContent = placeholder;
+    sel.appendChild(opt);
+    values.forEach(function (v) {
+      var o = document.createElement("option");
+      o.value = v; o.textContent = v;
+      sel.appendChild(o);
+    });
+    if (withOther) {
+      var other = document.createElement("option");
+      other.value = "__other"; other.textContent = "Other time…";
+      sel.appendChild(other);
+    }
+  }
+
+  /* ============================ Sample data ============================
+     25 rows for testing the table, matching and printing before anything
+     real exists. They live only in the browser — nothing is ever written
+     to Supabase — and they disappear the moment the first real flight is
+     saved, because the table only falls back to them when rows is empty.
+     [ name, phone, toDayIdx, toTime, toAmpm, toAirline, toAirport,
+       fromDayIdx, fromTime, fromAmpm, fromAirline, fromAirport, comments ] */
+  var SAMPLE_SOURCE = [
+    ["Avi Rosenberg",    "7185550142", 0, "9:30",  "AM", "El Al",  "JFK", 0,    "11:45", "PM", "El Al",  "JFK", "Two suitcases"],
+    ["Dovid Feldman",    "3475550198", 0, "9:30",  "AM", "El Al",  "JFK", 1,    "8:00",  "AM", "El Al",  "JFK", null],
+    ["Shimon Katz",      "8455550117", 0, "9:30",  "AM", "El Al",  "JFK", null, null,    null, null,     null,  "Needs a ride to the airport"],
+    ["Yaakov Brody",     "7325550163", 0, "10:00", "AM", "Delta",  "JFK", 1,    "8:45",  "AM", "Delta",  "JFK", null],
+    ["Eli Weiss",        "9175550129", 0, "11:15", "AM", "United", "EWR", 2,    "5:00",  "AM", "United", "EWR", "Booked with a stopover"],
+    ["Nosson Fried",     "7325550159", 0, "3:00",  "PM", "United", "EWR", 2,    "9:30",  "PM", "El Al",  "JFK", null],
+    ["Naftali Gross",    "8625550174", 0, "6:00",  "PM", "El Al",  "JFK", 3,    "1:30",  "PM", "El Al",  "JFK", null],
+    ["Binyomin Stern",   "7325550190", 1, "7:00",  "AM", "United", "EWR", 1,    "8:00",  "AM", "El Al",  "JFK", null],
+    ["Moshe Ackerman",   "7185550185", 1, "4:00",  "PM", "El Al",  "JFK", 0,    "11:45", "PM", "El Al",  "JFK", null],
+    ["Chaim Berkowitz",  "8455550136", 1, "4:00",  "PM", "El Al",  "JFK", 2,    "5:00",  "AM", "United", "EWR", null],
+    ["Yisroel Schwartz", "9175550171", 1, "4:00",  "PM", "El Al",  "JFK", 0,    "11:45", "PM", "El Al",  "EWR", "Two seats booked"],
+    ["Yitzchok Halpern", "3475550151", 1, "4:30",  "PM", "Delta",  "JFK", null, null,    null, null,     null,  null],
+    ["Shlomo Lieber",    "9175550108", 1, "10:30", "PM", "El Al",  "JFK", 3,    "6:00",  "AM", "Delta",  "JFK", null],
+    ["Tzvi Neuman",      "3475550179", 2, "8:45",  "AM", "El Al",  "JFK", 0,    "10:30", "PM", "El Al",  "JFK", null],
+    ["Aryeh Mandel",     "8625550143", 2, "1:15",  "PM", "Delta",  "JFK", 2,    "9:30",  "PM", "Delta",  "JFK", "Landing terminal 3"],
+    ["Dov Rothstein",    "8625550126", 2, "1:15",  "PM", "Delta",  "JFK", 1,    "11:30", "AM", "United", "EWR", null],
+    ["Yosef Klein",      "7185550167", 2, "2:00",  "PM", "Delta",  "JFK", null, null,    null, null,     null,  null],
+    ["Menachem Salzman", "8455550121", 2, "2:00",  "PM", "United", "EWR", 1,    "11:00", "AM", "United", "EWR", null],
+    ["Simcha Braun",     "7325550112", 2, "9:00",  "PM", "El Al",  "JFK", null, null,    null, null,     null,  "Flexible on the return"],
+    ["Sruli Kaufman",    "8455550188", 3, "6:30",  "AM", "United", "EWR", null, null,    null, null,     null,  null],
+    ["Yehuda Perlman",   "9175550154", 3, "11:00", "AM", "El Al",  "JFK", 3,    "1:30",  "PM", "El Al",  "JFK", null],
+    ["Zev Adler",        "8625550196", 3, "11:00", "AM", "El Al",  "JFK", 2,    "5:00",  "PM", "Delta",  "JFK", null],
+    ["Ari Teitelbaum",   "7185550194", 3, "11:30", "AM", "El Al",  "JFK", null, null,    null, null,     null,  "Might still change"],
+    ["Meir Landau",      "7185550133", 3, "11:45", "AM", "Delta",  "JFK", 1,    "8:45",  "AM", "Delta",  "JFK", "Sharing a car"],
+    ["Baruch Zilber",    "3475550145", 3, "8:00",  "PM", "El Al",  "JFK", 3,    "6:00",  "AM", "Delta",  "JFK", null]
+  ];
+
+  var SAMPLE_ROWS = SAMPLE_SOURCE.map(function (s, i) {
+    var hasReturn = s[7] !== null;
+    return {
+      id: "sample-" + (i + 1),
+      _sample: true,
+      name: s[0], phone: s[1],
+      to_day: TO_DAYS[s[2]], to_time: s[3], to_ampm: s[4],
+      to_minutes: toMinutes(s[3], s[4]), to_airline: s[5], to_airport: s[6],
+      from_day:     hasReturn ? FROM_DAYS[s[7]] : null,
+      from_time:    hasReturn ? s[8] : null,
+      from_ampm:    hasReturn ? s[9] : null,
+      from_minutes: hasReturn ? toMinutes(s[8], s[9]) : null,
+      from_airline: hasReturn ? s[10] : null,
+      from_airport: hasReturn ? s[11] : null,
+      comments: s[12]
+    };
+  });
+
+  // True while the board is still empty — the sample rows are standing in.
+  function usingSamples() { return rows.length === 0; }
+
+  // What the table, matcher and printout all work from.
+  function visibleRows() { return usingSamples() ? SAMPLE_ROWS : rows; }
+
+  /* ============================ Data ============================
+     Plain fetch against the project's REST endpoint. There is no client
+     library and no CDN, so this page depends on exactly one outside
+     domain — which matters on networks behind a content filter. */
+  var REST_URL = SUPABASE_URL + "/rest/v1/" + TABLE;
+  var DB_HOST  = SUPABASE_URL.replace(/^https?:\/\//, "");
+
+  function api(method, opts) {
+    opts = opts || {};
+    var init = {
+      method: method,
+      headers: {
+        "apikey": SUPABASE_KEY,
+        "Authorization": "Bearer " + SUPABASE_KEY,
+        "Content-Type": "application/json"
+      }
+    };
+    if (opts.prefer) init.headers.Prefer = opts.prefer;
+    if (opts.body) init.body = JSON.stringify(opts.body);
+
+    return fetch(REST_URL + (opts.query || ""), init).then(function (res) {
+      return res.text().then(function (text) {
+        var data = null;
+        if (text) { try { data = JSON.parse(text); } catch (e) { data = null; } }
+        if (!res.ok) {
+          throw new Error((data && (data.message || data.hint)) || text || ("HTTP " + res.status));
+        }
+        return data;
+      });
+    });
+  }
+
+  // Turn the raw failure into something the reader can act on.
+  function friendlyError(err) {
+    var m = (err && err.message) ? err.message : String(err);
+    if (/failed to fetch|networkerror|load failed|network request/i.test(m)) {
+      return "This page couldn’t reach its database. If you are on a filtered network, " +
+             "ask whoever manages the filter to allow " + DB_HOST + ".";
+    }
+    if (/schema cache|does not exist|relation .* does not exist/i.test(m)) {
+      return m + " — the table hasn’t been created yet. Run schema.sql in the Supabase SQL editor.";
+    }
+    return m;
+  }
+
+  function loadRows() {
+    return api("GET", { query: "?select=*" }).then(function (data) {
+      loadError = "";
+      rows = data || [];
+      renderTable();
+    })["catch"](function (err) {
+      loadError = friendlyError(err);
+      rows = [];
+      renderTable();
+    });
+  }
+
+  /* ============================ Table ============================ */
+
+  function sortRows(a, b) {
+    var d = dayIndex(a.to_day, TO_DAYS) - dayIndex(b.to_day, TO_DAYS);
+    if (d) return d;
+    d = (a.to_minutes || 0) - (b.to_minutes || 0);
+    if (d) return d;
+    return String(a.name || "").localeCompare(String(b.name || ""));
+  }
+
+  // One leg of a trip as a table cell. `leg` is "to" or "from".
+  function flightCell(r, leg) {
+    var day = r[leg + "_day"], time = r[leg + "_time"];
+    if (!day || !time) return '<span class="empty-val">—</span>';
+    var meta = time + " " + r[leg + "_ampm"] +
+               (r[leg + "_airline"] ? " · " + r[leg + "_airline"] : "") +
+               (r[leg + "_airport"] ? " · " + r[leg + "_airport"] : "");
+    return '<div class="flight-day">' + esc(day) + "</div>" +
+           '<div class="flight-meta">' + esc(meta) + "</div>";
+  }
+
+  function setNotice(html, isBad) {
+    notice.innerHTML = html;
+    notice.className = "notice" + (isBad ? " bad" : "");
+    notice.hidden = !html;
+  }
+
+  function renderTable() {
+    var sample = usingSamples();
+    var data = visibleRows().slice().sort(sortRows);
+
+    if (loadError) {
+      setNotice("<strong>Couldn’t load the flights.</strong> <span>" + esc(loadError) +
+        " The sample rows below are shown so the page can still be tried out.</span>", true);
+    } else if (sample) {
+      setNotice("<strong>Sample data — for testing.</strong> <span>These 25 rows aren’t saved anywhere. " +
+        "They disappear as soon as the first real flight is added.</span>", false);
+    } else {
+      setNotice("", false);
+    }
+
+    tbody.innerHTML = data.map(function (r) {
+      return '<tr' + (sample ? ' class="is-sample"' : "") + ">" +
+        '<td data-label="Flight">' + flightCell(r, "to") + "</td>" +
+        '<td data-label="Name" class="name-cell">' + esc(r.name) + "</td>" +
+        '<td data-label="Phone"><a class="phone" href="tel:' + esc(digits(r.phone)) + '">' +
+          esc(formatPhone(r.phone)) + "</a></td>" +
+        '<td data-label="Return">' + flightCell(r, "from") + "</td>" +
+        '<td data-label="Comments" class="comment-cell">' +
+          (r.comments ? esc(r.comments) : '<span class="empty-val">—</span>') + "</td>" +
+        '<td data-label="Edit" class="col-edit">' +
+          (r._sample
+            ? '<button type="button" class="btn btn-sm" disabled title="Sample row — add a real flight to edit">Edit</button>'
+            : '<button type="button" class="btn btn-sm" data-edit="' + esc(r.id) +
+              '" aria-label="Edit ' + esc(r.name) + '">Edit</button>') +
+        "</td>" +
+      "</tr>";
+    }).join("");
+
+    rowCount.textContent = data.length + (data.length === 1 ? " traveler" : " travelers") +
+                           (sample ? " (sample)" : "");
+    tableState.hidden = true;
+    tableScroll.hidden = false;
+  }
+
+  tbody.addEventListener("click", function (e) {
+    var btn = e.target.closest("[data-edit]");
+    if (btn) openEntry(btn.getAttribute("data-edit"));
+  });
+
+  /* ============================ Add / Edit dialog ============================ */
+
+  fillSelect($("f_to_day"),   TO_DAYS,   "Choose a day…",  false);
+  fillSelect($("f_from_day"), FROM_DAYS, "Choose a day…",  false);
+  fillSelect($("f_to_time"),   TIMES, "Choose a time…", true);
+  fillSelect($("f_from_time"), TIMES, "Choose a time…", true);
+
+  // Airport is a fixed list — no free text — so the codes stay consistent
+  // and matching can rely on them.
+  function fillAirports(sel) {
+    sel.innerHTML = "";
+    var blank = document.createElement("option");
+    blank.value = "";
+    blank.textContent = "Choose an airport…";
+    sel.appendChild(blank);
+    AIRPORTS.forEach(function (grp) {
+      var og = document.createElement("optgroup");
+      og.label = grp[0];
+      grp[1].forEach(function (a) {
+        var o = document.createElement("option");
+        o.value = a[0];
+        o.textContent = a[1];
+        og.appendChild(o);
+      });
+      sel.appendChild(og);
+    });
+  }
+
+  // Rebuilds the list, then selects `value`. A saved value that predates
+  // this list is kept as an extra option rather than silently discarded
+  // when someone opens that row to edit it.
+  function setAirport(id, value) {
+    var sel = $(id);
+    fillAirports(sel);
+    if (!value) { sel.value = ""; return; }
+    sel.value = value;
+    if (sel.value !== value) {
+      var o = document.createElement("option");
+      o.value = value;
+      o.textContent = value + " (already saved)";
+      sel.appendChild(o);
+      sel.value = value;
+    }
+  }
+
+  fillAirports($("f_to_airport"));
+  fillAirports($("f_from_airport"));
+
+  // "Other time…" reveals a free-text box.
+  function wireCustomTime(selectId, inputId) {
+    var sel = $(selectId), inp = $(inputId);
+    sel.addEventListener("change", function () {
+      var custom = sel.value === "__other";
+      inp.hidden = !custom;
+      if (custom) inp.focus(); else inp.value = "";
+    });
+  }
+  wireCustomTime("f_to_time", "f_to_time_custom");
+  wireCustomTime("f_from_time", "f_from_time_custom");
+
+  function setTimeControls(selectId, inputId, value) {
+    var sel = $(selectId), inp = $(inputId);
+    if (value && TIMES.indexOf(value) === -1) {
+      sel.value = "__other"; inp.hidden = false; inp.value = value;
+    } else {
+      sel.value = value || ""; inp.hidden = true; inp.value = "";
+    }
+  }
+
+  function readTimeControls(selectId, inputId) {
+    var sel = $(selectId), inp = $(inputId);
+    if (!sel.value) return "";
+    if (sel.value === "__other") return normalizeTime(inp.value);   // null when invalid
+    return sel.value;
+  }
+
+  function setRadio(name, value) {
+    var els = entryForm.querySelectorAll('input[name="' + name + '"]');
+    Array.prototype.forEach.call(els, function (el) { el.checked = (value != null && el.value === value); });
+  }
+
+  function getRadio(name) {
+    var el = entryForm.querySelector('input[name="' + name + '"]:checked');
+    return el ? el.value : "";
+  }
+
+  function openEntry(id) {
+    editingId = id || null;
+    var r = id ? rows.filter(function (x) { return String(x.id) === String(id); })[0] : null;
+
+    entryForm.reset();
+    formError.className = "form-error";
+    formError.textContent = "";
+    setRadio("to_ampm", null);
+    setRadio("from_ampm", null);
+
+    $("entryTitle").textContent = r ? "Edit Flight" : "Add a Flight";
+    $("entrySubmit").textContent = r ? "Save Changes" : "Submit";
+
+    if (r) {
+      $("f_name").value = r.name || "";
+      $("f_phone").value = r.phone || "";
+      $("f_to_day").value = r.to_day || "";
+      setTimeControls("f_to_time", "f_to_time_custom", r.to_time);
+      setRadio("to_ampm", r.to_ampm);
+      $("f_to_airline").value = r.to_airline || "";
+      setAirport("f_to_airport", r.to_airport);
+      $("f_from_day").value = r.from_day || "";
+      setTimeControls("f_from_time", "f_from_time_custom", r.from_time);
+      setRadio("from_ampm", r.from_ampm);
+      $("f_from_airline").value = r.from_airline || "";
+      setAirport("f_from_airport", r.from_airport);
+      $("f_comments").value = r.comments || "";
+    } else {
+      setTimeControls("f_to_time", "f_to_time_custom", "");
+      setTimeControls("f_from_time", "f_from_time_custom", "");
+      setAirport("f_to_airport", "");
+      setAirport("f_from_airport", "");
+    }
+
+    lastFocus = document.activeElement;
+    entryDialog.showModal();
+    $("f_name").focus();
+  }
+
+  $("clearReturn").addEventListener("click", function () {
+    $("f_from_day").value = "";
+    setTimeControls("f_from_time", "f_from_time_custom", "");
+    setRadio("from_ampm", null);
+    $("f_from_airline").value = "";
+    setAirport("f_from_airport", "");
+  });
+
+  function fail(msg, focusId) {
+    formError.textContent = msg;
+    formError.className = "form-error show";
+    formError.scrollIntoView({ block: "nearest" });
+    if (focusId) $(focusId).focus();
+    return null;
+  }
+
+  // Validates the form and returns a row object, or null (with a message shown).
+  function collect() {
+    formError.className = "form-error";
+
+    var name = $("f_name").value.trim();
+    if (!name) return fail("Please enter a name.", "f_name");
+
+    var phoneRaw = $("f_phone").value.trim();
+    if (digits(phoneRaw).length < 7) return fail("Please enter a phone number with at least 7 digits.", "f_phone");
+
+    var toDay = $("f_to_day").value;
+    if (!toDay) return fail("Please choose a day for the flight to E”Y.", "f_to_day");
+
+    var toTime = readTimeControls("f_to_time", "f_to_time_custom");
+    if (toTime === "") return fail("Please choose a time for the flight to E”Y.", "f_to_time");
+    if (toTime === null) return fail("That departure time isn’t valid — use a form like 9:45.", "f_to_time_custom");
+
+    var toAmpm = getRadio("to_ampm");
+    if (!toAmpm) return fail("Please pick AM or PM for the flight to E”Y.", "f_to_am");
+
+    var toAirline = $("f_to_airline").value.trim();
+    if (!toAirline) return fail("Please enter the airline for the flight to E”Y.", "f_to_airline");
+
+    var toAirport = $("f_to_airport").value.trim();
+    if (!toAirport) return fail("Please choose the airport you are leaving from.", "f_to_airport");
+
+    // From E"Y is optional, but day / time / AM-PM must be complete if any
+    // part of it is given. The return airline stays optional throughout.
+    var fromDay     = $("f_from_day").value;
+    var fromTime    = readTimeControls("f_from_time", "f_from_time_custom");
+    var fromAmpm    = getRadio("from_ampm");
+    var fromAirline = $("f_from_airline").value.trim();
+    var fromAirport = $("f_from_airport").value.trim();
+    if (fromTime === null) return fail("That return time isn’t valid — use a form like 3:15.", "f_from_time_custom");
+
+    var anyFrom = !!(fromDay || fromTime || fromAmpm || fromAirline || fromAirport);
+    if (anyFrom) {
+      if (!fromDay)  return fail("Add the day for the return flight, or clear the return flight.", "f_from_day");
+      if (!fromTime) return fail("Add the time for the return flight, or clear the return flight.", "f_from_time");
+      if (!fromAmpm) return fail("Pick AM or PM for the return flight, or clear the return flight.", "f_from_am");
+    }
+
+    return {
+      name: name,
+      phone: phoneRaw,
+      to_day: toDay,
+      to_time: toTime,
+      to_ampm: toAmpm,
+      to_minutes: toMinutes(toTime, toAmpm),
+      to_airline: toAirline,
+      to_airport: toAirport,
+      from_day: anyFrom ? fromDay : null,
+      from_time: anyFrom ? fromTime : null,
+      from_ampm: anyFrom ? fromAmpm : null,
+      from_minutes: anyFrom ? toMinutes(fromTime, fromAmpm) : null,
+      from_airline: (anyFrom && fromAirline) ? fromAirline : null,
+      from_airport: (anyFrom && fromAirport) ? fromAirport : null,
+      comments: $("f_comments").value.trim() || null
+    };
+  }
+
+  function findDuplicate(rec) {
+    var n = rec.name.trim().toLowerCase(), p = digits(rec.phone);
+    return rows.filter(function (r) {
+      return String(r.id) !== String(editingId) &&
+             String(r.name || "").trim().toLowerCase() === n &&
+             digits(r.phone) === p;
+    })[0] || null;
+  }
+
+  // Promise-based confirm using the styled dialog.
+  function askConfirm(message) {
+    return new Promise(function (resolve) {
+      $("confirmMsg").textContent = message;
+      var done = function (val) {
+        $("confirmYes").removeEventListener("click", yes);
+        $("confirmNo").removeEventListener("click", no);
+        confirmDlg.removeEventListener("cancel", no);
+        if (confirmDlg.open) confirmDlg.close();
+        resolve(val);
+      };
+      var yes = function () { done(true); };
+      var no  = function (e) { if (e) e.preventDefault(); done(false); };
+      $("confirmYes").addEventListener("click", yes);
+      $("confirmNo").addEventListener("click", no);
+      confirmDlg.addEventListener("cancel", no);
+      confirmDlg.showModal();
+    });
+  }
+
+  entryForm.addEventListener("submit", function (e) {
+    e.preventDefault();               // the dialog is closed by save(), not by the form
+    var rec = collect();
+    if (!rec) return;
+
+    var dup = findDuplicate(rec);
+    if (dup) {
+      askConfirm("“" + rec.name + "” with this phone number is already on the board (" +
+                 (dup.to_day || "") + ", " + (dup.to_time || "") + " " + (dup.to_ampm || "") +
+                 "). Add this entry anyway?").then(function (ok) {
+        if (ok) save(rec);
+        else $("f_name").focus();
+      });
+      return;
+    }
+    save(rec);
+  });
+
+  function save(rec) {
+    var btn = $("entrySubmit");
+    btn.disabled = true;
+    var wasEditing = !!editingId;
+    var op = wasEditing
+      ? api("PATCH", { query: "?id=eq." + encodeURIComponent(editingId), body: rec, prefer: "return=minimal" })
+      : api("POST",  { body: rec, prefer: "return=minimal" });
+
+    op.then(function () {
+      entryDialog.close();
+      toast(wasEditing ? "Flight updated." : "Flight added.", "ok");
+      return loadRows();
+    })["catch"](function (err) {
+      fail("Couldn’t save. " + friendlyError(err));
+    }).then(function () { btn.disabled = false; });
+  }
+
+  $("entryCancel").addEventListener("click", function () { entryDialog.close(); });
+  entryDialog.addEventListener("close", function () { if (lastFocus) lastFocus.focus(); });
+
+  /* ============================ Find a Match ============================
+     Step 1 — a copy of the table; click a traveler.
+     Step 2 — that traveler's four result sets.                            */
+
+  var pickFilter = "";   // text in the picker's search box
+
+  function byName(a, b) { return String(a.name || "").localeCompare(String(b.name || "")); }
+
+  function findRowById(id) {
+    return visibleRows().filter(function (r) { return String(r.id) === String(id); })[0] || null;
+  }
+
+  // Everyone sharing this person's day on one leg, split into identical
+  // times and times within the hour. The person themselves is excluded.
+  // true / false, or null when one side never recorded an airport.
+  function sameAirport(a, b) {
+    var x = String(a == null ? "" : a).trim().toUpperCase();
+    var y = String(b == null ? "" : b).trim().toUpperCase();
+    if (!x || !y) return null;
+    return x === y;
+  }
+
+  // Airport rules differ by leg:
+  //   going out — a different airport is not a match at all, so those rows
+  //               are dropped from both lists;
+  //   coming back — a different airport is demoted out of Exact and shown
+  //               in the near list instead, flagged.
+  // A blank airport on either side is "unknown", not "different": the row
+  // still matches, and the line is flagged so the gap is visible.
+  function matchesFor(person, pool, leg) {
+    var dayKey  = leg + "_day",
+        minKey  = leg + "_minutes",
+        portKey = leg + "_airport";
+    var out = { exact: [], near: [] };
+    if (!person[dayKey] || person[minKey] == null) return out;
+
+    pool.forEach(function (r) {
+      if (String(r.id) === String(person.id)) return;
+      if (r[dayKey] !== person[dayKey] || r[minKey] == null) return;
+
+      var gap = Math.abs(r[minKey] - person[minKey]);
+      if (gap > NEAR_WINDOW) return;
+
+      var same = sameAirport(person[portKey], r[portKey]);
+      if (leg === "to" && same === false) return;
+
+      var entry = {
+        row: r,
+        gap: gap,
+        otherPort: same === false,
+        unknownPort: same === null
+      };
+
+      if (gap === 0 && same !== false) out.exact.push(entry);
+      else out.near.push(entry);
+    });
+
+    out.exact.sort(function (a, b) { return byName(a.row, b.row); });
+    out.near.sort(function (a, b) { return (a.gap - b.gap) || byName(a.row, b.row); });
+    return out;
+  }
+
+  // " · El Al · JFK" for whichever of the two the row actually has.
+  function legExtras(r, leg) {
+    return (r[leg + "_airline"] ? " · " + esc(r[leg + "_airline"]) : "") +
+           (r[leg + "_airport"] ? " · " + esc(r[leg + "_airport"]) : "");
+  }
+
+  function travLine(entry, leg) {
+    var r = entry.row;
+    var meta = r[leg + "_time"] + " " + r[leg + "_ampm"] +
+               (r[leg + "_airline"] ? " · " + r[leg + "_airline"] : "") +
+               (r[leg + "_airport"] ? " · " + r[leg + "_airport"] : "") +
+               " · " + formatPhone(r.phone);
+
+    var tags = "";
+    if (entry.gap) tags += '<span class="gap-tag">' + entry.gap + " min apart</span>";
+    if (entry.otherPort) tags += '<span class="gap-tag alt">different airport</span>';
+    if (entry.unknownPort) tags += '<span class="gap-tag dim">airport not given</span>';
+
+    return '<div class="trav"><span class="t-name">' + esc(r.name) + "</span>" +
+           '<span class="t-meta">' + esc(meta) + "</span>" +
+           (tags ? '<span class="tags">' + tags + "</span>" : "") +
+           "</div>";
+  }
+
+  function section(title, count, sub, inner) {
+    return '<section class="match-section"><h3 class="match-title">' + title +
+      '<span class="badge">' + count + "</span></h3>" +
+      '<p class="match-sub">' + sub + "</p>" + inner + "</section>";
+  }
+
+  function groupBlock(head, lines) {
+    return '<div class="group"><div class="group-head">' + head + "</div>" + lines + "</div>";
+  }
+
+  /* ---- Step 1: the picker ---- */
+
+  function pickerRow(r) {
+    return '<tr class="pick-row" data-pick="' + esc(r.id) + '" tabindex="0" role="button"' +
+      ' aria-label="Show matches for ' + esc(r.name) + '">' +
+      '<td data-label="Flight">' + flightCell(r, "to") + "</td>" +
+      '<td data-label="Name" class="name-cell">' + esc(r.name) + "</td>" +
+      '<td data-label="Phone">' + esc(formatPhone(r.phone)) + "</td>" +
+      '<td data-label="Return">' + flightCell(r, "from") + "</td>" +
+      '<td data-label="Comments" class="comment-cell">' +
+        (r.comments ? esc(r.comments) : '<span class="empty-val">—</span>') + "</td>" +
+      '<td class="pick-chev" aria-hidden="true">Match &#8250;</td>' +
+    "</tr>";
+  }
+
+  function renderPickRows() {
+    var pool = visibleRows().slice().sort(sortRows);
+    var q = pickFilter.trim().toLowerCase();
+    if (q) {
+      pool = pool.filter(function (r) {
+        return [r.name, r.phone, r.to_airline, r.to_airport, r.to_day,
+                r.from_airline, r.from_airport, r.from_day]
+          .join(" ").toLowerCase().indexOf(q) !== -1;
+      });
+    }
+
+    var wrap = $("pickWrap"), hint = $("pickHint");
+    if (!wrap) return;
+
+    wrap.innerHTML = pool.length
+      ? "<table class=\"pick\"><thead><tr>" +
+          '<th scope="col">Flight</th><th scope="col">Name</th><th scope="col">Phone Number</th>' +
+          '<th scope="col">Return Flight</th><th scope="col">Comments</th>' +
+          '<th scope="col"><span class="sr-only">Choose</span></th>' +
+        "</tr></thead><tbody>" + pool.map(pickerRow).join("") + "</tbody></table>"
+      : '<p class="pick-empty">No traveler matches &ldquo;' + esc(pickFilter) + "&rdquo;.</p>";
+
+    if (hint) {
+      hint.textContent = pool.length + (pool.length === 1 ? " traveler" : " travelers");
+    }
+  }
+
+  function showPicker() {
+    $("matchSub").textContent = "Pick a traveler to see who they can travel with.";
+    $("matchBack").hidden = true;
+
+    matchBody.innerHTML =
+      (usingSamples()
+        ? '<p class="match-sub" style="margin:0 0 14px;color:var(--gold-soft)">' +
+          "These are the 25 sample rows — real flights replace them once one is added.</p>"
+        : "") +
+      '<div class="pick-tools">' +
+        '<input type="text" id="pickSearch" autocomplete="off" ' +
+          'placeholder="Search by name, phone, airline, airport or day&hellip;" aria-label="Search travelers">' +
+        '<span class="pick-hint" id="pickHint"></span>' +
+      "</div>" +
+      '<div class="pick-wrap" id="pickWrap"></div>';
+
+    var search = $("pickSearch");
+    search.value = pickFilter;
+    search.addEventListener("input", function () {
+      pickFilter = search.value;
+      renderPickRows();
+    });
+
+    renderPickRows();
+    matchBody.scrollTop = 0;
+  }
+
+  /* ---- Step 2: one traveler's matches ---- */
+
+  function showMatchesFor(person) {
+    if (!person) return;
+    var pool = visibleRows();
+    var to = matchesFor(person, pool, "to");
+    var hasReturn = !!(person.from_day && person.from_minutes != null);
+    var fr = hasReturn ? matchesFor(person, pool, "from") : { exact: [], near: [] };
+
+    // Plain day + time for the header card (which prints airline and airport
+    // separately); the group headings repeat the airport because it is now
+    // part of what makes a match.
+    var outLabel  = person.to_day + " · " + person.to_time + " " + person.to_ampm;
+    var backLabel = hasReturn
+      ? person.from_day + " · " + person.from_time + " " + person.from_ampm
+      : "";
+    var port      = function (p) { return p ? " · " + p : ""; };
+    var outHead   = outLabel + port(person.to_airport);
+    var backHead  = backLabel + port(person.from_airport);
+    var outNearHead = person.to_day + port(person.to_airport);
+    var who = esc(person.name);
+    var noReturn = "This traveler hasn’t given a return flight, so there’s nothing to match.";
+
+    $("matchSub").textContent = "Matches for " + person.name + ".";
+    $("matchBack").hidden = false;
+
+    matchBody.innerHTML =
+      '<div class="hero"><span class="h-name">' + who + "</span>" +
+        '<span class="h-meta">To E&rdquo;Y: <b>' + esc(outLabel) + "</b>" + legExtras(person, "to") + "</span>" +
+        '<span class="h-meta">From E&rdquo;Y: <b>' +
+          (hasReturn ? esc(backLabel) : "not given") + "</b>" +
+          (hasReturn ? legExtras(person, "from") : "") + "</span>" +
+      "</div>" +
+
+      section("To E&rdquo;Y — Exact Matches", to.exact.length,
+        "Same day, same departure time and same airport as " + who + ".",
+        to.exact.length
+          ? groupBlock(esc(outHead), to.exact.map(function (e) {
+              return travLine(e, "to");
+            }).join(""))
+          : '<p class="none">Nobody else leaves this airport at exactly this time.</p>') +
+
+      section("To E&rdquo;Y — Within 1 Hour", to.near.length,
+        "Same day and same airport, up to an hour from " + who +
+        ". The exact matches above are excluded, and other airports are left out entirely.",
+        to.near.length
+          ? groupBlock(esc(outNearHead), to.near.map(function (e) {
+              return travLine(e, "to");
+            }).join(""))
+          : '<p class="none">Nobody else leaves this airport within an hour of this flight.</p>') +
+
+      section("From E&rdquo;Y — Exact Matches", hasReturn ? fr.exact.length : "—",
+        hasReturn ? "Same day, same return time and same airport as " + who + "."
+                  : "No return flight on file.",
+        !hasReturn
+          ? '<p class="none">' + noReturn + "</p>"
+          : fr.exact.length
+            ? groupBlock(esc(backHead), fr.exact.map(function (e) {
+                return travLine(e, "from");
+              }).join(""))
+            : '<p class="none">Nobody else lands at this airport at exactly this time.</p>') +
+
+      section("From E&rdquo;Y — Not Exactly a Match", hasReturn ? fr.near.length : "—",
+        hasReturn ? "Same day, up to an hour from " + who +
+                    " — plus anyone at the same time landing at a different airport."
+                  : "No return flight on file.",
+        !hasReturn
+          ? '<p class="none">' + noReturn + "</p>"
+          : fr.near.length
+            ? groupBlock(esc(person.from_day), fr.near.map(function (e) {
+                return travLine(e, "from");
+              }).join(""))
+            : '<p class="none">Nobody else comes back within an hour of this flight.</p>');
+
+    matchBody.scrollTop = 0;
+  }
+
+  function openMatches() {
+    pickFilter = "";
+    showPicker();
+    lastFocus = document.activeElement;
+    matchDialog.showModal();
+    var search = $("pickSearch");
+    if (search) search.focus();
+  }
+
+  // Row clicks and keyboard activation inside the picker.
+  matchBody.addEventListener("click", function (e) {
+    var row = e.target.closest("[data-pick]");
+    if (row) showMatchesFor(findRowById(row.getAttribute("data-pick")));
+  });
+  matchBody.addEventListener("keydown", function (e) {
+    if (e.key !== "Enter" && e.key !== " " && e.key !== "Spacebar") return;
+    var row = e.target.closest("[data-pick]");
+    if (!row) return;
+    e.preventDefault();
+    showMatchesFor(findRowById(row.getAttribute("data-pick")));
+  });
+
+  $("matchBack").addEventListener("click", showPicker);
+  $("matchClose").addEventListener("click", function () { matchDialog.close(); });
+  matchDialog.addEventListener("close", function () { if (lastFocus) lastFocus.focus(); });
+
+  /* ============================ Toolbar ============================ */
+  $("addBtn").addEventListener("click", function () { openEntry(null); });
+  $("matchBtn").addEventListener("click", openMatches);
+  $("printBtn").addEventListener("click", function () { window.print(); });
+
+  /* ============================ Go ============================ */
+  $("aboutHost").textContent = DB_HOST;
+  loadRows();
+})();
+</script>
+</body>
+</html>

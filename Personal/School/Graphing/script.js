@@ -57,25 +57,25 @@ const declinedPairs = new Set();
    3. DOM references
    ------------------------------------------------------------ */
 
-const svg           = document.getElementById('graph');
-const overlay       = document.getElementById('overlay');
+const svg = document.getElementById('graph');
+const overlay = document.getElementById('overlay');
 const cardsViewport = document.getElementById('cardsViewport');
-const cardsTrack    = document.getElementById('cardsTrack');
-const carouselNav   = document.getElementById('carouselNav');
-const pageDots      = document.getElementById('pageDots');
-const prevPageBtn   = document.getElementById('prevPage');
-const nextPageBtn   = document.getElementById('nextPage');
-const linesEmpty    = document.getElementById('linesEmpty');
-const pointsField   = document.getElementById('pointsField');
-const pointsCount   = document.getElementById('pointsCount');
-const eqForm        = document.getElementById('eqForm');
-const eqInput       = document.getElementById('eqInput');
-const eqError       = document.getElementById('eqError');
-const ptForm        = document.getElementById('ptForm');
-const ptInput       = document.getElementById('ptInput');
-const ptError       = document.getElementById('ptError');
-const ptBtn         = document.getElementById('ptBtn');
-const modalRoot     = document.getElementById('modalRoot');
+const cardsTrack = document.getElementById('cardsTrack');
+const carouselNav = document.getElementById('carouselNav');
+const pageDots = document.getElementById('pageDots');
+const prevPageBtn = document.getElementById('prevPage');
+const nextPageBtn = document.getElementById('nextPage');
+const linesEmpty = document.getElementById('linesEmpty');
+const pointsField = document.getElementById('pointsField');
+const pointsCount = document.getElementById('pointsCount');
+const eqForm = document.getElementById('eqForm');
+const eqInput = document.getElementById('eqInput');
+const eqError = document.getElementById('eqError');
+const ptForm = document.getElementById('ptForm');
+const ptInput = document.getElementById('ptInput');
+const ptError = document.getElementById('ptError');
+const ptBtn = document.getElementById('ptBtn');
+const modalRoot = document.getElementById('modalRoot');
 
 let linesLayer, hoverLayer, pointsLayer, animLayer;   // svg groups
 let actionLayer, tipLayer;                 // html overlay layers
@@ -204,10 +204,10 @@ function buildGraph() {
   yName.textContent = 'y';
 
   // --- dynamic layers (order matters: lines under points) ---
-  linesLayer  = svgEl('g', { 'clip-path': 'url(#plotClip)' }, svg);
-  hoverLayer  = svgEl('g', { 'clip-path': 'url(#plotClip)' }, svg);
+  linesLayer = svgEl('g', { 'clip-path': 'url(#plotClip)' }, svg);
+  hoverLayer = svgEl('g', { 'clip-path': 'url(#plotClip)' }, svg);
   pointsLayer = svgEl('g', {}, svg);
-  animLayer   = svgEl('g', { 'pointer-events': 'none' }, svg);  // always on top
+  animLayer = svgEl('g', { 'pointer-events': 'none' }, svg);  // always on top
 }
 
 /* ------------------------------------------------------------
@@ -694,7 +694,7 @@ function openPointActions(id) {
       + (line ? `<p style="margin-top:8px">Heads up: this point builds <strong>${line.name}</strong>. Deleting it removes that line and its table.</p>` : ''),
     actions: [
       { label: 'Cancel', cls: 'btn-quiet' },
-      { label: 'Edit coordinates', cls: 'btn-primary', onClick: () => openEditPoint(id) },
+      // { label: 'Edit coordinates', cls: 'btn-primary', onClick: () => openEditPoint(id) },
       { label: 'Delete point', cls: 'btn-solid-danger', onClick: () => deletePoint(id) }
     ]
   });

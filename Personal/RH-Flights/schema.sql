@@ -7,6 +7,8 @@ create table if not exists public.rh_flights (
 
   name         text not null,
   phone        text not null,
+  from_city    text,          -- the city the traveler is leaving from (one per person,
+                              -- not per leg; see the note in index.html)
 
   -- To E"Y (required)
   to_day       text not null,
@@ -32,6 +34,7 @@ create table if not exists public.rh_flights (
 alter table public.rh_flights add column if not exists from_airline text;
 alter table public.rh_flights add column if not exists to_airport   text;
 alter table public.rh_flights add column if not exists from_airport text;
+alter table public.rh_flights add column if not exists from_city    text;
 notify pgrst, 'reload schema';
 
 create index if not exists rh_flights_to_idx   on public.rh_flights (to_day, to_minutes);

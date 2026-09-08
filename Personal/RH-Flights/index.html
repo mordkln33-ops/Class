@@ -128,7 +128,7 @@ h1{
 .count{ font-size:12.5px; color:var(--muted); letter-spacing:.07em; text-transform:uppercase; }
 
 .table-scroll{ overflow-x:auto; }
-table{ width:100%; border-collapse:collapse; min-width:820px; }
+table{ width:100%; border-collapse:collapse; min-width:900px; }
 thead th{
   position:sticky; top:0; z-index:2;
   text-align:left; font-size:11.5px; font-weight:700; letter-spacing:.11em; text-transform:uppercase;
@@ -143,6 +143,8 @@ tbody tr:last-child td{ border-bottom:none; }
 
 .flight-day{ font-weight:600; }
 .flight-meta{ color:var(--muted); font-size:14px; margin-top:3px; }
+/* Full day names on wide screens, abbreviated ones on phones. */
+.day-short{ display:none; }
 .name-cell{ font-weight:600; }
 .sr-only{ position:absolute; width:1px; height:1px; margin:-1px; padding:0; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0; }
 .phone{ color:var(--text); font-variant-numeric:tabular-nums; white-space:nowrap; text-decoration:none; border-bottom:1px dotted var(--gold-deep); }
@@ -287,7 +289,7 @@ input:disabled{ opacity:.45; }
 .pick-tools input{ flex:1 1 220px; }
 .pick-tools .pick-hint{ font-size:12px; color:var(--muted); }
 .pick-wrap{ border:1px solid var(--line-soft); border-radius:12px; overflow-x:auto; background:#fff; }
-table.pick{ min-width:600px; }
+table.pick{ min-width:700px; }
 table.pick thead th{ background:#f6f0e3; padding:10px 14px; }
 table.pick tbody td{ padding:11px 14px; }
 tr.pick-row{ cursor:pointer; }
@@ -375,34 +377,52 @@ tr.pick-row:focus-visible{ outline:none; background:rgba(216,178,105,.24); box-s
   .sheet-head,.sheet-foot{ padding-left:18px; padding-right:18px; }
 }
 
-/* Phone — the table stops being a table and becomes a stack of cards,
-   each cell labelled by its column so nothing needs sideways scrolling. */
+/* Phone — stay a real table and scroll sideways, so a screenful shows many
+   travelers rather than one. Type and padding tighten, day names abbreviate,
+   and the Flight column pins to the left so you keep your place while
+   scrolling across. */
 @media screen and (max-width:720px){
   body{ font-size:14.5px; }
-  .table-scroll{ overflow-x:visible; }
-  table,table.pick{ min-width:0; }
-  table,tbody,tr,td{ display:block; }
-  thead{ position:absolute; width:1px; height:1px; margin:-1px; padding:0; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0; }
-  tbody tr,
-  tbody tr:nth-child(even){
-    margin:12px; padding:2px 0; border:1px solid var(--line-soft); border-radius:12px;
-    background:#fff; box-shadow:0 1px 2px rgba(28,30,53,.05);
-  }
-  tbody tr:hover{ background:rgba(216,178,105,.14); }
-  .pick-wrap{ overflow-x:visible; background:transparent; border:none; }
-  tr.pick-row{ border-color:var(--line) !important; }
+  .day-long{ display:none; }
+  .day-short{ display:inline; }
+
+  .table-scroll,.pick-wrap{ -webkit-overflow-scrolling:touch; }
+  /* Separate borders so the pinned column keeps its own rules — collapsed
+     borders belong to the table and would not travel with a sticky cell. */
+  table{ border-collapse:separate; border-spacing:0; }
+  table{ min-width:700px; }
+  table.pick{ min-width:640px; }
+
+  thead th{ font-size:10px; letter-spacing:.06em; padding:9px 10px; }
+  tbody td{ padding:9px 10px; font-size:13px; }
+
+  .flight-day{ font-size:13px; white-space:nowrap; }
+  .flight-meta{ font-size:11.5px; margin-top:1px; white-space:nowrap; }
+  .name-cell{ max-width:104px; }
+  .phone{ font-size:12.5px; }
+  .comment-cell{ max-width:124px; font-size:12px; }
+  .col-edit .btn{ padding:5px 11px; font-size:12px; }
   .pick-chev{ display:none; }
-  tbody td,
-  tbody tr:last-child td{
-    display:grid; grid-template-columns:96px minmax(0,1fr); gap:4px 12px; align-items:baseline;
-    padding:9px 14px; border-bottom:1px solid rgba(28,30,53,.07);
+
+  /* One flat row colour, so the pinned cell can match it exactly. */
+  tbody tr,
+  tbody tr:nth-child(even),
+  tbody tr:hover{ background:var(--paper-2); }
+  tbody td:first-child{
+    position:sticky; left:0; z-index:1;
+    background:var(--paper-2); box-shadow:1px 0 0 var(--line);
   }
-  tbody td::before{
-    content:attr(data-label);
-    font-size:10px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--gold);
+  thead th:first-child{
+    position:sticky; top:0; left:0; z-index:3;
+    background:#f3ecdd; box-shadow:1px 0 0 var(--line);
   }
-  tbody td:last-child{ border-bottom:none; }
-  .comment-cell{ max-width:none; }
+  table.pick thead th:first-child{ background:#f6f0e3; }
+  /* Keep picker rows flat too, and show selection as a ring instead of a
+     fill, so the pinned cell never mismatches the rest of the row. */
+  tr.pick-row:hover,
+  tr.pick-row:focus-visible{ background:var(--paper-2); }
+  tr.pick-row:focus-visible{ box-shadow:inset 0 0 0 2px var(--gold); }
+
   .panel-head{ padding:14px 16px; }
   .group .trav{ gap:2px 8px; }
   .trav .tags{ margin-left:0; }
@@ -410,7 +430,7 @@ tr.pick-row:focus-visible{ outline:none; background:rgba(216,178,105,.24); box-s
 
 /* Small phone — full-width controls, tighter type. */
 @media screen and (max-width:480px){
-  .wrap{ padding-left:12px; padding-right:12px; }
+  .wrap{ padding-left:10px; padding-right:10px; }
   .actions{ gap:9px; }
   .actions .btn{ flex:1 1 100%; justify-content:center; }
   .panel-head{ flex-direction:column; align-items:flex-start; gap:2px; }
@@ -420,7 +440,15 @@ tr.pick-row:focus-visible{ outline:none; background:rgba(216,178,105,.24); box-s
   .sheet-head h2{ font-size:23px; }
   .sheet-foot{ flex-direction:column-reverse; }
   .sheet-foot .btn{ width:100%; justify-content:center; }
-  tbody td{ grid-template-columns:1fr; gap:2px; }
+
+  /* Squeeze a little further on the narrowest phones. */
+  table{ min-width:660px; }
+  table.pick{ min-width:610px; }
+  thead th{ padding:8px 9px; }
+  tbody td{ padding:8px 9px; font-size:12.5px; }
+  .name-cell{ max-width:92px; }
+  .comment-cell{ max-width:108px; }
+
   #toast{ left:12px; right:12px; bottom:14px; transform:translateY(20px); text-align:center; }
   #toast.show{ transform:translateY(0); }
 }
@@ -493,6 +521,7 @@ tr.pick-row:focus-visible{ outline:none; background:rgba(216,178,105,.24); box-s
             <th scope="col">Flight</th>
             <th scope="col">Name</th>
             <th scope="col">Phone Number</th>
+            <th scope="col">From City</th>
             <th scope="col">Return Flight</th>
             <th scope="col">Comments</th>
             <th scope="col" class="col-edit">Edit</th>
@@ -536,8 +565,8 @@ tr.pick-row:focus-visible{ outline:none; background:rgba(216,178,105,.24); box-s
            so no other domain needs to be opened up.</p>
 
         <h3>What gets stored</h3>
-        <p>Only what people type into the form: name, phone number, flight day, time, airline and
-           airport, and an optional comment. Anyone with the link can read, add, and edit entries, so treat it the
+        <p>Only what people type into the form: name, phone number, the city they are traveling from,
+           flight day, time, airline and airport, and an optional comment. Anyone with the link can read, add, and edit entries, so treat it the
            way you would a shared paper list &mdash; put in a phone number only if you are happy for
            everyone on the list to see it.</p>
       </div>
@@ -569,6 +598,11 @@ tr.pick-row:focus-visible{ outline:none; background:rgba(216,178,105,.24); box-s
             <input type="tel" id="f_phone" name="phone" inputmode="numeric" autocomplete="tel" required
                    maxlength="24" placeholder="5551234567">
             <span class="hint">Digits only &mdash; at least 7.</span>
+          </div>
+          <div class="field full">
+            <label class="lbl" for="f_city">From City <span class="req">&#42;</span></label>
+            <select id="f_city" name="from_city" required></select>
+            <span class="hint">The city you are traveling from &mdash; used to match people going together.</span>
           </div>
         </div>
       </fieldset>
@@ -697,6 +731,8 @@ tr.pick-row:focus-visible{ outline:none; background:rgba(216,178,105,.24); box-s
   var FROM_DAYS = ["Motzei R”H", "Monday September 14", "Tuesday September 15", "Wednesday September 16"];
   var NEAR_WINDOW = 60; // minutes
 
+  var CITIES = ["Boro Park", "Monsey", "Lakewood"];
+
   // Airports handling international flights in the tri-state area and
   // Pennsylvania. Grouped by state; the value stored is the IATA code.
   var AIRPORTS = [
@@ -823,51 +859,51 @@ tr.pick-row:focus-visible{ outline:none; background:rgba(216,178,105,.24); box-s
      real exists. They live only in the browser — nothing is ever written
      to Supabase — and they disappear the moment the first real flight is
      saved, because the table only falls back to them when rows is empty.
-     [ name, phone, toDayIdx, toTime, toAmpm, toAirline, toAirport,
-       fromDayIdx, fromTime, fromAmpm, fromAirline, fromAirport, comments ] */
+     [ name, phone, fromCity, toDayIdx, toTime, toAmpm, toAirline, toAirport,
+       fromDayIdx, fromTime, fromAmpm, fromAirline, fromAirport, comments ]  */
   var SAMPLE_SOURCE = [
-    ["Avi Rosenberg",    "7185550142", 0, "9:30",  "AM", "El Al",  "JFK", 0,    "11:45", "PM", "El Al",  "JFK", "Two suitcases"],
-    ["Dovid Feldman",    "3475550198", 0, "9:30",  "AM", "El Al",  "JFK", 1,    "8:00",  "AM", "El Al",  "JFK", null],
-    ["Shimon Katz",      "8455550117", 0, "9:30",  "AM", "El Al",  "JFK", null, null,    null, null,     null,  "Needs a ride to the airport"],
-    ["Yaakov Brody",     "7325550163", 0, "10:00", "AM", "Delta",  "JFK", 1,    "8:45",  "AM", "Delta",  "JFK", null],
-    ["Eli Weiss",        "9175550129", 0, "11:15", "AM", "United", "EWR", 2,    "5:00",  "AM", "United", "EWR", "Booked with a stopover"],
-    ["Nosson Fried",     "7325550159", 0, "3:00",  "PM", "United", "EWR", 2,    "9:30",  "PM", "El Al",  "JFK", null],
-    ["Naftali Gross",    "8625550174", 0, "6:00",  "PM", "El Al",  "JFK", 3,    "1:30",  "PM", "El Al",  "JFK", null],
-    ["Binyomin Stern",   "7325550190", 1, "7:00",  "AM", "United", "EWR", 1,    "8:00",  "AM", "El Al",  "JFK", null],
-    ["Moshe Ackerman",   "7185550185", 1, "4:00",  "PM", "El Al",  "JFK", 0,    "11:45", "PM", "El Al",  "JFK", null],
-    ["Chaim Berkowitz",  "8455550136", 1, "4:00",  "PM", "El Al",  "JFK", 2,    "5:00",  "AM", "United", "EWR", null],
-    ["Yisroel Schwartz", "9175550171", 1, "4:00",  "PM", "El Al",  "JFK", 0,    "11:45", "PM", "El Al",  "EWR", "Two seats booked"],
-    ["Yitzchok Halpern", "3475550151", 1, "4:30",  "PM", "Delta",  "JFK", null, null,    null, null,     null,  null],
-    ["Shlomo Lieber",    "9175550108", 1, "10:30", "PM", "El Al",  "JFK", 3,    "6:00",  "AM", "Delta",  "JFK", null],
-    ["Tzvi Neuman",      "3475550179", 2, "8:45",  "AM", "El Al",  "JFK", 0,    "10:30", "PM", "El Al",  "JFK", null],
-    ["Aryeh Mandel",     "8625550143", 2, "1:15",  "PM", "Delta",  "JFK", 2,    "9:30",  "PM", "Delta",  "JFK", "Landing terminal 3"],
-    ["Dov Rothstein",    "8625550126", 2, "1:15",  "PM", "Delta",  "JFK", 1,    "11:30", "AM", "United", "EWR", null],
-    ["Yosef Klein",      "7185550167", 2, "2:00",  "PM", "Delta",  "JFK", null, null,    null, null,     null,  null],
-    ["Menachem Salzman", "8455550121", 2, "2:00",  "PM", "United", "EWR", 1,    "11:00", "AM", "United", "EWR", null],
-    ["Simcha Braun",     "7325550112", 2, "9:00",  "PM", "El Al",  "JFK", null, null,    null, null,     null,  "Flexible on the return"],
-    ["Sruli Kaufman",    "8455550188", 3, "6:30",  "AM", "United", "EWR", null, null,    null, null,     null,  null],
-    ["Yehuda Perlman",   "9175550154", 3, "11:00", "AM", "El Al",  "JFK", 3,    "1:30",  "PM", "El Al",  "JFK", null],
-    ["Zev Adler",        "8625550196", 3, "11:00", "AM", "El Al",  "JFK", 2,    "5:00",  "PM", "Delta",  "JFK", null],
-    ["Ari Teitelbaum",   "7185550194", 3, "11:30", "AM", "El Al",  "JFK", null, null,    null, null,     null,  "Might still change"],
-    ["Meir Landau",      "7185550133", 3, "11:45", "AM", "Delta",  "JFK", 1,    "8:45",  "AM", "Delta",  "JFK", "Sharing a car"],
-    ["Baruch Zilber",    "3475550145", 3, "8:00",  "PM", "El Al",  "JFK", 3,    "6:00",  "AM", "Delta",  "JFK", null]
+    ["Avi Rosenberg",    "7185550142", "Lakewood",      0, "9:30",  "AM", "El Al",  "JFK", 0,    "11:45", "PM", "El Al",  "JFK", "Two suitcases"],
+    ["Dovid Feldman",    "3475550198", "Lakewood",      0, "9:30",  "AM", "El Al",  "JFK", 1,    "8:00",  "AM", "El Al",  "JFK", null],
+    ["Shimon Katz",      "8455550117", "Monsey",        0, "9:30",  "AM", "El Al",  "JFK", null, null,    null, null,     null,  "Needs a ride to the airport"],
+    ["Yaakov Brody",     "7325550163", "Lakewood",      0, "10:00", "AM", "Delta",  "JFK", 1,    "8:45",  "AM", "Delta",  "JFK", null],
+    ["Eli Weiss",        "9175550129", "Monsey",        0, "11:15", "AM", "United", "EWR", 2,    "5:00",  "AM", "United", "EWR", "Booked with a stopover"],
+    ["Nosson Fried",     "7325550159", "Monsey",        0, "3:00",  "PM", "United", "EWR", 2,    "9:30",  "PM", "El Al",  "JFK", null],
+    ["Naftali Gross",    "8625550174", "Boro Park",     0, "6:00",  "PM", "El Al",  "JFK", 3,    "1:30",  "PM", "El Al",  "JFK", null],
+    ["Binyomin Stern",   "7325550190", "Monsey",        1, "7:00",  "AM", "United", "EWR", 1,    "8:00",  "AM", "El Al",  "JFK", null],
+    ["Moshe Ackerman",   "7185550185", "Boro Park",     1, "4:00",  "PM", "El Al",  "JFK", 0,    "11:45", "PM", "El Al",  "JFK", null],
+    ["Chaim Berkowitz",  "8455550136", "Boro Park",     1, "4:00",  "PM", "El Al",  "JFK", 2,    "5:00",  "AM", "United", "EWR", null],
+    ["Yisroel Schwartz", "9175550171", "Lakewood",      1, "4:00",  "PM", "El Al",  "JFK", 0,    "11:45", "PM", "El Al",  "EWR", "Two seats booked"],
+    ["Yitzchok Halpern", "3475550151", "Boro Park",     1, "4:30",  "PM", "Delta",  "JFK", null, null,    null, null,     null,  null],
+    ["Shlomo Lieber",    "9175550108", "Monsey",        1, "10:30", "PM", "El Al",  "JFK", 3,    "6:00",  "AM", "Delta",  "JFK", null],
+    ["Tzvi Neuman",      "3475550179", "Monsey",        2, "8:45",  "AM", "El Al",  "JFK", 0,    "10:30", "PM", "El Al",  "JFK", null],
+    ["Aryeh Mandel",     "8625550143", "Lakewood",      2, "1:15",  "PM", "Delta",  "JFK", 2,    "9:30",  "PM", "Delta",  "JFK", "Landing terminal 3"],
+    ["Dov Rothstein",    "8625550126", "Lakewood",      2, "1:15",  "PM", "Delta",  "JFK", 1,    "11:30", "AM", "United", "EWR", null],
+    ["Yosef Klein",      "7185550167", "Boro Park",     2, "2:00",  "PM", "Delta",  "JFK", null, null,    null, null,     null,  null],
+    ["Menachem Salzman", "8455550121", "Monsey",        2, "2:00",  "PM", "United", "EWR", 1,    "11:00", "AM", "United", "EWR", null],
+    ["Simcha Braun",     "7325550112", "Monsey",        2, "9:00",  "PM", "El Al",  "JFK", null, null,    null, null,     null,  "Flexible on the return"],
+    ["Sruli Kaufman",    "8455550188", "Monsey",        3, "6:30",  "AM", "United", "EWR", null, null,    null, null,     null,  null],
+    ["Yehuda Perlman",   "9175550154", "Boro Park",     3, "11:00", "AM", "El Al",  "JFK", 3,    "1:30",  "PM", "El Al",  "JFK", null],
+    ["Zev Adler",        "8625550196", "Boro Park",     3, "11:00", "AM", "El Al",  "JFK", 2,    "5:00",  "PM", "Delta",  "JFK", null],
+    ["Ari Teitelbaum",   "7185550194", "Monsey",        3, "11:30", "AM", "El Al",  "JFK", null, null,    null, null,     null,  "Might still change"],
+    ["Meir Landau",      "7185550133", "Lakewood",      3, "11:45", "AM", "Delta",  "JFK", 1,    "8:45",  "AM", "Delta",  "JFK", "Sharing a car"],
+    ["Baruch Zilber",    "3475550145", "Monsey",        3, "8:00",  "PM", "El Al",  "JFK", 3,    "6:00",  "AM", "Delta",  "JFK", null]
   ];
 
   var SAMPLE_ROWS = SAMPLE_SOURCE.map(function (s, i) {
-    var hasReturn = s[7] !== null;
+    var hasReturn = s[8] !== null;
     return {
       id: "sample-" + (i + 1),
       _sample: true,
-      name: s[0], phone: s[1],
-      to_day: TO_DAYS[s[2]], to_time: s[3], to_ampm: s[4],
-      to_minutes: toMinutes(s[3], s[4]), to_airline: s[5], to_airport: s[6],
-      from_day:     hasReturn ? FROM_DAYS[s[7]] : null,
-      from_time:    hasReturn ? s[8] : null,
-      from_ampm:    hasReturn ? s[9] : null,
-      from_minutes: hasReturn ? toMinutes(s[8], s[9]) : null,
-      from_airline: hasReturn ? s[10] : null,
-      from_airport: hasReturn ? s[11] : null,
-      comments: s[12]
+      name: s[0], phone: s[1], from_city: s[2],
+      to_day: TO_DAYS[s[3]], to_time: s[4], to_ampm: s[5],
+      to_minutes: toMinutes(s[4], s[5]), to_airline: s[6], to_airport: s[7],
+      from_day:     hasReturn ? FROM_DAYS[s[8]] : null,
+      from_time:    hasReturn ? s[9] : null,
+      from_ampm:    hasReturn ? s[10] : null,
+      from_minutes: hasReturn ? toMinutes(s[9], s[10]) : null,
+      from_airline: hasReturn ? s[11] : null,
+      from_airport: hasReturn ? s[12] : null,
+      comments: s[13]
     };
   });
 
@@ -944,14 +980,29 @@ tr.pick-row:focus-visible{ outline:none; background:rgba(216,178,105,.24); box-s
     return String(a.name || "").localeCompare(String(b.name || ""));
   }
 
-  // One leg of a trip as a table cell. `leg` is "to" or "from".
+  var DAY_ABBR = { Monday: "Mon", Tuesday: "Tue", Wednesday: "Wed", Thursday: "Thu",
+                   Friday: "Fri", Saturday: "Sat", Sunday: "Sun" };
+
+  // "Monday September 7" -> "Mon Sep 7". Leaves anything unrecognised
+  // (such as Motzei R"H) alone.
+  function shortDay(day) {
+    return String(day || "")
+      .replace(/^([A-Za-z]+)/, function (m) { return DAY_ABBR[m] || m; })
+      .replace(/September/, "Sep");
+  }
+
+  // One leg of a trip as a table cell. `leg` is "to" or "from". Both the
+  // full and the short day are rendered; CSS shows whichever fits.
   function flightCell(r, leg) {
     var day = r[leg + "_day"], time = r[leg + "_time"];
     if (!day || !time) return '<span class="empty-val">—</span>';
     var meta = time + " " + r[leg + "_ampm"] +
                (r[leg + "_airline"] ? " · " + r[leg + "_airline"] : "") +
                (r[leg + "_airport"] ? " · " + r[leg + "_airport"] : "");
-    return '<div class="flight-day">' + esc(day) + "</div>" +
+    return '<div class="flight-day">' +
+             '<span class="day-long">' + esc(day) + "</span>" +
+             '<span class="day-short">' + esc(shortDay(day)) + "</span>" +
+           "</div>" +
            '<div class="flight-meta">' + esc(meta) + "</div>";
   }
 
@@ -981,6 +1032,8 @@ tr.pick-row:focus-visible{ outline:none; background:rgba(216,178,105,.24); box-s
         '<td data-label="Name" class="name-cell">' + esc(r.name) + "</td>" +
         '<td data-label="Phone"><a class="phone" href="tel:' + esc(digits(r.phone)) + '">' +
           esc(formatPhone(r.phone)) + "</a></td>" +
+        '<td data-label="From City">' +
+          (r.from_city ? esc(r.from_city) : '<span class="empty-val">—</span>') + "</td>" +
         '<td data-label="Return">' + flightCell(r, "from") + "</td>" +
         '<td data-label="Comments" class="comment-cell">' +
           (r.comments ? esc(r.comments) : '<span class="empty-val">—</span>') + "</td>" +
@@ -1011,44 +1064,51 @@ tr.pick-row:focus-visible{ outline:none; background:rgba(216,178,105,.24); box-s
   fillSelect($("f_to_time"),   TIMES, "Choose a time…", true);
   fillSelect($("f_from_time"), TIMES, "Choose a time…", true);
 
-  // Airport is a fixed list — no free text — so the codes stay consistent
-  // and matching can rely on them.
+  // City and airport are fixed lists — no free text — so the stored values
+  // stay consistent and matching can rely on them.
+  function addOption(parent, value, text) {
+    var o = document.createElement("option");
+    o.value = value;
+    o.textContent = text;
+    parent.appendChild(o);
+    return o;
+  }
+
+  function fillCities(sel) {
+    sel.innerHTML = "";
+    addOption(sel, "", "Choose a city…");
+    CITIES.forEach(function (c) { addOption(sel, c, c); });
+  }
+
   function fillAirports(sel) {
     sel.innerHTML = "";
-    var blank = document.createElement("option");
-    blank.value = "";
-    blank.textContent = "Choose an airport…";
-    sel.appendChild(blank);
+    addOption(sel, "", "Choose an airport…");
     AIRPORTS.forEach(function (grp) {
       var og = document.createElement("optgroup");
       og.label = grp[0];
-      grp[1].forEach(function (a) {
-        var o = document.createElement("option");
-        o.value = a[0];
-        o.textContent = a[1];
-        og.appendChild(o);
-      });
+      grp[1].forEach(function (a) { addOption(og, a[0], a[1]); });
       sel.appendChild(og);
     });
   }
 
-  // Rebuilds the list, then selects `value`. A saved value that predates
-  // this list is kept as an extra option rather than silently discarded
-  // when someone opens that row to edit it.
-  function setAirport(id, value) {
+  // Rebuilds the list, then selects `value`. A saved value outside the list
+  // is kept as an extra option rather than silently discarded when someone
+  // opens that row to edit it.
+  function setFixedValue(id, value, fill) {
     var sel = $(id);
-    fillAirports(sel);
+    fill(sel);
     if (!value) { sel.value = ""; return; }
     sel.value = value;
     if (sel.value !== value) {
-      var o = document.createElement("option");
-      o.value = value;
-      o.textContent = value + " (already saved)";
-      sel.appendChild(o);
+      addOption(sel, value, value + " (already saved)");
       sel.value = value;
     }
   }
 
+  function setAirport(id, value) { setFixedValue(id, value, fillAirports); }
+  function setCity(id, value)    { setFixedValue(id, value, fillCities); }
+
+  fillCities($("f_city"));
   fillAirports($("f_to_airport"));
   fillAirports($("f_from_airport"));
 
@@ -1106,6 +1166,7 @@ tr.pick-row:focus-visible{ outline:none; background:rgba(216,178,105,.24); box-s
     if (r) {
       $("f_name").value = r.name || "";
       $("f_phone").value = r.phone || "";
+      setCity("f_city", r.from_city);
       $("f_to_day").value = r.to_day || "";
       setTimeControls("f_to_time", "f_to_time_custom", r.to_time);
       setRadio("to_ampm", r.to_ampm);
@@ -1120,6 +1181,7 @@ tr.pick-row:focus-visible{ outline:none; background:rgba(216,178,105,.24); box-s
     } else {
       setTimeControls("f_to_time", "f_to_time_custom", "");
       setTimeControls("f_from_time", "f_from_time_custom", "");
+      setCity("f_city", "");
       setAirport("f_to_airport", "");
       setAirport("f_from_airport", "");
     }
@@ -1154,6 +1216,9 @@ tr.pick-row:focus-visible{ outline:none; background:rgba(216,178,105,.24); box-s
 
     var phoneRaw = $("f_phone").value.trim();
     if (digits(phoneRaw).length < 7) return fail("Please enter a phone number with at least 7 digits.", "f_phone");
+
+    var fromCity = $("f_city").value.trim();
+    if (!fromCity) return fail("Please choose the city you are traveling from.", "f_city");
 
     var toDay = $("f_to_day").value;
     if (!toDay) return fail("Please choose a day for the flight to E”Y.", "f_to_day");
@@ -1190,6 +1255,7 @@ tr.pick-row:focus-visible{ outline:none; background:rgba(216,178,105,.24); box-s
     return {
       name: name,
       phone: phoneRaw,
+      from_city: fromCity,
       to_day: toDay,
       to_time: toTime,
       to_ampm: toAmpm,
@@ -1287,21 +1353,24 @@ tr.pick-row:focus-visible{ outline:none; background:rgba(216,178,105,.24); box-s
 
   // Everyone sharing this person's day on one leg, split into identical
   // times and times within the hour. The person themselves is excluded.
-  // true / false, or null when one side never recorded an airport.
-  function sameAirport(a, b) {
-    var x = String(a == null ? "" : a).trim().toUpperCase();
-    var y = String(b == null ? "" : b).trim().toUpperCase();
+  // true / false, or null when one side left the field blank.
+  function sameText(a, b) {
+    var x = String(a == null ? "" : a).trim().replace(/\s+/g, " ").toUpperCase();
+    var y = String(b == null ? "" : b).trim().replace(/\s+/g, " ").toUpperCase();
     if (!x || !y) return null;
     return x === y;
   }
 
-  // Airport rules differ by leg:
-  //   going out — a different airport is not a match at all, so those rows
-  //               are dropped from both lists;
-  //   coming back — a different airport is demoted out of Exact and shown
-  //               in the near list instead, flagged.
-  // A blank airport on either side is "unknown", not "different": the row
+  // Airport and departure city follow the same rule, which differs by leg:
+  //   going out — a mismatch on either one is not a match at all, so the
+  //               row is dropped from both lists;
+  //   coming back — a mismatch demotes the row out of Exact and into the
+  //               near list instead, flagged with what differs.
+  // A blank value on either side is "unknown", not "different": the row
   // still matches, and the line is flagged so the gap is visible.
+  //
+  // NOTE: from_city is per person, not per leg — never build its key from
+  // `leg`, or the return leg would look for a field that does not exist.
   function matchesFor(person, pool, leg) {
     var dayKey  = leg + "_day",
         minKey  = leg + "_minutes",
@@ -1316,17 +1385,22 @@ tr.pick-row:focus-visible{ outline:none; background:rgba(216,178,105,.24); box-s
       var gap = Math.abs(r[minKey] - person[minKey]);
       if (gap > NEAR_WINDOW) return;
 
-      var same = sameAirport(person[portKey], r[portKey]);
-      if (leg === "to" && same === false) return;
+      var samePort = sameText(person[portKey], r[portKey]);
+      var sameCity = sameText(person.from_city, r.from_city);
+      var mismatch = (samePort === false) || (sameCity === false);
+
+      if (leg === "to" && mismatch) return;
 
       var entry = {
         row: r,
         gap: gap,
-        otherPort: same === false,
-        unknownPort: same === null
+        otherPort:   samePort === false,
+        unknownPort: samePort === null,
+        otherCity:   sameCity === false,
+        unknownCity: sameCity === null
       };
 
-      if (gap === 0 && same !== false) out.exact.push(entry);
+      if (gap === 0 && !mismatch) out.exact.push(entry);
       else out.near.push(entry);
     });
 
@@ -1346,12 +1420,15 @@ tr.pick-row:focus-visible{ outline:none; background:rgba(216,178,105,.24); box-s
     var meta = r[leg + "_time"] + " " + r[leg + "_ampm"] +
                (r[leg + "_airline"] ? " · " + r[leg + "_airline"] : "") +
                (r[leg + "_airport"] ? " · " + r[leg + "_airport"] : "") +
+               (r.from_city ? " · from " + r.from_city : "") +
                " · " + formatPhone(r.phone);
 
     var tags = "";
     if (entry.gap) tags += '<span class="gap-tag">' + entry.gap + " min apart</span>";
     if (entry.otherPort) tags += '<span class="gap-tag alt">different airport</span>';
+    if (entry.otherCity) tags += '<span class="gap-tag alt">different city</span>';
     if (entry.unknownPort) tags += '<span class="gap-tag dim">airport not given</span>';
+    if (entry.unknownCity) tags += '<span class="gap-tag dim">city not given</span>';
 
     return '<div class="trav"><span class="t-name">' + esc(r.name) + "</span>" +
            '<span class="t-meta">' + esc(meta) + "</span>" +
@@ -1377,6 +1454,8 @@ tr.pick-row:focus-visible{ outline:none; background:rgba(216,178,105,.24); box-s
       '<td data-label="Flight">' + flightCell(r, "to") + "</td>" +
       '<td data-label="Name" class="name-cell">' + esc(r.name) + "</td>" +
       '<td data-label="Phone">' + esc(formatPhone(r.phone)) + "</td>" +
+      '<td data-label="From City">' +
+        (r.from_city ? esc(r.from_city) : '<span class="empty-val">—</span>') + "</td>" +
       '<td data-label="Return">' + flightCell(r, "from") + "</td>" +
       '<td data-label="Comments" class="comment-cell">' +
         (r.comments ? esc(r.comments) : '<span class="empty-val">—</span>') + "</td>" +
@@ -1389,7 +1468,7 @@ tr.pick-row:focus-visible{ outline:none; background:rgba(216,178,105,.24); box-s
     var q = pickFilter.trim().toLowerCase();
     if (q) {
       pool = pool.filter(function (r) {
-        return [r.name, r.phone, r.to_airline, r.to_airport, r.to_day,
+        return [r.name, r.phone, r.from_city, r.to_airline, r.to_airport, r.to_day,
                 r.from_airline, r.from_airport, r.from_day]
           .join(" ").toLowerCase().indexOf(q) !== -1;
       });
@@ -1401,6 +1480,7 @@ tr.pick-row:focus-visible{ outline:none; background:rgba(216,178,105,.24); box-s
     wrap.innerHTML = pool.length
       ? "<table class=\"pick\"><thead><tr>" +
           '<th scope="col">Flight</th><th scope="col">Name</th><th scope="col">Phone Number</th>' +
+          '<th scope="col">From City</th>' +
           '<th scope="col">Return Flight</th><th scope="col">Comments</th>' +
           '<th scope="col"><span class="sr-only">Choose</span></th>' +
         "</tr></thead><tbody>" + pool.map(pickerRow).join("") + "</tbody></table>"
@@ -1422,7 +1502,7 @@ tr.pick-row:focus-visible{ outline:none; background:rgba(216,178,105,.24); box-s
         : "") +
       '<div class="pick-tools">' +
         '<input type="text" id="pickSearch" autocomplete="off" ' +
-          'placeholder="Search by name, phone, airline, airport or day&hellip;" aria-label="Search travelers">' +
+          'placeholder="Search by name, phone, city, airline, airport or day&hellip;" aria-label="Search travelers">' +
         '<span class="pick-hint" id="pickHint"></span>' +
       "</div>" +
       '<div class="pick-wrap" id="pickWrap"></div>';
@@ -1466,6 +1546,8 @@ tr.pick-row:focus-visible{ outline:none; background:rgba(216,178,105,.24); box-s
 
     matchBody.innerHTML =
       '<div class="hero"><span class="h-name">' + who + "</span>" +
+        '<span class="h-meta">From <b>' +
+          (person.from_city ? esc(person.from_city) : "city not given") + "</b></span>" +
         '<span class="h-meta">To E&rdquo;Y: <b>' + esc(outLabel) + "</b>" + legExtras(person, "to") + "</span>" +
         '<span class="h-meta">From E&rdquo;Y: <b>' +
           (hasReturn ? esc(backLabel) : "not given") + "</b>" +
@@ -1473,24 +1555,24 @@ tr.pick-row:focus-visible{ outline:none; background:rgba(216,178,105,.24); box-s
       "</div>" +
 
       section("To E&rdquo;Y — Exact Matches", to.exact.length,
-        "Same day, same departure time and same airport as " + who + ".",
+        "Same day, same departure time, same airport and same city as " + who + ".",
         to.exact.length
           ? groupBlock(esc(outHead), to.exact.map(function (e) {
               return travLine(e, "to");
             }).join(""))
-          : '<p class="none">Nobody else leaves this airport at exactly this time.</p>') +
+          : '<p class="none">Nobody else leaves this airport at exactly this time from this city.</p>') +
 
       section("To E&rdquo;Y — Within 1 Hour", to.near.length,
-        "Same day and same airport, up to an hour from " + who +
-        ". The exact matches above are excluded, and other airports are left out entirely.",
+        "Same airport and same city, up to an hour from " + who +
+        ". The exact matches above are excluded; other airports and other cities are left out entirely.",
         to.near.length
           ? groupBlock(esc(outNearHead), to.near.map(function (e) {
               return travLine(e, "to");
             }).join(""))
-          : '<p class="none">Nobody else leaves this airport within an hour of this flight.</p>') +
+          : '<p class="none">Nobody else leaves this airport within an hour of this flight from this city.</p>') +
 
       section("From E&rdquo;Y — Exact Matches", hasReturn ? fr.exact.length : "—",
-        hasReturn ? "Same day, same return time and same airport as " + who + "."
+        hasReturn ? "Same day, same return time, same airport and same city as " + who + "."
                   : "No return flight on file.",
         !hasReturn
           ? '<p class="none">' + noReturn + "</p>"
@@ -1502,7 +1584,7 @@ tr.pick-row:focus-visible{ outline:none; background:rgba(216,178,105,.24); box-s
 
       section("From E&rdquo;Y — Not Exactly a Match", hasReturn ? fr.near.length : "—",
         hasReturn ? "Same day, up to an hour from " + who +
-                    " — plus anyone at the same time landing at a different airport."
+                    " — plus anyone at the same time whose airport or city differs."
                   : "No return flight on file.",
         !hasReturn
           ? '<p class="none">' + noReturn + "</p>"

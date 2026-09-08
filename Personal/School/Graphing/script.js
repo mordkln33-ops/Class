@@ -333,6 +333,18 @@ function renderPointsOnGraph() {
    8. Rendering — HTML overlay (delete button + hover read-out)
    ------------------------------------------------------------ */
 
+/**
+ * How many screen pixels one css pixel of the overlay covers. It is 1 normally
+ * and 2 while the graph is magnified, because the whole panel is scaled — screen
+ * distances have to be divided by it before they are used as css positions.
+ */
+function overlayScale() {
+  const w = overlay.clientWidth;
+  if (!w) return 1;
+  const k = overlay.getBoundingClientRect().width / w;
+  return k > 0.01 ? k : 1;
+}
+
 function svgToOverlay(sx, sy) {
   const ctm = svg.getScreenCTM();
   if (!ctm) return { x: 0, y: 0 };
@@ -340,7 +352,8 @@ function svgToOverlay(sx, sy) {
   pt.x = sx; pt.y = sy;
   const scr = pt.matrixTransform(ctm);
   const box = overlay.getBoundingClientRect();
-  return { x: scr.x - box.left, y: scr.y - box.top };
+  const k = overlayScale();
+  return { x: (scr.x - box.left) / k, y: (scr.y - box.top) / k };
 }
 
 function initOverlay() {
@@ -832,7 +845,7 @@ svg.addEventListener('click', ev => {
 });
 
 svg.addEventListener('pointermove', ev => {
-  if (drag || travel) return;
+  if (drag || travel || windowDragging) return;
   const g = eventToGraph(ev);
 
   let best = null;
@@ -864,13 +877,14 @@ svg.addEventListener('pointermove', ev => {
   }
 
   const box = overlay.getBoundingClientRect();
+  const k = overlayScale();
   const changedLine = !hover || hover.lineId !== line.id;
   const changedStep = !hover || hover.step !== step;
 
   hover = {
     lineId: line.id, x: hx, y: hy, step,
-    cursorX: ev.clientX - box.left,
-    cursorY: ev.clientY - box.top
+    cursorX: (ev.clientX - box.left) / k,
+    cursorY: (ev.clientY - box.top) / k
   };
 
   if (changedLine) ensureCardVisible(line.id);
@@ -1403,6 +1417,7 @@ document.getElementById('helpBtn').addEventListener('click', () => {
       <li><strong>Move a point.</strong> Drag it — it snaps to the nearest corner and the equation and table update instantly.</li>
       <li><strong>Delete a point.</strong> Click it once, then press <em>Delete point</em>. (Dragging never triggers delete.) You can also click any pair in the list at the bottom left to edit or delete it.</li>
       <li><strong>Type an equation.</strong> Bottom right, enter something like <code>y = -3x + 2</code> and graph it directly.</li>
+      <li><strong>Make a section bigger.</strong> Press the 🔍 button in any section's heading and it pops out as a movable window at double size — handy on a projector. Drag it by its heading, click it to bring it forward, and press the same button to put it back. You can magnify more than one section at a time, and everything still works while it is magnified.</li>
       <li><strong>Type an ordered pair.</strong> Under that, enter <code>(3, 4)</code> and watch a dot travel from the origin: first <em>across</em> to x = 3, then <em>up</em> to y = 4. That order — x, then y — is what an ordered pair means.</li>
     </ol>`,
     actions: [{ label: 'Got it', cls: 'btn-primary' }]
@@ -1411,13 +1426,184 @@ document.getElementById('helpBtn').addEventListener('click', () => {
 
 let resizeTimer = null;
 window.addEventListener('resize', () => {
+  layoutZoomWindows();
   applyPageOffset();
   clearTimeout(resizeTimer);
   resizeTimer = setTimeout(() => renderOverlay(true), 90);
 });
 
+/*
+  Anything that is positioned from a measured size has to be redone whenever a
+  panel changes size — which now happens on magnify, not just on window resize.
+*/
+if (window.ResizeObserver) {
+  new ResizeObserver(() => applyPageOffset()).observe(cardsViewport);
+  new ResizeObserver(() => { if (actionLayer) renderOverlay(true); })
+    .observe(document.getElementById('graphStage'));
+}
+
 /* ------------------------------------------------------------
-   18. Start
+   18. Magnify a section into a movable window
+   ------------------------------------------------------------ */
+
+const ZOOM_FACTOR = 2;     // must match transform: scale() in styles.css
+const ZOOM_MARGIN = 12;    // keep this much clear of the screen edges
+const ZOOM_KEEP = 110;     // px of the window that must stay on screen
+
+/** panel element -> { ghost, left, top, visW, visH } */
+const zoomWindows = new Map();
+let zoomZ = 40;            // above the header (5), below the modal (100)
+let windowDragging = false;// a window is being moved: the graph ignores hovers
+
+/** The class that pins a panel to its grid cell, e.g. "panel-graph". */
+function placementClass(panel) {
+  return [...panel.classList].find(c => c.startsWith('panel-')) || '';
+}
+
+function makeGhost(panel) {
+  const ghost = document.createElement('div');
+  ghost.className = 'panel-ghost ' + placementClass(panel);
+  const title = panel.querySelector('h2');
+  ghost.innerHTML = `<div>
+      <div class="ghost-icon" aria-hidden="true">🔍</div>
+      <p class="ghost-text"><strong>${title ? title.textContent : 'This section'}</strong><br>
+      is open in a magnified window</p>
+    </div>`;
+  return ghost;
+}
+
+/** Size and place one magnified window, measuring the gap it left behind. */
+function placeZoomWindow(panel, state, opts) {
+  const base = state.ghost.getBoundingClientRect();
+  const vw = window.innerWidth, vh = window.innerHeight;
+  const maxW = Math.max(160, vw - ZOOM_MARGIN * 2);
+  const maxH = Math.max(120, vh - ZOOM_MARGIN * 2);
+
+  // Twice the size the panel has in the grid. If that will not fit on screen,
+  // both sides shrink by the same amount so the window keeps the panel's shape
+  // — the contents are still drawn at 2x, there is simply less room for them.
+  const k = Math.min(ZOOM_FACTOR, maxW / base.width, maxH / base.height);
+  state.visW = base.width * k;
+  state.visH = base.height * k;
+  panel.style.width = (state.visW / ZOOM_FACTOR) + 'px';
+  panel.style.height = (state.visH / ZOOM_FACTOR) + 'px';
+
+  if (opts && opts.center) {
+    // open centred on the spot the panel came from, nudged so stacked
+    // windows do not land exactly on top of each other
+    const nudge = (zoomWindows.size - 1) * 26;
+    state.left = base.left + base.width / 2 - state.visW / 2 + nudge;
+    state.top = base.top + base.height / 2 - state.visH / 2 + nudge;
+  }
+  state.left = clamp(state.left, ZOOM_MARGIN, Math.max(ZOOM_MARGIN, vw - state.visW - ZOOM_MARGIN));
+  state.top = clamp(state.top, ZOOM_MARGIN, Math.max(ZOOM_MARGIN, vh - state.visH - ZOOM_MARGIN));
+  panel.style.left = state.left + 'px';
+  panel.style.top = state.top + 'px';
+}
+
+function layoutZoomWindows() {
+  zoomWindows.forEach((state, panel) => placeZoomWindow(panel, state));
+}
+
+/** Put a window in front, renumbering now and then so it stays under the modal. */
+function raiseZoom(panel) {
+  if (zoomZ > 90) {
+    [...zoomWindows.keys()]
+      .sort((a, b) => (+a.style.zIndex || 0) - (+b.style.zIndex || 0))
+      .forEach((p, i) => { p.style.zIndex = 40 + i; });
+    zoomZ = 40 + zoomWindows.size;
+  }
+  panel.style.zIndex = ++zoomZ;
+}
+
+function setZoomButton(panel, on) {
+  const btn = panel.querySelector('[data-zoom]');
+  if (!btn) return;
+  btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+  const label = on ? 'Return this section to the page' : 'Magnify this section';
+  btn.title = label;
+  btn.setAttribute('aria-label', label);
+}
+
+function openZoom(panel) {
+  if (zoomWindows.has(panel)) return;
+  const ghost = makeGhost(panel);
+  panel.parentNode.insertBefore(ghost, panel);
+
+  const state = { ghost, left: 0, top: 0, visW: 0, visH: 0 };
+  zoomWindows.set(panel, state);
+  panel.classList.add('is-zoomed');
+  raiseZoom(panel);
+  placeZoomWindow(panel, state, { center: true });
+  setZoomButton(panel, true);
+}
+
+function closeZoom(panel) {
+  const state = zoomWindows.get(panel);
+  if (!state) return;
+  zoomWindows.delete(panel);
+  state.ghost.remove();
+  panel.classList.remove('is-zoomed', 'is-dragging');
+  panel.style.width = panel.style.height = '';
+  panel.style.left = panel.style.top = panel.style.zIndex = '';
+  setZoomButton(panel, false);
+  applyPageOffset();
+  renderOverlay(true);
+}
+
+document.querySelectorAll('[data-zoom]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const panel = btn.closest('.panel');
+    if (!panel) return;
+    if (zoomWindows.has(panel)) closeZoom(panel);
+    else openZoom(panel);
+  });
+});
+
+/* ---- click to bring forward, drag the heading to move ---- */
+
+function startWindowDrag(panel, state, ev) {
+  ev.preventDefault();
+  const startX = ev.clientX, startY = ev.clientY;
+  const fromLeft = state.left, fromTop = state.top;
+  panel.classList.add('is-dragging');
+  windowDragging = true;
+
+  const move = e => {
+    const vw = window.innerWidth, vh = window.innerHeight;
+    state.left = clamp(fromLeft + e.clientX - startX, ZOOM_KEEP - state.visW, vw - ZOOM_KEEP);
+    state.top = clamp(fromTop + e.clientY - startY, 0, vh - 40);
+    panel.style.left = state.left + 'px';
+    panel.style.top = state.top + 'px';
+  };
+  const end = () => {
+    window.removeEventListener('pointermove', move);
+    window.removeEventListener('pointerup', end);
+    window.removeEventListener('pointercancel', end);
+    panel.classList.remove('is-dragging');
+    windowDragging = false;
+  };
+  window.addEventListener('pointermove', move);
+  window.addEventListener('pointerup', end);
+  window.addEventListener('pointercancel', end);
+}
+
+// Capture phase: the window comes forward even when the click is meant for a
+// point, a chip or a button inside it.
+document.addEventListener('pointerdown', ev => {
+  const panel = ev.target.closest && ev.target.closest('.panel.is-zoomed');
+  if (!panel) return;
+  const state = zoomWindows.get(panel);
+  if (!state) return;
+
+  raiseZoom(panel);
+  if (ev.button !== 0) return;
+  if (!ev.target.closest('.panel-head') || ev.target.closest('button')) return;
+  startWindowDrag(panel, state, ev);
+}, true);
+
+/* ------------------------------------------------------------
+   19. Start
    ------------------------------------------------------------ */
 
 buildGraph();

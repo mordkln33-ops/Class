@@ -93,7 +93,6 @@
      ========================================================== */
 
   function gcd(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) { var t = b; b = a % b; a = t; } return a || 1; }
-  function lcm(a, b) { return a / gcd(a, b) * b; }
 
   function fracText(n, d) { return n + '/' + d; }
 
@@ -127,23 +126,7 @@
     return best;
   }
 
-  /* When a sum runs past one whole there are more squares than
-     the denominator. Columns still come from a divisor of the
-     denominator, so "one whole" ends on a clean row break and
-     the extra squares carry on underneath. */
-  function colsForWhole(den, total, w, h) {
-    var best = 1, bestScore = Infinity;
-    for (var c = 1; c <= den; c++) {
-      if (den % c !== 0) continue;
-      var r = Math.ceil(total / c);
-      var score = Math.abs(Math.log((w / c) / (h / r)));
-      if (score < bestScore) { bestScore = score; best = c; }
-    }
-    return best;
-  }
-
-  /* cells: [{ color, text, empty, extra }] ; opts.cols forces a width,
-     opts.whole shapes the grid around that many squares            */
+  /* cells: [{ color, text, empty, quiet }] ; opts.cols forces a width */
   function drawGrid(host, cells, opts) {
     opts = opts || {};
     host._cells = cells;
@@ -156,7 +139,7 @@
     var W = host.clientWidth, H = host.clientHeight;
     if (W < 10 || H < 10) return;
 
-    var cols = opts.cols || (opts.whole ? colsForWhole(opts.whole, n, W, H) : bestCols(n, W, H));
+    var cols = opts.cols || bestCols(n, W, H);
     var rows = Math.ceil(n / cols);
 
     var gap = 3, pad = 3;
@@ -180,7 +163,6 @@
     cells.forEach(function (c, idx) {
       var el = document.createElement('div');
       el.className = 'cell' + (c.empty ? ' cell-empty' : '') + (c.quiet ? ' is-quiet' : '');
-      if (c.extra) el.className += ' is-extra';
       if (c.color) el.style.background = css(c.color);
       el.style.fontSize = fs.toFixed(1) + 'px';
       el.style.animationDelay = Math.min(idx * 6, 320) + 'ms';
@@ -425,7 +407,18 @@
   var pickOpSign = document.getElementById('pickOpSign');
   var previewBox = document.getElementById('maniPreview');
   var opButtons = Array.prototype.slice.call(document.querySelectorAll('.op-btn'));
-  var currentOp = 'add';
+  var addModeBlock = document.getElementById('addModeBlock');
+  var addModeInputs = Array.prototype.slice.call(document.querySelectorAll('input[name="addMode"]'));
+  var computeBtn = document.getElementById('computeBtn');
+  var computeHint = document.getElementById('computeHint');
+
+  var currentOp = 'add';   /* which big button: 'add' or 'multiply' */
+  var addMode = null;      /* 'or' or 'and' — must be chosen before Add can run */
+
+  /* 'or' | 'and' | 'multiply' */
+  function effectiveOp() { return currentOp === 'add' ? addMode : 'multiply'; }
+
+  var OP_WORD = { or: 'or', and: 'and', multiply: '×' };
 
   function fillPicker(select, side) {
     var sp = state[side];
@@ -450,7 +443,14 @@
     btn.addEventListener('click', function () {
       currentOp = btn.dataset.op;
       opButtons.forEach(function (b) { b.classList.toggle('is-on', b === btn); });
-      pickOpSign.textContent = currentOp === 'add' ? '+' : '×';
+      addModeBlock.hidden = currentOp !== 'add';
+      updatePreview();
+    });
+  });
+
+  addModeInputs.forEach(function (input) {
+    input.addEventListener('change', function () {
+      if (input.checked) addMode = input.value;
       updatePreview();
     });
   });
@@ -464,49 +464,88 @@
     return { a: a, b: b, dA: state.A.den, dB: state.B.den };
   }
 
-  /* The math behind both operations, shared by the preview and
-     the full-screen result.                                   */
+  /* Every operation is read off one joint sample space: Space A
+     across, Space B down, dA x dB equally likely squares. Because
+     the two spaces are independent experiments, that scenario is
+     what the rules of probability actually describe — so nothing
+     here is plain fraction addition.
+
+         P(A and B) = P(A) x P(B)              the overlap
+         P(A or B)  = P(A) + P(B) - P(A and B) the overlap counted once
+
+     Counted in squares: onlyA + onlyB + both == the union.       */
   function computeResult() {
     var s = selection();
-    var sign = currentOp === 'add' ? '+' : '×';
+    var op = effectiveOp();
     var out = {
-      op: currentOp, sign: sign, a: s.a, b: s.b, dA: s.dA, dB: s.dB,
+      op: op, word: OP_WORD[op] || '', a: s.a, b: s.b, dA: s.dA, dB: s.dB,
       mix: blend(s.a.color, s.b.color),
       label: s.a.label + ', ' + s.b.label
     };
 
-    if (currentOp === 'add') {
-      out.den = lcm(s.dA, s.dB);
-      out.nA = s.a.num * (out.den / s.dA);
-      out.nB = s.b.num * (out.den / s.dB);
-      out.num = out.nA + out.nB;
-      out.overflow = out.num > out.den;
-    } else {
-      out.den = s.dA * s.dB;
-      out.num = s.a.num * s.b.num;
-      out.overflow = false;
-    }
+    out.den   = s.dA * s.dB;                        /* every joint outcome */
+    out.both  = s.a.num * s.b.num;                  /* A happens and B happens */
+    out.onlyA = s.a.num * (s.dB - s.b.num);         /* A happens, B does not  */
+    out.onlyB = s.b.num * (s.dA - s.a.num);         /* B happens, A does not  */
+    out.union = out.onlyA + out.onlyB + out.both;
+
+    out.num = (op === 'or') ? out.union : out.both;
     out.simple = simplified(out.num, out.den);
     return out;
   }
 
+  /* The working, spelled out in the same words a teacher would use. */
+  function explain(r) {
+    if (r.op === 'or') {
+      return 'P(' + r.a.label + ' or ' + r.b.label + ') = P(' + r.a.label + ') + P(' + r.b.label +
+        ') − P(both) = ' + fracText(r.a.num, r.dA) + ' + ' + fracText(r.b.num, r.dB) + ' − ' +
+        fracText(r.both, r.den) + ' = ' + fracText(r.num, r.den) + '. The ' + r.both +
+        ' overlapping squares get counted once, not twice.';
+    }
+    if (r.op === 'and') {
+      return 'P(' + r.a.label + ' and ' + r.b.label + ') = P(' + r.a.label + ') × P(' + r.b.label +
+        ') = ' + fracText(r.a.num, r.dA) + ' × ' + fracText(r.b.num, r.dB) + ' = ' +
+        fracText(r.num, r.den) + '. Independent events, so the chances multiply.';
+    }
+    return 'Area model: ' + r.dA + ' columns for Space A, ' + r.dB + ' rows for Space B — ' +
+      r.den + ' equally likely squares, ' + r.num + ' of them in both strips.';
+  }
+
+  /* One scenario, two independent experiments: dA x dB squares. */
+  function scenarioNote(r) {
+    return 'Space A and Space B are independent, so pairing them gives ' + r.dA + ' × ' + r.dB +
+      ' = ' + r.den + ' equally likely squares.';
+  }
+
   function updatePreview() {
-    var r = computeResult();
+    var ready = effectiveOp() !== null;
+    computeBtn.disabled = !ready;
+    computeHint.hidden = ready;
     previewBox.innerHTML = '';
 
+    /* Add needs its or/and choice before there is anything to show. */
+    if (!ready) {
+      pickOpSign.textContent = '?';
+      previewBox.appendChild(plain('Choose ', 'prev-ask'));
+      previewBox.appendChild(plain('OR', 'prev-word'));
+      previewBox.appendChild(plain(' or ', 'prev-ask'));
+      previewBox.appendChild(plain('AND', 'prev-word'));
+      previewBox.appendChild(plain(' above to see the result.', 'prev-ask'));
+      return;
+    }
+
+    var r = computeResult();
+    pickOpSign.textContent = r.word;
+
     previewBox.appendChild(term(r.a.label + ' ' + fracText(r.a.num, r.dA), r.a.color));
-    previewBox.appendChild(plain(' ' + r.sign + ' ', 'eq-op'));
+    previewBox.appendChild(plain(r.word, 'eq-op eq-word'));
     previewBox.appendChild(term(r.b.label + ' ' + fracText(r.b.num, r.dB), r.b.color));
-    previewBox.appendChild(plain(' = ', 'eq-eq'));
+    previewBox.appendChild(plain('=', 'eq-eq'));
     previewBox.appendChild(term(fracText(r.num, r.den), r.mix));
 
     var sub = document.createElement('span');
     sub.className = 'prev-sub';
-    sub.textContent = r.op === 'add'
-      ? (r.dA === r.dB
-          ? 'Same denominator already — the squares just join together.'
-          : 'Rewritten over a common denominator of ' + r.den + ': ' + fracText(r.nA, r.den) + ' + ' + fracText(r.nB, r.den) + '.')
-      : 'Area model: ' + r.dA + ' columns for Space A, ' + r.dB + ' rows for Space B.';
+    sub.textContent = explain(r);
     previewBox.appendChild(sub);
   }
 
@@ -529,11 +568,12 @@
      ========================================================== */
 
   var resultTitle = document.getElementById('resultTitle');
-  var resultWarn = document.getElementById('resultWarn');
+  var resultNote = document.getElementById('resultNote');
   var resultGridArea = document.getElementById('resultGridArea');
   var resultLegend = document.getElementById('resultLegend');
 
-  document.getElementById('computeBtn').addEventListener('click', function () {
+  computeBtn.addEventListener('click', function () {
+    if (computeBtn.disabled) return;
     showResult(computeResult());
   });
 
@@ -546,7 +586,7 @@
     /* ---- equation headline ---- */
     resultTitle.innerHTML = '';
     resultTitle.appendChild(term(r.a.label + ' ' + fracText(r.a.num, r.dA), r.a.color));
-    resultTitle.appendChild(plain(r.sign, 'eq-op'));
+    resultTitle.appendChild(plain(r.word, 'eq-op eq-word'));
     resultTitle.appendChild(term(r.b.label + ' ' + fracText(r.b.num, r.dB), r.b.color));
     resultTitle.appendChild(plain('=', 'eq-eq'));
     resultTitle.appendChild(term(r.label + ' ' + fracText(r.num, r.den), r.mix));
@@ -556,57 +596,63 @@
     extra.textContent = (r.simple.changed ? '= ' + fracText(r.simple.n, r.simple.d) + '  ' : '') + '= ' + asPercent(r.num, r.den);
     resultTitle.appendChild(extra);
 
-    /* ---- warning when a sum runs past one whole ---- */
-    if (r.overflow) {
-      resultWarn.textContent =
-        'That sum is more than one whole (' + fracText(r.num, r.den) + '). Two outcomes of the same ' +
-        'experiment can never add past 1 — these came from different experiments. The first ' + r.den +
-        ' squares are one whole; the gold-outlined ones are the overflow.';
-      resultWarn.hidden = false;
-    } else {
-      resultWarn.hidden = true;
-    }
+    /* ---- the scenario, then the working ---- */
+    resultNote.textContent = scenarioNote(r) + ' ' + explain(r);
 
-    /* ---- the grid ---- */
+    /* ---- the grid: one joint sample space, Space A across and
+            Space B down. A square is painted in full when it counts
+            toward the answer, washed out when it does not.        */
     var cells = [];
-    var opts = {};
+    var opts = { cols: r.dA };
+    var union = (r.op === 'or');
 
-    if (r.op === 'add') {
-      var total = Math.max(r.den, r.num);
-      opts.whole = r.den;
-      for (var i = 0; i < total; i++) {
-        if (i < r.num) {
-          cells.push({ color: r.mix, text: r.label, extra: i >= r.den });
+    for (var j = 0; j < r.dB; j++) {
+      for (var k = 0; k < r.dA; k++) {
+        var inA = k < r.a.num;
+        var inB = j < r.b.num;
+
+        if (inA && inB) {
+          /* both happened — the blend, carrying both labels */
+          cells.push({ color: r.mix, text: r.label });
+        } else if (inA) {
+          cells.push(union
+            ? { color: r.a.color, text: r.a.label }
+            : { color: tint(r.a.color), text: r.a.label, quiet: true });
+        } else if (inB) {
+          cells.push(union
+            ? { color: r.b.color, text: r.b.label }
+            : { color: tint(r.b.color), text: r.b.label, quiet: true });
         } else {
           cells.push({ empty: true, text: '' });
-        }
-      }
-    } else {
-      opts.cols = r.dA;
-      for (var j = 0; j < r.dB; j++) {
-        for (var k = 0; k < r.dA; k++) {
-          var inA = k < r.a.num;
-          var inB = j < r.b.num;
-          if (inA && inB) cells.push({ color: r.mix, text: r.label });
-          else if (inA) cells.push({ color: tint(r.a.color), text: r.a.label, quiet: true });
-          else if (inB) cells.push({ color: tint(r.b.color), text: r.b.label, quiet: true });
-          else cells.push({ empty: true, text: '' });
         }
       }
     }
 
     /* ---- legend ---- */
     resultLegend.innerHTML = '';
-    resultLegend.appendChild(chip(r.a.label + ' ' + fracText(r.a.num, r.dA), r.a.color));
-    resultLegend.appendChild(mathSign(r.sign));
-    resultLegend.appendChild(chip(r.b.label + ' ' + fracText(r.b.num, r.dB), r.b.color));
-    resultLegend.appendChild(mathSign('='));
-    resultLegend.appendChild(chip(r.label + ' ' + fracText(r.num, r.den), r.mix));
+    if (r.op === 'or') {
+      /* the union split into three pieces that do not overlap —
+         those DO add up, and they add up to the answer            */
+      resultLegend.appendChild(chip(r.a.label + ' only ' + fracText(r.onlyA, r.den), r.a.color));
+      resultLegend.appendChild(mathSign('+'));
+      resultLegend.appendChild(chip(r.b.label + ' only ' + fracText(r.onlyB, r.den), r.b.color));
+      resultLegend.appendChild(mathSign('+'));
+      resultLegend.appendChild(chip(r.label + ' ' + fracText(r.both, r.den), r.mix));
+      resultLegend.appendChild(mathSign('='));
+      resultLegend.appendChild(plain(fracText(r.num, r.den), 'legend-total'));
+    } else {
+      resultLegend.appendChild(chip(r.a.label + ' ' + fracText(r.a.num, r.dA), r.a.color));
+      resultLegend.appendChild(mathSign(r.word));
+      resultLegend.appendChild(chip(r.b.label + ' ' + fracText(r.b.num, r.dB), r.b.color));
+      resultLegend.appendChild(mathSign('='));
+      resultLegend.appendChild(chip(r.label + ' ' + fracText(r.num, r.den), r.mix));
+    }
 
+    /* unhide first: reading clientWidth in drawGrid forces the
+       layout, so the grid area already has its real size here */
     open(resultOverlay);
     close(maniOverlay);
-    /* draw once the overlay actually has a size */
-    requestAnimationFrame(function () { drawGrid(resultGridArea, cells, opts); });
+    drawGrid(resultGridArea, cells, opts);
   }
 
   function chip(text, color) {

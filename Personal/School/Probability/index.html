@@ -152,13 +152,44 @@
           <button class="op-btn is-on" type="button" data-op="add">
             <span class="op-sign" aria-hidden="true">+</span>
             <span class="op-name">Add</span>
-            <span class="op-note">Chance of <em>this or that</em></span>
+            <span class="op-note">Combine <em>two independent events</em></span>
           </button>
           <button class="op-btn" type="button" data-op="multiply">
             <span class="op-sign" aria-hidden="true">&times;</span>
             <span class="op-name">Multiply</span>
-            <span class="op-note">Chance of <em>this and then that</em></span>
+            <span class="op-note">The area model for <em>P(A) &times; P(B)</em></span>
           </button>
+        </div>
+
+        <!-- mandatory for Add: no default, nothing computes until one is ticked -->
+        <div class="add-mode" id="addModeBlock">
+          <p class="add-mode-cap">
+            Tick one <span class="req-tag">Required</span>
+          </p>
+          <div class="add-mode-row">
+            <label class="mode-opt">
+              <input type="radio" name="addMode" value="or">
+              <span class="mode-box">
+                <span class="mode-tick" aria-hidden="true"></span>
+                <span class="mode-text">
+                  <span class="mode-word">OR</span>
+                  <span class="mode-note">Either one happens &mdash; or both do</span>
+                  <span class="mode-rule">P(A) + P(B) &minus; P(A and B)</span>
+                </span>
+              </span>
+            </label>
+            <label class="mode-opt">
+              <input type="radio" name="addMode" value="and">
+              <span class="mode-box">
+                <span class="mode-tick" aria-hidden="true"></span>
+                <span class="mode-text">
+                  <span class="mode-word">AND</span>
+                  <span class="mode-note">Both happen in the same scenario</span>
+                  <span class="mode-rule">P(A) &times; P(B)</span>
+                </span>
+              </span>
+            </label>
+          </div>
         </div>
       </fieldset>
 
@@ -181,8 +212,9 @@
     </div>
 
     <div class="modal-foot">
+      <span class="foot-hint" id="computeHint">Tick <strong>OR</strong> or <strong>AND</strong> first</span>
       <button class="btn btn-ghost" type="button" data-close>Cancel</button>
-      <button class="btn btn-primary btn-lg" id="computeBtn" type="button">Show the result</button>
+      <button class="btn btn-primary btn-lg" id="computeBtn" type="button" disabled>Show the result</button>
     </div>
   </div>
 </div>
@@ -198,7 +230,7 @@
       </div>
     </div>
 
-    <p class="result-warn" id="resultWarn" hidden></p>
+    <p class="result-note" id="resultNote"></p>
 
     <div class="grid-area result-grid-area" id="resultGridArea"></div>
 
@@ -218,8 +250,9 @@
         <li><strong>Type one fraction.</strong> The denominator copies to the other fraction, and the second numerator fills in as the complement &mdash; the two chances always total one whole.</li>
         <li><strong>Name both outcomes</strong> and press <em>Build grid</em>. Each square is one equally likely result, painted in one of two contrasting colors.</li>
         <li><strong>Do it again on the other side</strong> for a second experiment.</li>
-        <li><strong>Press Manipulate.</strong> <em>Add</em> combines two outcomes into one region on a common denominator. <em>Multiply</em> draws an area model &mdash; Space&nbsp;A across, Space&nbsp;B down &mdash; and the overlap is the answer.</li>
-        <li><strong>Read the blend.</strong> The result region is the two colors mixed, carrying both labels separated by a comma.</li>
+        <li><strong>Press Manipulate</strong> and pick an operation. <em>Add</em> makes you tick <strong>OR</strong> or <strong>AND</strong> &mdash; there is no default, because the two answer different questions. <em>Multiply</em> shows the area model on its own.</li>
+        <li><strong>Every result is one scenario.</strong> The two spaces are independent experiments, so pairing them gives a grid of Space&nbsp;A across by Space&nbsp;B down &mdash; every square equally likely. <strong>AND</strong> counts the overlap; <strong>OR</strong> counts every square where either happens, with the overlap counted once. The chances are never just added as fractions.</li>
+        <li><strong>Read the blend.</strong> Squares where both events happen are the two colors mixed, carrying both labels separated by a comma. Squares that do not count toward the answer are washed out.</li>
       </ol>
       <p class="help-tip">Colors are re-rolled every time you build, and are always kept pale so the dark labels stay readable on a projector.</p>
     </div>

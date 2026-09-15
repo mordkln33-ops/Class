@@ -12,18 +12,27 @@
 const MIN = -10;              // smallest x / y shown
 const MAX = 10;               // largest x / y shown
 const UNIT = 30;              // svg units per 1 graph unit
-const PAD = 44;               // room around the plot for numbers
+const PAD = 50;               // room around the plot for numbers and axis names
 const SIZE = (MAX - MIN) * UNIT + PAD * 2;
 const OX = PAD + (0 - MIN) * UNIT;   // svg x of the origin
 const OY = PAD + (MAX - 0) * UNIT;   // svg y of the origin
 const NS = 'http://www.w3.org/2000/svg';
 const CARD_GAP = 14;          // must match --card-gap in styles.css
-const HOVER_TOL = 12;         // px (svg units) tolerance for hovering a line
+const HOVER_TOL = 14;         // px (svg units) tolerance for hovering a line
 
+/*
+  Line colours, in the order they are handed out. Every one is a dark shade
+  measuring at least 6.5:1 against the white plane, because a projector lifts
+  the whole image toward grey and the usual mid-tone amber / lime / cyan drop
+  to about 3:1 and stop reading as distinct lines. Consecutive entries are far
+  apart in hue so two lines drawn one after the other never look alike.
+*/
 const COLORS = [
-  '#2563eb', '#e11d48', '#0d9488', '#d97706',
-  '#7c3aed', '#0891b2', '#65a30d', '#c026d3'
+  '#1d4ed8', '#9f1239', '#9a3412', '#115e59',
+  '#5b21b6', '#3f6212', '#86198f', '#155e75'
 ];
+
+const INK = '#0b1220';        // colour of a point that belongs to no line
 
 const toPx = x => OX + x * UNIT;          // graph x -> svg x
 const toPy = y => OY - y * UNIT;          // graph y -> svg y
@@ -153,9 +162,9 @@ function buildGraph() {
 
   const marker = svgEl('marker', {
     id: 'arrowHead', viewBox: '0 0 10 10', refX: 9, refY: 5,
-    markerWidth: 6, markerHeight: 6, orient: 'auto-start-reverse'
+    markerWidth: 5, markerHeight: 5, orient: 'auto-start-reverse'
   }, defs);
-  svgEl('path', { d: 'M0,0 L10,5 L0,10 Z', fill: '#334155' }, marker);
+  svgEl('path', { d: 'M0,0 L10,5 L0,10 Z', fill: INK }, marker);
 
   // --- grid ---
   const grid = svgEl('g', {}, svg);
@@ -180,27 +189,42 @@ function buildGraph() {
     'marker-start': 'url(#arrowHead)', 'marker-end': 'url(#arrowHead)'
   }, axes);
 
-  // --- axis numbers ---
+  /*
+    --- axis numbers ---
+    At projector size a label is about 16 units tall in a 30-unit grid square,
+    so the square below-left of the origin cannot hold all three of the labels
+    that want it: x = -1, y = -1 and the 0. NUM_BELOW is chosen to sit low
+    enough to clear the axis and high enough to clear the y = -1 label.
+  */
+  const NUM_BELOW = 18;   // x-row baseline, below the x-axis
+  const NUM_LEFT = 11;    // y-column right edge, left of the y-axis
+
   const nums = svgEl('g', {}, svg);
   for (let i = MIN; i <= MAX; i++) {
     if (i === 0) continue;
     const xt = svgEl('text', {
-      class: 'axis-num', x: toPx(i), y: toPy(0) + 15, 'text-anchor': 'middle'
+      class: 'axis-num', x: toPx(i), y: toPy(0) + NUM_BELOW, 'text-anchor': 'middle'
     }, nums);
     xt.textContent = i;
     const yt = svgEl('text', {
-      class: 'axis-num', x: toPx(0) - 8, y: toPy(i) + 4, 'text-anchor': 'end'
+      class: 'axis-num', x: toPx(0) - NUM_LEFT, y: toPy(i) + 6, 'text-anchor': 'end'
     }, nums);
     yt.textContent = i;
   }
+  /*
+    The 0 therefore goes just ABOVE the x-axis rather than below it, keeping the
+    y-column's alignment. That completes the y-axis as ... 2, 1, 0, -1, -2 ...
+    and leaves clear white on every side; sat below the axis in the usual spot
+    it ran into the x = -1 label and the pair read as "-10".
+  */
   const zero = svgEl('text', {
-    class: 'axis-num', x: toPx(0) - 8, y: toPy(0) + 15, 'text-anchor': 'end'
+    class: 'axis-num', x: toPx(0) - NUM_LEFT, y: toPy(0) - 6, 'text-anchor': 'end'
   }, nums);
   zero.textContent = '0';
 
-  const xName = svgEl('text', { class: 'axis-name', x: toPx(MAX) + 22, y: toPy(0) + 5 }, nums);
+  const xName = svgEl('text', { class: 'axis-name', x: toPx(MAX) + 26, y: toPy(0) + 8 }, nums);
   xName.textContent = 'x';
-  const yName = svgEl('text', { class: 'axis-name', x: toPx(0) + 9, y: toPy(MAX) - 16 }, nums);
+  const yName = svgEl('text', { class: 'axis-name', x: toPx(0) + 13, y: toPy(MAX) - 22 }, nums);
   yName.textContent = 'y';
 
   // --- dynamic layers (order matters: lines under points) ---
@@ -277,7 +301,7 @@ function renderLinesOnGraph() {
     const spot = tagSpot(line);
     if (spot) {
       const t = svgEl('text', {
-        class: 'line-tag', x: toPx(spot.x), y: toPy(spot.y) - 9,
+        class: 'line-tag', x: toPx(spot.x), y: toPy(spot.y) - 13,
         fill: line.color, 'text-anchor': spot.anchor
       }, linesLayer);
       t.textContent = line.name;
@@ -302,24 +326,25 @@ function renderPointsOnGraph() {
   pointsLayer.innerHTML = '';
   points.forEach(p => {
     const line = lines.find(l => l.id === p.lineId);
-    const color = line ? line.color : '#0f172a';
+    const color = line ? line.color : INK;
     const cls = 'point' + (p.id === selectedPointId ? ' selected' : '')
       + (drag && drag.id === p.id ? ' dragging' : '')
       + (p.id === justLandedId ? ' just-landed' : '');
 
     const g = svgEl('g', { class: cls, 'data-id': p.id }, pointsLayer);
-    svgEl('circle', { class: 'point-ring', cx: toPx(p.x), cy: toPy(p.y), r: 13, stroke: color }, g);
+    svgEl('circle', { class: 'point-ring', cx: toPx(p.x), cy: toPy(p.y), r: 17, stroke: color }, g);
     // transparent disc so the whole area around the dot is grabbable
-    svgEl('circle', { class: 'point-hit', cx: toPx(p.x), cy: toPy(p.y), r: 13 }, g);
-    svgEl('circle', { class: 'point-dot', cx: toPx(p.x), cy: toPy(p.y), r: 7, fill: color }, g);
+    svgEl('circle', { class: 'point-hit', cx: toPx(p.x), cy: toPy(p.y), r: 18 }, g);
+    svgEl('circle', { class: 'point-dot', cx: toPx(p.x), cy: toPy(p.y), r: 9, fill: color }, g);
 
     // Label placement: keep it off the axes / edges so nothing is hidden.
-    const right = p.x <= MAX - 3;
+    // The offsets clear the larger dot and the 19px label set in styles.css.
+    const right = p.x <= MAX - 4;
     const up = p.y <= MAX - 1;
     const label = svgEl('text', {
       class: 'point-label',
-      x: toPx(p.x) + (right ? 13 : -13),
-      y: toPy(p.y) + (up ? -12 : 22),
+      x: toPx(p.x) + (right ? 17 : -17),
+      y: toPy(p.y) + (up ? -16 : 30),
       'text-anchor': right ? 'start' : 'end',
       fill: color
     }, g);
@@ -378,7 +403,7 @@ function renderOverlay(force) {
     actionKey = key;
     actionLayer.innerHTML = '';
     if (showAction) {
-      const pos = svgToOverlay(toPx(sel.x), toPy(sel.y) - 16);
+      const pos = svgToOverlay(toPx(sel.x), toPy(sel.y) - 21);
       const btn = document.createElement('button');
       btn.className = 'point-action';
       btn.type = 'button';
@@ -400,7 +425,8 @@ function renderOverlay(force) {
     const line = lines.find(l => l.id === hover.lineId);
     if (line) {
       const tip = document.createElement('div');
-      tip.className = 'hover-tip' + (hover.cursorX > overlay.clientWidth - 150 ? ' flip' : '');
+      // the read-out is wider now that it is set at projector size
+      tip.className = 'hover-tip' + (hover.cursorX > overlay.clientWidth - 220 ? ' flip' : '');
       tip.style.left = hover.cursorX + 'px';
       tip.style.top = hover.cursorY + 'px';
       tip.style.background = line.color;
@@ -422,7 +448,7 @@ function renderHoverMarker() {
   svgEl('line', {
     class: 'hover-guide', x1: cx, y1: cy, x2: toPx(0), y2: cy, stroke: line.color
   }, hoverLayer);
-  svgEl('circle', { class: 'hover-dot', cx, cy, r: 6, stroke: line.color }, hoverLayer);
+  svgEl('circle', { class: 'hover-dot', cx, cy, r: 8, stroke: line.color }, hoverLayer);
 }
 
 /* ------------------------------------------------------------
@@ -575,7 +601,7 @@ function renderPointsField() {
     const chip = document.createElement('button');
     chip.type = 'button';
     chip.className = 'pt-chip' + (p.id === selectedPointId ? ' is-selected' : '');
-    chip.style.setProperty('--chip-color', line ? line.color : '#0f172a');
+    chip.style.setProperty('--chip-color', line ? line.color : INK);
     chip.innerHTML = `<span class="pt-dot"></span>(${p.x}, ${p.y})` +
       (line ? `<span class="pt-tag">${line.name}</span>` : '');
     chip.addEventListener('click', () => openPointActions(p.id));
@@ -1180,16 +1206,20 @@ function cancelTravel() {
   setPlotFormEnabled(true);
 }
 
-/** Random spark particles thrown off when the point lands. */
+/**
+ * Random spark particles thrown off when the point lands. The old pale ambers
+ * and white were invisible against the white plane once projected, so these are
+ * deep shades and each particle is a little larger.
+ */
 function makeSparks() {
-  const colors = ['#f59e0b', '#fbbf24', '#fde68a', '#7c3aed', '#ffffff'];
+  const colors = ['#b45309', '#9a3412', '#5b21b6', '#1d4ed8', '#9f1239'];
   const list = [];
   for (let i = 0; i < 18; i++) {
     const spread = (i / 18) * Math.PI * 2 + (Math.random() - 0.5) * 0.35;
     list.push({
       angle: spread,
-      reach: 32 + Math.random() * 46,
-      size: 2.2 + Math.random() * 2.9,
+      reach: 34 + Math.random() * 48,
+      size: 3.2 + Math.random() * 3.4,
       color: colors[i % colors.length],
       lag: Math.random() * 0.16
     });
@@ -1275,14 +1305,14 @@ function plotWithAnimation(tx, ty) {
     if (t < sparkStart) {
       svgEl('circle', {
         class: 'travel-ring', cx, cy,
-        r: 12 + beat * 7, opacity: 0.5 - beat * 0.3
+        r: 15 + beat * 8, opacity: 0.75 - beat * 0.35
       }, animLayer);
     }
-    svgEl('circle', { class: 'travel-dot', cx, cy, r: 7 + beat * 2.6 }, animLayer);
+    svgEl('circle', { class: 'travel-dot', cx, cy, r: 9 + beat * 3 }, animLayer);
 
     if (caption) {
       const cap = svgEl('text', {
-        class: 'travel-caption', x: cx, y: cy - 20 - beat * 3
+        class: 'travel-caption', x: cx, y: cy - 27 - beat * 3
       }, animLayer);
       cap.textContent = caption;
     }
@@ -1293,7 +1323,7 @@ function plotWithAnimation(tx, ty) {
 
       if (sp < 0.2) {
         svgEl('circle', {
-          class: 'flash', cx, cy, r: 10 + sp * 60, opacity: 0.75 * (1 - sp / 0.2)
+          class: 'flash', cx, cy, r: 10 + sp * 60, opacity: 0.45 * (1 - sp / 0.2)
         }, animLayer);
       }
       [0, 0.13].forEach((offset, i) => {
@@ -1301,10 +1331,10 @@ function plotWithAnimation(tx, ty) {
         if (rp <= 0) return;
         svgEl('circle', {
           class: 'shock', cx, cy,
-          r: 8 + easeOut(rp) * (46 - i * 12),
-          stroke: i ? '#7c3aed' : '#f59e0b',
-          'stroke-width': 3 * (1 - rp),
-          opacity: 0.85 * (1 - rp)
+          r: 8 + easeOut(rp) * (48 - i * 12),
+          stroke: i ? '#5b21b6' : '#b45309',
+          'stroke-width': 5 * (1 - rp),
+          opacity: 0.9 * (1 - rp)
         }, animLayer);
       });
 

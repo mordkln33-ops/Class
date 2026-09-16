@@ -67,6 +67,7 @@ const declinedPairs = new Set();
    ------------------------------------------------------------ */
 
 const svg = document.getElementById('graph');
+const graphStage = document.getElementById('graphStage');
 const overlay = document.getElementById('overlay');
 const cardsViewport = document.getElementById('cardsViewport');
 const cardsTrack = document.getElementById('cardsTrack');
@@ -147,6 +148,138 @@ function svgEl(tag, attrs, parent) {
   return el;
 }
 
+/* ------------------------------------------------------------
+   4b. Sizing the plane for the screen it is actually drawn on
+   ------------------------------------------------------------ */
+
+/*
+  Everything inside the <svg> is measured in user units, so it scales with the
+  plane: the viewBox is SIZE units wide however many pixels the panel gives it.
+  On a 1366x768 laptop the graph comes out around 450px, which shrank the axis
+  numbers to about 6px on screen and made the coordinates unreadable.
+
+  So the sizes below are derived from the graph's MEASURED width instead of
+  being fixed, which keeps a label the same size on screen whatever size the
+  panel is, and thins the tick labels out when a full set no longer fits.
+*/
+
+/** Wanted size on screen, in css pixels. */
+const TARGET = {
+  axisNum: 15,
+  axisName: 20,
+  lineTag: 16,
+  pointLabel: 17,
+  travelCap: 16,
+  dot: 8,
+  line: 4.5,
+  guide: 2.5,
+  grid: 1.2,
+  gridFive: 1.9,
+  axis: 3.2,
+  frame: 1.8,
+  halo: 2.3
+};
+
+/** The same sizes in svg user units. Defaults suit a full-screen graph. */
+const gfx = {
+  k: 1, step: 1, num: 16,
+  pointLabel: 19, dot: 9, ring: 17, hit: 18, hover: 8,
+  labelDx: 17, labelUp: 16, labelDown: 30,
+  numBelow: 18, numLeft: 11, zeroUp: 6, yMid: 6
+};
+
+/**
+ * Recalculate every graph size from the panel's current width.
+ * Returns true when something baked into the static plane changed, i.e. when
+ * buildGraph() has to run again.
+ */
+function measureGraph() {
+  /*
+    clientWidth, not getBoundingClientRect(): a magnified panel is drawn with
+    transform: scale(2), and the whole point of magnifying is that the labels
+    get bigger. Measuring the untransformed layout width leaves the 2x alone.
+  */
+  const w = graphStage ? graphStage.clientWidth : 0;
+  const k = w > 20 ? SIZE / w : 1;              // user units per css pixel
+  /*
+    --ui-scale rides along for everything except the axis numbers. A projector
+    is read from across the room, so its extra scale should make the labels
+    genuinely bigger; the axis numbers are left out because their size is
+    capped by how many fit around the origin, not by the viewing distance.
+  */
+  const ui = parseFloat(getComputedStyle(document.documentElement)
+    .getPropertyValue('--ui-scale')) || 1;
+  const u = (px, lo, hi) => Math.round(clamp(px * k * ui, lo, hi) * 10) / 10;
+  gfx.k = k;
+
+  const num = Math.round(clamp(TARGET.axisNum * k, 14, 32) * 10) / 10;
+  const label = u(TARGET.pointLabel, 17, 34);
+
+  /*
+    Three labels share the grid square below-left of the origin: x = -1, y = -1
+    and the 0. Keeping their halos apart needs the type under about UNIT / 1.73
+    units — a tighter limit than simply fitting "-10" between two ticks, which
+    only needs 1.25x the type plus a gap. Past that the honest fix is fewer
+    labels rather than smaller ones: every other tick, which also retires the
+    crowded +-1 pair, and then every fifth.
+
+    The slack is hysteresis. Without it a one-pixel resize can land exactly on
+    the boundary and flip the whole plane back and forth.
+  */
+  const slack = gfx.step === 1 ? 1.03 : 0.97;
+  const step = num * 1.73 <= UNIT * slack ? 1
+    : num * 1.25 + 4 <= UNIT * 2 ? 2 : 5;
+
+  const changed = step !== gfx.step || num !== gfx.num;
+  gfx.step = step;
+  gfx.num = num;
+  gfx.numBelow = num * 1.125;    // x-row baseline, below the x-axis
+  gfx.numLeft = num * 0.7;       // y-column right edge, left of the y-axis
+  gfx.zeroUp = num * 0.375;
+  gfx.yMid = num * 0.375;        // nudge that centres a y label on its tick
+
+  gfx.pointLabel = label;
+  gfx.labelDx = label * 0.9;
+  gfx.labelUp = label * 0.84;
+  gfx.labelDown = label * 1.58;
+
+  gfx.dot = u(TARGET.dot, 9, 16);
+  gfx.ring = gfx.dot * 1.9;
+  gfx.hit = gfx.dot * 2;
+  gfx.hover = gfx.dot * 0.9;
+
+  // Sizes the stylesheet needs. Set on the <svg> so only the plane sees them.
+  const set = (name, v) => svg.style.setProperty(name, v + 'px');
+  set('--fs-axis-num', num);
+  set('--fs-axis-name', u(TARGET.axisName, 20, 34));
+  set('--fs-line-tag', u(TARGET.lineTag, 16, 30));
+  set('--fs-point-label', label);
+  set('--fs-travel-cap', u(TARGET.travelCap, 16, 30));
+  set('--sw-line', u(TARGET.line, 5, 9));
+  set('--sw-guide', u(TARGET.guide, 3, 6));
+  set('--sw-grid', u(TARGET.grid, 1.5, 3));
+  set('--sw-grid-five', u(TARGET.gridFive, 2.4, 4.5));
+  set('--sw-axis', u(TARGET.axis, 4, 7));
+  set('--sw-frame', u(TARGET.frame, 2.5, 4));
+  set('--sw-dot', u(TARGET.halo, 3.5, 6));
+  set('--dot-r', gfx.dot);
+  set('--dot-pop', gfx.dot * 2.1);
+  set('--dot-dip', gfx.dot * 0.67);
+
+  return changed;
+}
+
+/** Re-measure after a resize or a magnify, rebuilding the plane if needed. */
+function syncGraph() {
+  if (measureGraph()) {
+    buildGraph();
+    update();
+  } else {
+    renderPointsOnGraph();
+  }
+  renderOverlay(true);
+}
+
 function buildGraph() {
   svg.setAttribute('viewBox', `0 0 ${SIZE} ${SIZE}`);
   svg.innerHTML = '';
@@ -191,23 +324,21 @@ function buildGraph() {
 
   /*
     --- axis numbers ---
-    At projector size a label is about 16 units tall in a 30-unit grid square,
-    so the square below-left of the origin cannot hold all three of the labels
-    that want it: x = -1, y = -1 and the 0. NUM_BELOW is chosen to sit low
-    enough to clear the axis and high enough to clear the y = -1 label.
+    At full size a label is about 16 units tall in a 30-unit grid square, so the
+    square below-left of the origin cannot hold all three of the labels that
+    want it: x = -1, y = -1 and the 0. gfx.numBelow sits the x row low enough to
+    clear the axis and high enough to clear the y = -1 label. On a small panel
+    the type is proportionally larger and gfx.step drops the odd ticks instead.
   */
-  const NUM_BELOW = 18;   // x-row baseline, below the x-axis
-  const NUM_LEFT = 11;    // y-column right edge, left of the y-axis
-
   const nums = svgEl('g', {}, svg);
   for (let i = MIN; i <= MAX; i++) {
-    if (i === 0) continue;
+    if (i === 0 || i % gfx.step !== 0) continue;
     const xt = svgEl('text', {
-      class: 'axis-num', x: toPx(i), y: toPy(0) + NUM_BELOW, 'text-anchor': 'middle'
+      class: 'axis-num', x: toPx(i), y: toPy(0) + gfx.numBelow, 'text-anchor': 'middle'
     }, nums);
     xt.textContent = i;
     const yt = svgEl('text', {
-      class: 'axis-num', x: toPx(0) - NUM_LEFT, y: toPy(i) + 6, 'text-anchor': 'end'
+      class: 'axis-num', x: toPx(0) - gfx.numLeft, y: toPy(i) + gfx.yMid, 'text-anchor': 'end'
     }, nums);
     yt.textContent = i;
   }
@@ -218,7 +349,7 @@ function buildGraph() {
     it ran into the x = -1 label and the pair read as "-10".
   */
   const zero = svgEl('text', {
-    class: 'axis-num', x: toPx(0) - NUM_LEFT, y: toPy(0) - 6, 'text-anchor': 'end'
+    class: 'axis-num', x: toPx(0) - gfx.numLeft, y: toPy(0) - gfx.zeroUp, 'text-anchor': 'end'
   }, nums);
   zero.textContent = '0';
 
@@ -332,23 +463,29 @@ function renderPointsOnGraph() {
       + (p.id === justLandedId ? ' just-landed' : '');
 
     const g = svgEl('g', { class: cls, 'data-id': p.id }, pointsLayer);
-    svgEl('circle', { class: 'point-ring', cx: toPx(p.x), cy: toPy(p.y), r: 17, stroke: color }, g);
+    svgEl('circle', { class: 'point-ring', cx: toPx(p.x), cy: toPy(p.y), r: gfx.ring, stroke: color }, g);
     // transparent disc so the whole area around the dot is grabbable
-    svgEl('circle', { class: 'point-hit', cx: toPx(p.x), cy: toPy(p.y), r: 18 }, g);
-    svgEl('circle', { class: 'point-dot', cx: toPx(p.x), cy: toPy(p.y), r: 9, fill: color }, g);
+    svgEl('circle', { class: 'point-hit', cx: toPx(p.x), cy: toPy(p.y), r: gfx.hit }, g);
+    svgEl('circle', { class: 'point-dot', cx: toPx(p.x), cy: toPy(p.y), r: gfx.dot, fill: color }, g);
 
-    // Label placement: keep it off the axes / edges so nothing is hidden.
-    // The offsets clear the larger dot and the 19px label set in styles.css.
-    const right = p.x <= MAX - 4;
+    /*
+      Label placement. The coordinates are set relative to the plane, so on a
+      small panel they are proportionally bigger and a pair like (-10, -10) is
+      wide enough to run off the edge. Flip it to the other side of the dot
+      once the measured width would not fit, rather than at a fixed x.
+    */
+    const text = `(${p.x}, ${p.y})`;
+    const wide = text.length * gfx.pointLabel * 0.6;   // rough advance width
+    const right = toPx(p.x) + gfx.labelDx + wide < SIZE - 4;
     const up = p.y <= MAX - 1;
     const label = svgEl('text', {
       class: 'point-label',
-      x: toPx(p.x) + (right ? 17 : -17),
-      y: toPy(p.y) + (up ? -16 : 30),
+      x: toPx(p.x) + (right ? gfx.labelDx : -gfx.labelDx),
+      y: toPy(p.y) + (up ? -gfx.labelUp : gfx.labelDown),
       'text-anchor': right ? 'start' : 'end',
       fill: color
     }, g);
-    label.textContent = `(${p.x}, ${p.y})`;
+    label.textContent = text;
 
     g.addEventListener('pointerdown', onPointPointerDown);
   });
@@ -448,7 +585,7 @@ function renderHoverMarker() {
   svgEl('line', {
     class: 'hover-guide', x1: cx, y1: cy, x2: toPx(0), y2: cy, stroke: line.color
   }, hoverLayer);
-  svgEl('circle', { class: 'hover-dot', cx, cy, r: 8, stroke: line.color }, hoverLayer);
+  svgEl('circle', { class: 'hover-dot', cx, cy, r: gfx.hover, stroke: line.color }, hoverLayer);
 }
 
 /* ------------------------------------------------------------
@@ -1213,13 +1350,14 @@ function cancelTravel() {
  */
 function makeSparks() {
   const colors = ['#b45309', '#9a3412', '#5b21b6', '#1d4ed8', '#9f1239'];
+  const s = gfx.dot / 9;            // follow the dot, so they read on a small plane
   const list = [];
   for (let i = 0; i < 18; i++) {
     const spread = (i / 18) * Math.PI * 2 + (Math.random() - 0.5) * 0.35;
     list.push({
       angle: spread,
-      reach: 34 + Math.random() * 48,
-      size: 3.2 + Math.random() * 3.4,
+      reach: (34 + Math.random() * 48) * s,
+      size: (3.2 + Math.random() * 3.4) * s,
       color: colors[i % colors.length],
       lag: Math.random() * 0.16
     });
@@ -1305,14 +1443,14 @@ function plotWithAnimation(tx, ty) {
     if (t < sparkStart) {
       svgEl('circle', {
         class: 'travel-ring', cx, cy,
-        r: 15 + beat * 8, opacity: 0.75 - beat * 0.35
+        r: gfx.dot * (1.65 + beat * 0.9), opacity: 0.75 - beat * 0.35
       }, animLayer);
     }
-    svgEl('circle', { class: 'travel-dot', cx, cy, r: 9 + beat * 3 }, animLayer);
+    svgEl('circle', { class: 'travel-dot', cx, cy, r: gfx.dot * (1 + beat * 0.33) }, animLayer);
 
     if (caption) {
       const cap = svgEl('text', {
-        class: 'travel-caption', x: cx, y: cy - 27 - beat * 3
+        class: 'travel-caption', x: cx, y: cy - gfx.dot * 3 - beat * 3
       }, animLayer);
       cap.textContent = caption;
     }
@@ -1459,7 +1597,7 @@ window.addEventListener('resize', () => {
   layoutZoomWindows();
   applyPageOffset();
   clearTimeout(resizeTimer);
-  resizeTimer = setTimeout(() => renderOverlay(true), 90);
+  resizeTimer = setTimeout(syncGraph, 90);
 });
 
 /*
@@ -1468,8 +1606,11 @@ window.addEventListener('resize', () => {
 */
 if (window.ResizeObserver) {
   new ResizeObserver(() => applyPageOffset()).observe(cardsViewport);
-  new ResizeObserver(() => { if (actionLayer) renderOverlay(true); })
-    .observe(document.getElementById('graphStage'));
+  /*
+    The graph's pixel size drives every label size on the plane, so a resize
+    has to re-measure and not just reposition the overlay.
+  */
+  new ResizeObserver(() => { if (actionLayer) syncGraph(); }).observe(graphStage);
 }
 
 /* ------------------------------------------------------------
@@ -1636,6 +1777,7 @@ document.addEventListener('pointerdown', ev => {
    19. Start
    ------------------------------------------------------------ */
 
+measureGraph();   // size the plane's type before it is drawn
 buildGraph();
 initOverlay();
 update();

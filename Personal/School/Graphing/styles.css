@@ -109,6 +109,13 @@
   --card-gap: 14px;
   /* must match CARD_GAP in script.js */
 
+  /* Space between and inside the four panels. The graph is a square limited
+     by the height it is given, so every pixel taken out of these goes
+     straight into making it bigger. They tighten on short screens. */
+  --gap: 12px;
+  --pad: 12px;
+  --body-pad: 12px 14px;
+
   --font: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", Arial, sans-serif;
   --mono: "Cascadia Mono", "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
 }
@@ -121,18 +128,27 @@
 @media (max-height: 900px) {
   :root {
     --ui-scale: .95;
+    --gap: 9px;
+    --pad: 9px;
+    --body-pad: 10px 12px;
   }
 }
 
 @media (max-height: 820px) {
   :root {
     --ui-scale: .88;
+    --gap: 8px;
+    --pad: 8px;
+    --body-pad: 9px 11px;
   }
 }
 
 @media (max-height: 720px) {
   :root {
     --ui-scale: .8;
+    --gap: 7px;
+    --pad: 7px;
+    --body-pad: 8px 10px;
   }
 }
 
@@ -318,55 +334,66 @@ p {
 /* ---------------- Layout ---------------- */
 
 /*
-  The two columns split at different points, so the grid is cut into twelfths:
-    left  — inputs 4/12 (a third), equations + tables 8/12 (two thirds)
-    right — graph 9/12 (three quarters), coordinate list 3/12
-  fr units share out the space left after the gaps, so nothing overflows.
+  Three rows, and only the middle one is elastic:
+
+    row 1  auto   the input forms — exactly as tall as they need, so they can
+                  never be cut off or need scrolling
+    row 2  1fr    all the slack
+    row 3  auto   the list of plotted points, capped so it cannot run away
+
+  Each panel spans two of them so both columns still fill the screen exactly:
+  left is input + (lines spanning 2-3), right is (graph spanning 1-2) + points.
+  Because the graph covers rows 1 and 2, the input panel growing by a line of
+  status text shrinks row 2 by the same amount and leaves the graph untouched.
+
+  This replaces a grid of twelve equal rows, which handed the input and points
+  panels more height than their contents ever used and starved the graph of
+  the rest.
+
+  The columns are not even: the graph is a square limited by its height, so a
+  half-width column left 150-240px of dead space beside it on a laptop. 1.38fr
+  is the ratio at which the square fills its column on a 16:9 or 16:10 screen,
+  and the width that frees up goes to the tables.
 */
 .layout {
   height: calc(100vh - var(--header-h));
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: repeat(12, 1fr);
-  gap: 12px;
-  padding: 12px;
+  grid-template-columns: 1.38fr 1fr;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: var(--gap);
+  padding: var(--pad);
 }
 
 .panel-input {
   grid-column: 1;
-  grid-row: 1 / span 4;
+  grid-row: 1;
 }
 
 .panel-lines {
   grid-column: 1;
-  grid-row: 5 / span 8;
+  grid-row: 2 / span 2;
 }
 
 .panel-graph {
   grid-column: 2;
-  grid-row: 1 / span 9;
+  grid-row: 1 / span 2;
 }
 
 .panel-points {
   grid-column: 2;
-  grid-row: 10 / span 3;
+  grid-row: 3;
+  /* sized by its chips, but never at the graph's expense */
+  max-height: 26vh;
 }
 
 /*
-  The two stacked forms need about 220px at --ui-scale 1, plus a line for the
-  status message, and --ui-scale grows them again on a big display. Four
-  twelfths of the height only covers that past about 1100px — 1080p included,
-  which missed by 7px — so up to there the input panel takes a fifth row out
-  of the tables' budget. Without it the second form was cut off by the panel's
-  bottom edge on every laptop.
+  On a genuinely narrow screen the graph runs out of width before it runs out
+  of height, so the lopsided split starves it instead of saving space. Go back
+  to even columns there.
 */
-@media (max-height: 1100px) {
-  .panel-input {
-    grid-row: 1 / span 5;
-  }
-
-  .panel-lines {
-    grid-row: 6 / span 7;
+@media (max-width: 1150px) {
+  .layout {
+    grid-template-columns: 1fr 1fr;
   }
 }
 
@@ -419,7 +446,7 @@ p {
 .panel-body {
   flex: 1;
   min-height: 0;
-  padding: 12px 14px;
+  padding: var(--body-pad);
   overflow: auto;
 }
 
@@ -588,15 +615,36 @@ p {
   display: grid;
   place-items: center;
   padding: 8px;
-  overflow: hidden;
+  /* nothing here is ever allowed to be cut off — see .graph-stage */
+  overflow: visible;
 }
 
+/*
+  Fallback sizing: a square as tall as the box, narrowed if that overflows.
+  max-width can leave the svg letterboxed but never clipped.
+*/
 .graph-stage {
   position: relative;
   height: 100%;
   aspect-ratio: 1 / 1;
   max-width: 100%;
   max-height: 100%;
+}
+
+/*
+  The real rule. cqmin is the smaller of the container's two sides, so this is
+  exactly the largest square that fits — no overflow to hide in either
+  direction, whichever way the panel happens to be proportioned.
+*/
+@supports (width: 1cqmin) {
+  .graph-body {
+    container-type: size;
+  }
+
+  .graph-stage {
+    width: 100cqmin;
+    height: 100cqmin;
+  }
 }
 
 #graph {
@@ -1178,17 +1226,18 @@ table.vt tr.hl td {
 /* ---------------- Equation input ---------------- */
 
 /*
-  The two forms sit centred in the panel — but `safe` matters: without it a
-  panel too short for its contents centres them, pushing the first label out
-  of the top where `overflow: auto` cannot scroll back to it. On a 768px
-  laptop that silently ate the "Point as an ordered pair" label.
+  This panel sits in an `auto` grid row, so it is exactly as tall as the two
+  forms and never scrolls or clips them. That also makes centring pointless —
+  and centring here was the bug that used to push the first label out of the
+  top of a too-short panel, where `overflow: auto` could not scroll back to it.
 */
 .panel-input .panel-body {
   display: flex;
   flex-direction: column;
-  justify-content: safe center;
+  justify-content: flex-start;
   gap: 0;
-  padding: 12px 16px;
+  padding: var(--body-pad);
+  overflow: visible;
 }
 
 .mini-form {
@@ -1484,6 +1533,11 @@ table.vt tr.hl td {
   .panel-points {
     grid-column: 1;
     grid-row: auto;
+  }
+
+  /* the page scrolls here, so the points list has no reason to be capped */
+  .panel-points {
+    max-height: none;
   }
 
   /* graph leads on narrow screens */

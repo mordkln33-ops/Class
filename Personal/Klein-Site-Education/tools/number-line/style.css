@@ -1,0 +1,459 @@
+/* ============================================================
+   Number Line — shared styles for the vertical and horizontal pages
+   ============================================================ */
+
+:root {
+  --bg-1:      #f7f9fc;
+  --bg-2:      #eef2f7;
+  --panel:     #ffffff;
+  --ink:       #1e2430;
+  --muted:     #6b7684;
+  --line:      #dfe5ec;
+  --accent:    #3f6183;
+  --positive:  #111111;   /* fill at or above zero */
+  --negative:  #c73a3a;   /* fill below zero       */
+  --shadow:    0 8px 24px rgba(24, 39, 58, .08);
+  --radius:    14px;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+  color: var(--ink);
+  background: linear-gradient(135deg, var(--bg-1), var(--bg-2));
+  overflow: hidden;             /* only the history panel scrolls */
+}
+
+h1, h2 { margin: 0; }
+
+a { color: var(--accent); }
+
+/* ============================================================
+   Page skeletons
+   ============================================================ */
+
+.page {
+  height: 100vh;
+  display: grid;
+  gap: 24px;
+  padding: 24px;
+}
+
+/* vertical page: number line | controls | history */
+.layout-vertical .page {
+  grid-template-columns: auto minmax(320px, 1fr) minmax(270px, 24%);
+  align-items: center;
+}
+
+/* horizontal page: number line across the top third,
+   controls and history sharing the bottom two thirds */
+.layout-horizontal .page {
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 2fr;
+}
+
+.layout-horizontal .gauge-area {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+}
+
+.panel {
+  min-height: 0;                /* lets inner areas scroll, not the page */
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 26px 28px;
+}
+
+/* ============================================================
+   The number line itself
+   ============================================================ */
+
+/* vertical: a 20% × 80% block, with the scale in a gutter beside it */
+.gauge-vertical {
+  display: grid;
+  grid-template-columns: 46px 20vw;
+  gap: 8px;
+  height: 80vh;
+}
+
+.gauge-horizontal {
+  width: 80vw;
+}
+
+.track {
+  position: relative;
+  overflow: hidden;
+  background:
+    repeating-linear-gradient(var(--grid-dir, to bottom),
+      rgba(67, 77, 91, .10) 0,
+      rgba(67, 77, 91, .10) 1px,
+      transparent 1px,
+      transparent 2.5%),
+    #fff;
+  border: 2px solid #242a33;
+  border-radius: 10px;
+  box-shadow: inset 0 1px 3px rgba(24, 39, 58, .10);
+}
+
+.track-vertical {
+  --grid-dir: to bottom;
+  width: 100%;
+  height: 100%;
+}
+
+.track-horizontal {
+  --grid-dir: to right;
+  width: 100%;
+  height: 20vh;
+}
+
+/* the fill always starts at the low end of the scale */
+.fill {
+  position: absolute;
+  background: var(--positive);
+  z-index: 2;
+  transition: height .35s ease, width .35s ease, background-color .25s ease;
+}
+
+.fill.is-negative { background: var(--negative); }
+
+.fill-vertical {
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 50%;
+}
+
+.fill-horizontal {
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 50%;
+}
+
+/* zero marker, drawn over the fill so it stays visible either way */
+.zero-line {
+  position: absolute;
+  z-index: 3;
+  background: #8b97a6;
+}
+
+.zero-line-vertical {
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 2px;
+}
+
+.zero-line-horizontal {
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 2px;
+}
+
+/* ---------- tick marks and numbers ---------- */
+
+.scale { position: relative; }
+
+.scale-vertical { height: 100%; }
+
+.scale-horizontal {
+  height: 30px;
+  margin-top: 6px;
+}
+
+.tick {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  line-height: 1;
+  color: var(--muted);
+}
+
+.scale-vertical .tick {
+  right: 0;
+  transform: translateY(-50%);
+}
+
+.scale-horizontal .tick {
+  top: 0;
+  flex-direction: column;
+  gap: 4px;
+  transform: translateX(-50%);
+}
+
+.tick-line { background: #a7b1bd; }
+
+.scale-vertical .tick-line  { width: 7px;  height: 1px; }
+.scale-horizontal .tick-line { width: 1px; height: 7px; }
+
+.tick.is-major { color: var(--ink); font-weight: 700; font-size: 11px; }
+.tick.is-major .tick-line { background: #4c5563; }
+.scale-vertical .tick.is-major .tick-line  { width: 13px; height: 2px; }
+.scale-horizontal .tick.is-major .tick-line { width: 2px; height: 13px; }
+
+/* ============================================================
+   Controls
+   ============================================================ */
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow-y: auto;
+}
+
+.controls h1 {
+  font-size: 1.6rem;
+  letter-spacing: -.01em;
+}
+
+.subtitle {
+  margin: 6px 0 0;
+  color: var(--muted);
+  line-height: 1.5;
+  font-size: .94rem;
+}
+
+.value-card {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: baseline;
+  gap: 4px 12px;
+  padding: 14px 18px;
+  background: #f6f9fc;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.value-label {
+  font-size: .74rem;
+  font-weight: 700;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.value-number {
+  font-size: 2.1rem;
+  font-variant-numeric: tabular-nums;
+  transition: color .25s ease;
+}
+
+.value-number.is-negative { color: var(--negative); }
+
+.value-note {
+  grid-column: 1 / -1;
+  font-size: .8rem;
+  color: var(--muted);
+  min-height: 1em;
+}
+
+.op-form label {
+  display: block;
+  margin-bottom: 7px;
+  font-weight: 700;
+  font-size: .95rem;
+}
+
+.op-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+}
+
+.op-row input {
+  width: 100%;
+  padding: 11px 13px;
+  font: inherit;
+  font-size: 1rem;
+  color: var(--ink);
+  background: #fff;
+  border: 1px solid #c3ccd8;
+  border-radius: 9px;
+  outline: none;
+  transition: border-color .15s, box-shadow .15s;
+}
+
+.op-row input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(63, 97, 131, .15);
+}
+
+.btn {
+  font: inherit;
+  font-weight: 700;
+  padding: 10px 20px;
+  border: 0;
+  border-radius: 9px;
+  color: #fff;
+  background: var(--accent);
+  cursor: pointer;
+  transition: transform .12s ease, filter .15s ease;
+}
+
+.btn:hover  { filter: brightness(1.08); }
+.btn:active { transform: translateY(1px); }
+.btn:focus-visible { outline: 3px solid rgba(63, 97, 131, .35); outline-offset: 2px; }
+
+.btn-sub { background: #7a5560; }
+
+.btn-ghost {
+  padding: 5px 12px;
+  font-size: .8rem;
+  font-weight: 600;
+  color: var(--muted);
+  background: transparent;
+  border: 1px solid var(--line);
+}
+
+.btn-ghost:hover { color: var(--ink); background: #f2f5f9; }
+
+.footnote {
+  margin: 0;
+  color: var(--muted);
+  font-size: .86rem;
+  line-height: 1.5;
+}
+
+.page-link {
+  margin-top: auto;
+  font-size: .92rem;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.page-link:hover { text-decoration: underline; }
+
+/* ============================================================
+   History — the list scrolls, the page does not
+   ============================================================ */
+
+.history {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.history-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+.history-head h2 {
+  font-size: .82rem;
+  font-weight: 700;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.history-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  margin: 0;
+  padding: 4px 10px 0 0;
+  list-style: none;
+}
+
+.history-item {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 11px 2px;
+  border-bottom: 1px solid #eef1f5;
+  font-size: .95rem;
+  font-variant-numeric: tabular-nums;
+  animation: slide-in .25s ease;
+}
+
+.history-op {
+  flex: 0 0 auto;
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border-radius: 6px;
+  font-size: .85rem;
+  font-weight: 700;
+  color: #fff;
+  background: var(--accent);
+}
+
+.history-item.is-sub .history-op { background: #7a5560; }
+
+.history-result { font-weight: 700; }
+.history-result.is-negative { color: var(--negative); }
+
+.history-flag {
+  display: block;
+  margin-top: 3px;
+  font-size: .76rem;
+  color: var(--muted);
+}
+
+.history-empty {
+  padding: 12px 2px;
+  color: var(--muted);
+  font-size: .92rem;
+}
+
+@keyframes slide-in {
+  from { opacity: 0; transform: translateY(-5px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ============================================================
+   Narrow screens: stack and let the page scroll
+   ============================================================ */
+
+@media (max-width: 950px) {
+  body { overflow: auto; }
+
+  .page,
+  .layout-vertical .page,
+  .layout-horizontal .page {
+    height: auto;
+    min-height: 100vh;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+  }
+
+  .layout-horizontal .gauge-area { grid-column: 1; }
+
+  .gauge-vertical {
+    height: 65vh;
+    grid-template-columns: 46px minmax(0, 1fr);
+  }
+
+  .gauge-horizontal { width: 100%; }
+
+  .track-horizontal { height: 130px; }
+
+  .history { max-height: 55vh; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fill { transition: none; }
+  .history-item { animation: none; }
+}

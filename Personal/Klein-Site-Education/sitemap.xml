@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    sitemap.xml — the list of pages you want search engines to index.
+    TODO: replace yourdomain.com with your real domain, and update <lastmod> when the page changes.
+
+    The /work sample pages are left out on purpose (they're marked noindex).
+    When one becomes a real project, add it here like this:
+
+    <url>
+        <loc>https://www.yourdomain.com/work/tutor-sample.html</loc>
+        <lastmod>2026-10-07</lastmod>
+    </url>
+-->
+<!-- The live learning tools are real, useful pages, so they are listed for search engines. -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+        <loc>https://www.yourdomain.com/</loc>
+        <lastmod>2026-10-07</lastmod>
+    </url>
+    <url>
+        <loc>https://www.yourdomain.com/tools/graphing/</loc>
+        <lastmod>2026-10-07</lastmod>
+    </url>
+    <url>
+        <loc>https://www.yourdomain.com/tools/fractions/</loc>
+        <lastmod>2026-10-07</lastmod>
+    </url>
+    <url>
+        <loc>https://www.yourdomain.com/tools/probability/</loc>
+        <lastmod>2026-10-07</lastmod>
+    </url>
+    <url>
+        <loc>https://www.yourdomain.com/tools/number-line/</loc>
+        <lastmod>2026-10-07</lastmod>
+    </url>
+</urlset>

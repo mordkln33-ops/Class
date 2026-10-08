@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Graphs in Real Life</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <h1>Graphs in Real Life</h1>
+    <div class="topbar-actions">
+      <button type="button" id="rocBtn" class="btn btn-roc">Rate of change tool</button>
+      <button type="button" id="clearBtn" class="btn btn-danger">Clear all</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="graph-wrap" id="graphWrap">
+      <svg id="graph" role="img" aria-label="Coordinate graph from 0 to 30 on the x-axis and 0 to 20 on the y-axis">
+        <g id="scene"></g>
+        <g id="hoverLayer" pointer-events="none"></g>
+      </svg>
+
+      <div id="toast" class="toast" role="status" hidden></div>
+
+      <div id="pointMenu" class="point-menu" hidden>
+        <p class="point-menu-title">Point <span id="pointMenuCoords"></span></p>
+        <button type="button" id="menuRoc" class="btn btn-roc">Find rate of change from here</button>
+        <button type="button" id="menuDelete" class="btn btn-danger">Delete this point</button>
+        <button type="button" id="menuCancel" class="btn btn-plain">Cancel</button>
+      </div>
+    </section>
+
+    <section class="controls">
+      <div class="row labels-row">
+        <label class="field">
+          <span class="field-label">Y-axis label</span>
+          <input id="yLabel" type="text" placeholder="e.g. Distance" autocomplete="off">
+        </label>
+        <label class="field">
+          <span class="field-label">Units</span>
+          <input id="yUnits" type="text" placeholder="e.g. miles" autocomplete="off">
+        </label>
+        <label class="field">
+          <span class="field-label">X-axis label</span>
+          <input id="xLabel" type="text" placeholder="e.g. Time" autocomplete="off">
+        </label>
+        <label class="field">
+          <span class="field-label">Units</span>
+          <input id="xUnits" type="text" placeholder="e.g. hours" autocomplete="off">
+        </label>
+      </div>
+
+      <div class="row coords-row">
+        <label class="field field-wide">
+          <span class="field-label">Coordinates</span>
+          <input id="coords" type="text" placeholder="Click the graph, or type points like (2, 5), (4, 9)" autocomplete="off" spellcheck="false">
+        </label>
+        <p id="coordsMsg" class="coords-msg" role="status"></p>
+      </div>
+
+      <div class="row radio-row" role="radiogroup" aria-label="Graph display">
+        <label class="radio">
+          <input type="radio" name="mode" value="fit">
+          <span class="swatch swatch-fit" aria-hidden="true"></span>
+          Line of best fit
+        </label>
+        <label class="radio">
+          <input type="radio" name="mode" value="connect">
+          <span class="swatch swatch-connect" aria-hidden="true"></span>
+          Connect the dots
+        </label>
+        <label class="radio">
+          <input type="radio" name="mode" value="none" checked>
+          None
+        </label>
+      </div>
+
+      <div class="row equation-row" id="equationRow" hidden>
+        <p id="equation" class="equation"></p>
+      </div>
+    </section>
+  </main>
+
+  <div id="rocPanel" class="roc-panel" role="dialog" aria-labelledby="rocTitle" hidden>
+    <div class="roc-header" id="rocHeader">
+      <span id="rocTitle" class="roc-title">Rate of Change</span>
+      <button type="button" id="rocClose" class="roc-close">&#x2715; Close</button>
+    </div>
+    <div class="roc-body">
+      <p id="rocInstr" class="roc-instr"></p>
+      <div class="roc-points">
+        <div class="roc-point"><span class="roc-badge">1</span> Point 1: <strong id="rocP1">—</strong></div>
+        <div class="roc-point"><span class="roc-badge">2</span> Point 2: <strong id="rocP2">—</strong></div>
+      </div>
+      <div id="rocResult" class="roc-result" hidden></div>
+      <p class="roc-tip">Tip: close this tool to delete points.</p>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

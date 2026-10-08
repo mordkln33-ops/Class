@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bell Curve Simulator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<main class="app">
+
+  <!-- ================= GRAPH (top two thirds) ================= -->
+  <section class="graph-area" aria-label="Simulation graph">
+
+    <!-- Top left: summary statistics -->
+    <aside class="stats-panel" aria-label="Summary statistics">
+      <h2 class="panel-title">The Numbers</h2>
+      <dl class="stat-list">
+        <div class="stat-row"><dt><span class="key key-mean"></span>Mean</dt><dd id="stMean">—</dd></div>
+        <div class="stat-row"><dt><span class="key key-median"></span>Median</dt><dd id="stMedian">—</dd></div>
+        <div class="stat-row"><dt><span class="key key-sd"></span>Std. Dev. (SD)</dt><dd id="stSD">—</dd></div>
+        <div class="stat-row" title="95% margin of error: about 95% of the time, the true value is within this distance of the result."><dt>Margin of error <small>(95%)</small></dt><dd id="stMOE">—</dd></div>
+        <div class="stat-row"><dt>Range</dt><dd id="stRange">—</dd></div>
+        <div class="stat-row"><dt>Lowest / Highest</dt><dd id="stMinMax">—</dd></div>
+      </dl>
+
+      <ul class="legend" aria-label="Legend">
+        <li><span class="lg lg-dot"></span>One dot = one <span id="lgUnit">run</span></li>
+        <li><span class="lg lg-curve"></span>Bell curve</li>
+        <li><span class="lg lg-mean"></span>Mean</li>
+        <li><span class="lg lg-median"></span>Median</li>
+        <li><span class="lg lg-band"></span>Within 1 SD of mean</li>
+        <li><span class="lg lg-sdline"></span>1, 2 &amp; 3 SD from mean</li>
+      </ul>
+    </aside>
+
+    <!-- Title + top-right buttons -->
+    <header class="graph-header">
+      <div class="graph-heading">
+        <h1 id="graphTitle">Bell Curve Simulator</h1>
+        <p id="graphSubtitle">Press <strong>Simulate</strong> to create a new simulation.</p>
+      </div>
+      <div class="graph-actions">
+        <button id="skipBtn" class="btn btn-ghost" type="button" hidden>Skip ▶▶</button>
+        <button id="againBtn" class="btn btn-ghost" type="button" hidden>Run again</button>
+        <button id="openSimBtn" class="btn btn-primary btn-big" type="button">Simulate</button>
+      </div>
+    </header>
+
+    <div class="chart-wrap" id="chartWrap">
+      <svg id="chart" role="img" aria-labelledby="graphTitle"></svg>
+      <div class="empty-state" id="emptyState">
+        <svg viewBox="0 0 200 80" class="empty-curve" aria-hidden="true">
+          <path d="M5 75 C 60 75, 70 8, 100 8 S 140 75, 195 75" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+        </svg>
+        <p>No simulation yet.<br>Press <strong>Simulate</strong> in the top right to begin.</p>
+      </div>
+      <div class="tooltip" id="tooltip" role="status" hidden></div>
+    </div>
+  </section>
+
+  <!-- ================= EXPLANATIONS (bottom third) ================= -->
+  <section class="explain-area" aria-label="What the numbers mean">
+    <article class="card card-mean">
+      <div class="card-head">
+        <h2>Mean</h2>
+        <span class="card-value" id="cardMean">—</span>
+        <button class="btn btn-small how-btn" type="button" data-explain="mean" disabled>How? <span aria-hidden="true">⤢</span></button>
+      </div>
+      <p>The <strong>average</strong>. Add up every result, then divide by how many results there are. It is the <em>balance point</em> of the dots.</p>
+    </article>
+
+    <article class="card card-median">
+      <div class="card-head">
+        <h2>Median</h2>
+        <span class="card-value" id="cardMedian">—</span>
+        <button class="btn btn-small how-btn" type="button" data-explain="median" disabled>How? <span aria-hidden="true">⤢</span></button>
+      </div>
+      <p>The <strong>middle</strong> result. Line up every result from smallest to largest &mdash; half are below this number and half are above.</p>
+    </article>
+
+    <article class="card card-sd">
+      <div class="card-head">
+        <h2>Standard Deviation</h2>
+        <span class="card-value" id="cardSD">—</span>
+        <button class="btn btn-small how-btn" type="button" data-explain="sd" disabled>How? <span aria-hidden="true">⤢</span></button>
+      </div>
+      <p>How <strong>spread out</strong> the results are. A small SD means the dots crowd close to the mean; a large SD means they spread out wide.</p>
+      <p class="card-note" id="cardSDNote"></p>
+    </article>
+  </section>
+</main>
+
+<!-- ================= SIMULATE POP-UP ================= -->
+<div class="modal-backdrop" id="simModal" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="simModalTitle">
+    <div class="modal-head">
+      <h2 id="simModalTitle">New Simulation</h2>
+      <button class="close-btn" type="button" data-close aria-label="Close">✕</button>
+    </div>
+
+    <div class="tabs" role="tablist">
+      <button class="tab active" role="tab" type="button" data-tab="single" aria-selected="true">Single</button>
+      <button class="tab" role="tab" type="button" data-tab="average" aria-selected="false">Average</button>
+      <button class="tab" role="tab" type="button" data-tab="random" aria-selected="false">Random</button>
+    </div>
+
+    <div class="modal-body">
+
+      <!-- ---------- SINGLE ---------- -->
+      <form class="tab-panel" id="formSingle" data-panel="single" novalidate>
+        <div class="instructions">
+          <p><strong>How it works:</strong> list every possible outcome of <em>one</em> try as a group (for a coin: <em>Heads</em> and <em>Tails</em>) and give each one a probability.</p>
+          <p><strong>Check the box</strong> next to the group you want to count. Each dot on the graph shows how many times the checked group happened in one run.</p>
+        </div>
+
+        <div class="groups-head">
+          <span>Show</span><span>Group name</span><span>Probability</span><span></span>
+        </div>
+        <div class="groups" id="groups"></div>
+        <div class="groups-foot">
+          <button type="button" class="btn btn-ghost btn-small" id="addGroupBtn">+ Add group</button>
+          <p class="prob-status" id="probStatus"></p>
+        </div>
+
+        <div class="field-grid">
+          <label class="field">
+            <span>Sample size <small>(tries in each run)</small></span>
+            <input type="number" id="sSample" min="1" max="10000" step="1" value="50">
+          </label>
+          <label class="field">
+            <span>Number of runs <small>(dots)</small></span>
+            <input type="number" id="sRuns" min="1" max="5000" step="1" value="200">
+          </label>
+          <div class="field">
+            <span>Show results as</span>
+            <div class="segmented" role="radiogroup" aria-label="Show results as">
+              <label><input type="radio" name="sDisplay" value="count" checked><span>Count</span></label>
+              <label><input type="radio" name="sDisplay" value="percent"><span>Percentage</span></label>
+            </div>
+          </div>
+        </div>
+
+        <p class="form-error" aria-live="polite"></p>
+        <div class="form-actions"><button type="submit" class="btn btn-primary btn-big">Simulate</button></div>
+      </form>
+
+      <!-- ---------- AVERAGE ---------- -->
+      <form class="tab-panel" id="formAverage" data-panel="average" novalidate hidden>
+        <div class="instructions">
+          <p><strong>How it works:</strong> each run picks a group of random numbers (the <em>sample</em>) between the lowest and highest number, then finds their <strong>average</strong>.</p>
+          <p>Each dot on the graph is the average of one sample.</p>
+        </div>
+        <div class="field-grid">
+          <label class="field field-wide">
+            <span>Name <small>(what is being measured)</small></span>
+            <input type="text" id="aName" maxlength="40" value="Dice roll">
+          </label>
+          <label class="field">
+            <span>Lowest number</span>
+            <input type="number" id="aLow" step="any" value="1">
+          </label>
+          <label class="field">
+            <span>Highest number</span>
+            <input type="number" id="aHigh" step="any" value="6">
+          </label>
+          <label class="field">
+            <span>Unit name</span>
+            <input type="text" id="aUnit" maxlength="30" value="points">
+          </label>
+          <label class="field">
+            <span>Sample size <small>(numbers per run)</small></span>
+            <input type="number" id="aSample" min="1" max="10000" step="1" value="10">
+          </label>
+          <label class="field">
+            <span>Number of runs <small>(dots)</small></span>
+            <input type="number" id="aRuns" min="1" max="5000" step="1" value="200">
+          </label>
+        </div>
+        <p class="form-error" aria-live="polite"></p>
+        <div class="form-actions"><button type="submit" class="btn btn-primary btn-big">Simulate</button></div>
+      </form>
+
+      <!-- ---------- RANDOM ---------- -->
+      <form class="tab-panel" id="formRandom" data-panel="random" novalidate hidden>
+        <div class="instructions">
+          <p><strong>How it works:</strong> the computer picks random numbers between the lowest and highest number. Each dot is <strong>one random number</strong>.</p>
+          <p>Notice: plain random numbers usually do <em>not</em> make a bell shape. Compare this with the <em>Average</em> tab!</p>
+        </div>
+        <div class="field-grid">
+          <label class="field field-wide">
+            <span>Name</span>
+            <input type="text" id="rName" maxlength="40" value="Random number">
+          </label>
+          <label class="field">
+            <span>Lowest number</span>
+            <input type="number" id="rLow" step="any" value="1">
+          </label>
+          <label class="field">
+            <span>Highest number</span>
+            <input type="number" id="rHigh" step="any" value="20">
+          </label>
+          <label class="field">
+            <span>Sample size <small>(how many numbers)</small></span>
+            <input type="number" id="rSample" min="1" max="5000" step="1" value="200">
+          </label>
+        </div>
+        <p class="form-error" aria-live="polite"></p>
+        <div class="form-actions"><button type="submit" class="btn btn-primary btn-big">Simulate</button></div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ================= "HOW?" POP-UP ================= -->
+<div class="modal-backdrop" id="explainModal" hidden>
+  <div class="modal modal-explain" role="dialog" aria-modal="true" aria-labelledby="explainTitle">
+    <div class="modal-head">
+      <h2 id="explainTitle">How it was found</h2>
+      <button class="close-btn" type="button" data-close aria-label="Close">✕</button>
+    </div>
+    <div class="modal-body" id="explainBody"></div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

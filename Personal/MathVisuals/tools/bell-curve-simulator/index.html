@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en" class="is-tool">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+  <!-- ===== SEO: title + description are unique to this page ===== -->
+  <title>Bell Curve Simulator: Normal Distribution Demo | MathVisuals</title>
+  <meta name="description" content="Simulate coin flips or build a perfect bell curve, then explore mean, median, standard deviation, margin of error and the 68-95-99.7 rule. Free and projector-ready.">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <link rel="canonical" href="https://mathvisuals.online/tools/bell-curve-simulator/">
+  <meta name="author" content="Mordechai Klein">
+
+  <!-- ===== Social sharing (Open Graph + X/Twitter) ===== -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="MathVisuals">
+  <meta property="og:title" content="Bell Curve Simulator: Normal Distribution Demo | MathVisuals">
+  <meta property="og:description" content="Simulate coin flips or build a perfect bell curve, then explore mean, median, standard deviation, margin of error and the 68-95-99.7 rule. Free and projector-ready.">
+  <meta property="og:url" content="https://mathvisuals.online/tools/bell-curve-simulator/">
+  <meta property="og:image" content="https://mathvisuals.online/assets/img/og/bell-curve-simulator.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Dot plot of 1,000 simulated heights forming a bell curve, with the mean and median marked and the middle 68% within one standard deviation highlighted">
+  <meta property="og:locale" content="en_US">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- ===== Theme + icons ===== -->
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#111a2e" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="../../assets/img/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" href="../../assets/img/apple-touch-icon.png">
+  <link rel="manifest" href="../../site.webmanifest">
+
+  <!-- Applies saved light/dark mode before the page paints (must not be deferred) -->
+  <script src="../../assets/js/theme-init.js"></script>
+
+  <!-- ===== Styles: font → global style guide → this page ===== -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&amp;display=swap">
+  <link rel="stylesheet" href="../../assets/css/site.css">
+  <link rel="stylesheet" href="../../assets/css/tools/bell-curve-simulator.css">
+
+  <!-- ===== Scripts (deferred: run after the HTML is parsed) ===== -->
+  <script src="../../assets/js/tools/bell-curve-simulator.js" defer></script>
+  <script src="../../assets/js/site.js" defer></script>
+
+  <!-- ===== Structured data (schema.org JSON-LD) for search engines ===== -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": [
+      "WebApplication",
+      "LearningResource"
+    ],
+    "name": "Bell Curve Simulator",
+    "url": "https://mathvisuals.online/tools/bell-curve-simulator/",
+    "description": "Simulate coin flips or build a perfect bell curve, then explore mean, median, standard deviation, margin of error and the 68-95-99.7 rule. Free and projector-ready.",
+    "image": "https://mathvisuals.online/assets/img/og/bell-curve-simulator.jpg",
+    "applicationCategory": "EducationalApplication",
+    "operatingSystem": "Any (runs in a web browser)",
+    "browserRequirements": "Requires JavaScript",
+    "inLanguage": "en",
+    "isAccessibleForFree": true,
+    "copyrightYear": 2026,
+    "copyrightHolder": { "@id": "https://mathvisuals.online/#person" },
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "learningResourceType": "Interactive simulation",
+    "educationalUse": [
+      "Classroom demonstration",
+      "Whole-class instruction"
+    ],
+    "educationalLevel": "Grades 6–12 (Statistics)",
+    "teaches": [
+      "Normal distribution",
+      "Mean and median",
+      "Standard deviation",
+      "Empirical rule (68-95-99.7)",
+      "Margin of error",
+      "Simulation"
+    ],
+    "audience": {
+      "@type": "EducationalAudience",
+      "educationalRole": "teacher"
+    },
+    "author": {
+      "@id": "https://mathvisuals.online/#person"
+    },
+    "publisher": {
+      "@id": "https://mathvisuals.online/#person"
+    }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://mathvisuals.online/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Probability & Statistics",
+        "item": "https://mathvisuals.online/#statistics"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": "Bell Curve Simulator",
+        "item": "https://mathvisuals.online/tools/bell-curve-simulator/"
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#tool">Skip to the tool</a>
+
+  <!-- ===== Site header: brand, breadcrumb, navigation, dark-mode toggle ===== -->
+  <header class="site-header">
+    <div class="site-header__inner container">
+      <a class="brand" href="../../" aria-label="MathVisuals home">
+        <img class="brand__mark" src="../../assets/img/logo.svg" alt="" width="32" height="32">
+        <span class="brand__name">Math<span>Visuals</span></span>
+      </a>
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ol>
+          <li><a href="../../">Home</a></li>
+          <li><a href="../../#statistics">Probability & Statistics</a></li>
+          <li><span aria-current="page">Bell Curve Simulator</span></li>
+        </ol>
+      </nav>
+
+      <div class="site-nav">
+        <nav aria-label="Main">
+          <ul class="site-nav__list" id="site-nav-list">
+            <li><a class="site-nav__link" href="#about-tool">Teacher notes</a></li>
+            <li><a class="site-nav__link" href="../../#tools">All tools</a></li>
+            <li><a class="site-nav__link" href="../../#contact">Suggest a tool</a></li>
+          </ul>
+        </nav>
+
+        <!-- Dark-mode switch (wired up in site.js) -->
+        <button class="theme-toggle" type="button" aria-pressed="false" aria-label="Switch to dark mode">
+          <span class="theme-toggle__thumb">
+            <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></svg>
+            <svg class="icon-moon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M20.5 14.6A8.6 8.6 0 0 1 9.4 3.5a8.6 8.6 0 1 0 11.1 11.1z"/></svg>
+          </span>
+        </button>
+
+        <!-- Menu button: only visible on narrow screens -->
+        <button class="nav-toggle btn btn-ghost btn-icon" type="button" aria-expanded="false" aria-controls="site-nav-list" aria-label="Open menu">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+  <!-- =============================================================
+       TOOL: Bell Curve Simulator
+       Original markup inside div.tool-frame; <main class="app"> became a
+       <div> (one <main> per page). The pop-ups sit inside the frame too.
+       ============================================================= -->
+  <div class="tool-frame" id="tool">
+    <div class="app">
+
+      <!-- ================= GRAPH (top two thirds) ================= -->
+      <section class="graph-area" aria-label="Simulation graph">
+
+        <!-- Top left: summary statistics -->
+        <aside class="stats-panel" aria-label="Summary statistics">
+          <h2 class="panel-title">The Numbers</h2>
+          <dl class="stat-list">
+            <div class="stat-row"><dt><span class="key key-mean"></span>Mean</dt><dd id="stMean">—</dd></div>
+            <div class="stat-row"><dt><span class="key key-median"></span>Median</dt><dd id="stMedian">—</dd></div>
+            <div class="stat-row"><dt><span class="key key-sd"></span>Std. Dev. (SD)<button class="q-btn how-btn" type="button" data-explain="sd" aria-label="How the standard deviation was found" title="How was this found?" disabled>?</button></dt><dd id="stSD">—</dd></div>
+            <div class="stat-row" title="95% margin of error: about 95% of the time, the true value is within this distance of the result."><dt>Margin of error <small>(95%)</small></dt><dd id="stMOE">—</dd></div>
+            <div class="stat-row"><dt>Range</dt><dd id="stRange">—</dd></div>
+            <div class="stat-row"><dt>Lowest / Highest</dt><dd id="stMinMax">—</dd></div>
+          </dl>
+
+          <ul class="legend" aria-label="Legend">
+            <li><span class="lg lg-dot"></span>One dot = <span id="lgUnit">one run</span></li>
+            <li><span class="lg lg-curve"></span>Bell curve</li>
+            <li><span class="lg lg-mean"></span>Mean</li>
+            <li><span class="lg lg-median"></span>Median</li>
+            <li><span class="lg lg-band"></span>Within 1 SD of mean</li>
+            <li><span class="lg lg-sdline"></span>1, 2 &amp; 3 SD from mean</li>
+            <li><span class="lg lg-sel"></span>Selected range</li>
+          </ul>
+        </aside>
+
+        <!-- Title + top-right buttons -->
+        <header class="graph-header">
+          <div class="graph-heading">
+            <h1 id="graphTitle">Bell Curve Simulator</h1>
+            <p id="graphSubtitle">Press <strong>Simulate</strong> to create a new simulation.</p>
+          </div>
+          <div class="graph-actions">
+            <button id="skipBtn" class="btn btn-ghost" type="button" hidden>Skip ▶▶</button>
+            <button id="againBtn" class="btn btn-ghost" type="button" hidden>Run again</button>
+            <button id="openSimBtn" class="btn btn-primary btn-big" type="button">Simulate</button>
+          </div>
+        </header>
+
+        <div class="chart-wrap" id="chartWrap">
+          <svg id="chart" role="img" aria-labelledby="graphTitle"></svg>
+          <div class="empty-state" id="emptyState">
+            <svg viewBox="0 0 200 80" class="empty-curve" aria-hidden="true">
+              <path d="M5 75 C 60 75, 70 8, 100 8 S 140 75, 195 75" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+            </svg>
+            <p>No simulation yet.<br>Press <strong>Simulate</strong> in the top right to begin.</p>
+          </div>
+          <div class="tooltip" id="tooltip" role="status" hidden></div>
+        </div>
+      </section>
+
+      <!-- ================= EXPLANATIONS (bottom third) ================= -->
+      <section class="explain-area" aria-label="What the numbers mean">
+        <article class="card card-range" aria-labelledby="rangeTitle">
+          <div class="card-head">
+            <h2 id="rangeTitle">Range Finder</h2>
+            <div class="quick-btns" role="group" aria-label="Quick ranges">
+              <button class="btn btn-small quick-btn" type="button" data-sd="1" disabled>±1 SD</button>
+              <button class="btn btn-small quick-btn" type="button" data-sd="2" disabled>±2 SD</button>
+              <button class="btn btn-small quick-btn" type="button" data-sd="3" disabled>±3 SD</button>
+              <button class="btn btn-small quick-btn" type="button" data-sd="clear" disabled>Clear</button>
+            </div>
+          </div>
+          <div class="range-inputs">
+            <label for="rgFrom">From</label>
+            <input type="number" id="rgFrom" step="any" placeholder="lowest" disabled>
+            <label for="rgTo">to</label>
+            <input type="number" id="rgTo" step="any" placeholder="highest" disabled>
+            <span class="rg-unit" id="rgUnit"></span>
+          </div>
+          <p class="range-hint" id="rgHint"></p>
+          <div class="range-results" id="rgResults" aria-live="polite" hidden>
+            <div class="rg-big"><span id="rgPct">—</span><small id="rgWhat"></small></div>
+            <div class="rg-detail">
+              <p id="rgCount"></p>
+              <p id="rgDots"></p>
+              <div class="rg-z" id="rgZ"></div>
+            </div>
+          </div>
+        </article>
+
+        <article class="card card-mean">
+          <div class="card-head">
+            <h2>Mean</h2>
+            <span class="card-value" id="cardMean">—</span>
+            <button class="btn btn-small how-btn" type="button" data-explain="mean" disabled>How? <span aria-hidden="true">⤢</span></button>
+          </div>
+          <p>The <strong>average</strong>. Add up every result, then divide by how many results there are. It is the <em>balance point</em> of the dots.</p>
+        </article>
+
+        <article class="card card-median">
+          <div class="card-head">
+            <h2>Median</h2>
+            <span class="card-value" id="cardMedian">—</span>
+            <button class="btn btn-small how-btn" type="button" data-explain="median" disabled>How? <span aria-hidden="true">⤢</span></button>
+          </div>
+          <p>The <strong>middle</strong> result. Line up every result from smallest to largest &mdash; half are below this number and half are above.</p>
+        </article>
+      </section>
+    </div><!-- /.app -->
+
+    <!-- ================= SIMULATE POP-UP ================= -->
+    <div class="modal-backdrop" id="simModal" hidden>
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="simModalTitle">
+        <div class="modal-head">
+          <h2 id="simModalTitle">New Simulation</h2>
+          <button class="close-btn" type="button" data-close aria-label="Close">✕</button>
+        </div>
+
+        <div class="tabs" role="tablist">
+          <button class="tab active" role="tab" type="button" data-tab="single" aria-selected="true">Single</button>
+          <button class="tab" role="tab" type="button" data-tab="bell" aria-selected="false">Bell Curve</button>
+        </div>
+
+        <div class="modal-body">
+
+          <!-- ---------- SINGLE ---------- -->
+          <form class="tab-panel" id="formSingle" data-panel="single" novalidate>
+            <div class="instructions">
+              <p><strong>How it works:</strong> list every possible outcome of <em>one</em> try as a group (for a coin: <em>Heads</em> and <em>Tails</em>) and give each one a probability.</p>
+              <p><strong>Check the box</strong> next to the group you want to count. Each dot on the graph shows how many times the checked group happened in one run.</p>
+            </div>
+
+            <div class="groups-head">
+              <span>Show</span><span>Group name</span><span>Probability</span><span></span>
+            </div>
+            <div class="groups" id="groups"></div>
+            <div class="groups-foot">
+              <button type="button" class="btn btn-ghost btn-small" id="addGroupBtn">+ Add group</button>
+              <p class="prob-status" id="probStatus"></p>
+            </div>
+
+            <div class="field-grid">
+              <label class="field">
+                <span>Sample size <small>(tries in each run)</small></span>
+                <input type="number" id="sSample" min="1" max="10000" step="1" value="50">
+              </label>
+              <label class="field">
+                <span>Number of runs <small>(dots)</small></span>
+                <input type="number" id="sRuns" min="1" max="5000" step="1" value="200">
+              </label>
+              <div class="field">
+                <span>Show results as</span>
+                <div class="segmented" role="radiogroup" aria-label="Show results as">
+                  <label><input type="radio" name="sDisplay" value="count" checked><span>Count</span></label>
+                  <label><input type="radio" name="sDisplay" value="percent"><span>Percentage</span></label>
+                </div>
+              </div>
+            </div>
+
+            <p class="form-error" aria-live="polite"></p>
+            <div class="form-actions"><button type="submit" class="btn btn-primary btn-big">Simulate</button></div>
+          </form>
+
+          <!-- ---------- BELL CURVE ---------- -->
+          <form class="tab-panel" id="formBell" data-panel="bell" novalidate hidden>
+            <div class="instructions">
+              <p><strong>How it works:</strong> builds a <em>perfect</em> bell curve. Each dot is one member of the sample (for example, one man).</p>
+              <p>The <strong>lowest</strong> and <strong>highest</strong> numbers are 3 SDs below and above the mean &mdash; almost everyone (99.7%) is in this range. The mean is in the middle, and 1 SD = range ÷ 6.</p>
+            </div>
+            <div class="field-grid">
+              <label class="field field-wide">
+                <span>Title <small>(what is being measured)</small></span>
+                <input type="text" id="bTitle" maxlength="60" value="Height of Adult Men in America">
+              </label>
+              <label class="field">
+                <span>Lowest number</span>
+                <input type="number" id="bLow" step="any" value="60">
+              </label>
+              <label class="field">
+                <span>Highest number</span>
+                <input type="number" id="bHigh" step="any" value="78">
+              </label>
+              <label class="field">
+                <span>Units</span>
+                <input type="text" id="bUnit" maxlength="30" value="inches">
+              </label>
+              <label class="field">
+                <span>Sample size <small>(how many dots)</small></span>
+                <input type="number" id="bSample" min="2" max="10000" step="1" value="1000">
+              </label>
+              <label class="field">
+                <span>Who or what is counted <small>(plural)</small></span>
+                <input type="text" id="bCounted" maxlength="30" value="men">
+              </label>
+            </div>
+            <div class="bell-preview" id="bellPreview" aria-live="polite"></div>
+            <p class="form-error" aria-live="polite"></p>
+            <div class="form-actions"><button type="submit" class="btn btn-primary btn-big">Simulate</button></div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= "HOW?" POP-UP ================= -->
+    <div class="modal-backdrop" id="explainModal" hidden>
+      <div class="modal modal-explain" role="dialog" aria-modal="true" aria-labelledby="explainTitle">
+        <div class="modal-head">
+          <h2 id="explainTitle">How it was found</h2>
+          <button class="close-btn" type="button" data-close aria-label="Close">✕</button>
+        </div>
+        <div class="modal-body" id="explainBody"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =============================================================
+       TEACHER NOTES (below the tool)
+       ============================================================= -->
+  <section class="tool-info" id="about-tool" aria-labelledby="about-tool-title">
+    <div class="container tool-info__grid">
+      <article class="prose">
+        <p class="overline">Teacher notes</p>
+        <h2 id="about-tool-title">Watching a normal distribution build itself</h2>
+        <p class="lead">The Bell Curve Simulator drops one dot at a time until the familiar bell shape
+          appears, then labels the mean, median and standard deviation on the same picture. Students
+          see where the 68-95-99.7 rule comes from instead of memorizing it.</p>
+
+        <h3>Two ways to simulate</h3>
+        <p>Press <strong>Simulate</strong> and choose a tab:</p>
+        <ul>
+          <li><strong>Single:</strong> list every outcome of one try, such as <em>Heads</em> 1/2 and <em>Tails</em> 1/2, check the outcome to count, and set the sample size and number of runs. Each dot is one run, for example “how many heads in 50 flips.” Results can be shown as a count or a percentage.</li>
+          <li><strong>Bell Curve:</strong> enter what is being measured, such as <em>Height of Adult Men</em>, with the lowest and highest values. These are treated as three standard deviations below and above the mean, and the tool builds a perfect normal distribution with one dot per person.</li>
+        </ul>
+
+        <h3>Read the numbers</h3>
+        <p>The panel on the left lists the mean, median, standard deviation, a 95% margin of error,
+          the range, and the lowest and highest results. The <strong>How?</strong> buttons open a
+          step-by-step explanation of how the mean, median and standard deviation were calculated from
+          this data, using the actual numbers.</p>
+
+        <h3>Find the percent in any range</h3>
+        <p>In the <strong>Range Finder</strong>, type a from-and-to range or drag across the chart. The dots
+          inside light up and the tool reports the percent and count in that range, with the z-scores
+          of each edge. The <em>±1 SD</em>, <em>±2 SD</em> and <em>±3 SD</em> buttons show the empirical rule
+          right away: about 68%, 95% and 99.7%.</p>
+
+        <div class="callout">
+          <p><strong>Teaching tip:</strong> run the same coin-flip simulation with 20 runs, then 200, then 2,000.
+            The shape gets smoother and the margin of error shrinks. It's a memorable way to show why
+            larger samples give more reliable results.</p>
+        </div>
+
+        <h2>Frequently asked questions</h2>
+        <div class="faq">
+          <details>
+            <summary>How many dots can it draw?</summary>
+            <div><p>Up to 5,000 runs in Single mode and a sample of up to 10,000 in Bell Curve mode. Use <em>Skip</em> to jump straight to the finished picture during the animation.</p></div>
+          </details>
+          <details>
+            <summary>Is the simulation random?</summary>
+            <div><p>Single mode is random: every run is a new set of simulated tries, so <em>Run again</em> gives a slightly different picture each time. Bell Curve mode builds an ideal normal distribution from the values you enter.</p></div>
+          </details>
+          <details>
+            <summary>What grade levels is it for?</summary>
+            <div><p>Middle school statistics (center and spread) through high school and AP Statistics (normal distributions, z-scores, simulation and margin of error).</p></div>
+          </details>
+        </div>
+      </article>
+
+      <aside aria-label="About this tool">
+        <section class="aside-card">
+          <h2>At a glance</h2>
+          <dl class="facts">
+            <div><dt>Grade level</dt><dd>Grades 6–12, Statistics, AP Statistics</dd></div>
+            <div><dt>Topics</dt><dd>Normal distribution, mean, median, standard deviation, empirical rule, z-scores, margin of error</dd></div>
+            <div><dt>Common Core</dt><dd>6.SP.B.5c, HSS-ID.A.2, HSS-ID.A.4, HSS-IC.B.4</dd></div>
+            <div><dt>Works on</dt><dd>Projectors, smartboards, laptops, tablets</dd></div>
+            <div><dt>Cost</dt><dd><span class="tag tag--free">Free</span></dd></div>
+          </dl>
+        </section>
+        <section class="aside-card">
+          <h2>Related tools</h2>
+          <ul class="link-list">
+            <li><a href="../probability-manipulator/">Probability Manipulator<small>Compound probability grids</small></a></li>
+            <li><a href="../real-life-graphs/">Graphs in Real Life<small>Scatter plots and best-fit lines</small></a></li>
+          </ul>
+        </section>
+      </aside>
+    </div>
+  </section>
+
+  </main>
+
+  <!-- ===== Site footer ===== -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="site-footer__grid">
+        <div class="site-footer__about">
+          <a class="brand" href="../../">
+            <img class="brand__mark" src="../../assets/img/logo.svg" alt="" width="32" height="32">
+            <span class="brand__name">Math<span>Visuals</span></span>
+          </a>
+          <p>Free interactive math visuals for projectors and smartboards, designed by a math teacher with a UX/UI background.</p>
+        </div>
+        <nav aria-label="Number Sense & Operations tools">
+          <h2>Number Sense</h2>
+          <ul>
+            <li><a href="../../tools/integer-number-line/">Integer Number Line</a></li>
+            <li><a href="../../tools/fraction-visualizer/">Fraction Visualizer</a></li>
+          </ul>
+        </nav>
+        <nav aria-label="Algebra & Graphing tools">
+          <h2>Algebra & Graphing</h2>
+          <ul>
+            <li><a href="../../tools/graphing-explorer/">Graphing Explorer</a></li>
+            <li><a href="../../tools/real-life-graphs/">Graphs in Real Life</a></li>
+          </ul>
+        </nav>
+        <nav aria-label="Probability & Statistics tools">
+          <h2>Statistics</h2>
+          <ul>
+            <li><a href="../../tools/probability-manipulator/">Probability Manipulator</a></li>
+            <li><a href="../../tools/bell-curve-simulator/">Bell Curve Simulator</a></li>
+          </ul>
+        </nav>
+      </div>
+      <div class="site-footer__bottom">
+        <p>© <span data-year>2026</span> Mordechai Klein. All rights reserved. The tools are free to use for now, but their design and code are my copyright and may not be copied or republished.</p>
+        <p><a href="../../#about">About</a> · <a href="../../#contact">Suggest a tool</a> · <a href="../../privacy.html">Privacy</a> · <a href="../../style-guide.html">Style guide</a></p>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en" class="is-tool">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+  <!-- ===== SEO: title + description are unique to this page ===== -->
+  <title>Probability Manipulator: AND &amp; OR Probability | MathVisuals</title>
+  <meta name="description" content="Build two probability spaces as colored grids, then add (OR) or multiply (AND) them to see compound probability as one joint sample space. Free for class.">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <link rel="canonical" href="https://mathvisuals.online/tools/probability-manipulator/">
+  <meta name="author" content="Mordechai Klein">
+
+  <!-- ===== Social sharing (Open Graph + X/Twitter) ===== -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="MathVisuals">
+  <meta property="og:title" content="Probability Manipulator: AND &amp; OR Probability | MathVisuals">
+  <meta property="og:description" content="Build two probability spaces as colored grids, then add (OR) or multiply (AND) them to see compound probability as one joint sample space. Free for class.">
+  <meta property="og:url" content="https://mathvisuals.online/tools/probability-manipulator/">
+  <meta property="og:image" content="https://mathvisuals.online/assets/img/og/probability-manipulator.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Joint sample space grid for a coin and a spinner, with the Heads-and-Red square highlighted as 1/8 and the other outcomes struck through">
+  <meta property="og:locale" content="en_US">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- ===== Theme + icons ===== -->
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#111a2e" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="../../assets/img/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" href="../../assets/img/apple-touch-icon.png">
+  <link rel="manifest" href="../../site.webmanifest">
+
+  <!-- Applies saved light/dark mode before the page paints (must not be deferred) -->
+  <script src="../../assets/js/theme-init.js"></script>
+
+  <!-- ===== Styles: font → global style guide → this page ===== -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&amp;display=swap">
+  <link rel="stylesheet" href="../../assets/css/site.css">
+  <link rel="stylesheet" href="../../assets/css/tools/probability-manipulator.css">
+
+  <!-- ===== Scripts (deferred: run after the HTML is parsed) ===== -->
+  <script src="../../assets/js/tools/probability-manipulator.js" defer></script>
+  <script src="../../assets/js/site.js" defer></script>
+
+  <!-- ===== Structured data (schema.org JSON-LD) for search engines ===== -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": [
+      "WebApplication",
+      "LearningResource"
+    ],
+    "name": "Probability Manipulator",
+    "url": "https://mathvisuals.online/tools/probability-manipulator/",
+    "description": "Build two probability spaces as colored grids, then add (OR) or multiply (AND) them to see compound probability as one joint sample space. Free for class.",
+    "image": "https://mathvisuals.online/assets/img/og/probability-manipulator.jpg",
+    "applicationCategory": "EducationalApplication",
+    "operatingSystem": "Any (runs in a web browser)",
+    "browserRequirements": "Requires JavaScript",
+    "inLanguage": "en",
+    "isAccessibleForFree": true,
+    "copyrightYear": 2026,
+    "copyrightHolder": { "@id": "https://mathvisuals.online/#person" },
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "learningResourceType": "Interactive simulation",
+    "educationalUse": [
+      "Classroom demonstration",
+      "Whole-class instruction"
+    ],
+    "educationalLevel": "Grades 7–12",
+    "teaches": [
+      "Compound probability",
+      "Sample spaces",
+      "Independent events",
+      "Multiplication rule P(A and B)",
+      "Addition rule P(A or B)"
+    ],
+    "audience": {
+      "@type": "EducationalAudience",
+      "educationalRole": "teacher"
+    },
+    "author": {
+      "@id": "https://mathvisuals.online/#person"
+    },
+    "publisher": {
+      "@id": "https://mathvisuals.online/#person"
+    }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://mathvisuals.online/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Probability & Statistics",
+        "item": "https://mathvisuals.online/#statistics"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": "Probability Manipulator",
+        "item": "https://mathvisuals.online/tools/probability-manipulator/"
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#tool">Skip to the tool</a>
+
+  <!-- ===== Site header: brand, breadcrumb, navigation, dark-mode toggle ===== -->
+  <header class="site-header">
+    <div class="site-header__inner container">
+      <a class="brand" href="../../" aria-label="MathVisuals home">
+        <img class="brand__mark" src="../../assets/img/logo.svg" alt="" width="32" height="32">
+        <span class="brand__name">Math<span>Visuals</span></span>
+      </a>
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ol>
+          <li><a href="../../">Home</a></li>
+          <li><a href="../../#statistics">Probability & Statistics</a></li>
+          <li><span aria-current="page">Probability Manipulator</span></li>
+        </ol>
+      </nav>
+
+      <div class="site-nav">
+        <nav aria-label="Main">
+          <ul class="site-nav__list" id="site-nav-list">
+            <li><a class="site-nav__link" href="#about-tool">Teacher notes</a></li>
+            <li><a class="site-nav__link" href="../../#tools">All tools</a></li>
+            <li><a class="site-nav__link" href="../../#contact">Suggest a tool</a></li>
+          </ul>
+        </nav>
+
+        <!-- Dark-mode switch (wired up in site.js) -->
+        <button class="theme-toggle" type="button" aria-pressed="false" aria-label="Switch to dark mode">
+          <span class="theme-toggle__thumb">
+            <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></svg>
+            <svg class="icon-moon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M20.5 14.6A8.6 8.6 0 0 1 9.4 3.5a8.6 8.6 0 1 0 11.1 11.1z"/></svg>
+          </span>
+        </button>
+
+        <!-- Menu button: only visible on narrow screens -->
+        <button class="nav-toggle btn btn-ghost btn-icon" type="button" aria-expanded="false" aria-controls="site-nav-list" aria-label="Open menu">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+  <!-- =============================================================
+       TOOL: Probability Manipulator
+       Original markup inside div.tool-frame; <main class="stage"> became
+       a <div>, .brand became .brand-tool (the site header owns .brand),
+       and the buttons use the shared button classes.
+       ============================================================= -->
+  <div class="tool-frame" id="tool">
+    <header class="app-header">
+      <div class="brand-tool">
+        <span class="brand-logo" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="3"/>
+            <path d="M3 9h18M3 15h18M9 3v18M15 3v18"/>
+          </svg>
+        </span>
+        <div class="brand-text">
+          <h1>Probability Manipulator</h1>
+          <p>Build two spaces &middot; add or multiply &middot; watch the colors blend</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button id="helpBtn" class="btn btn-ghost" type="button"><span aria-hidden="true">?</span> How it works</button>
+        <button id="resetBtn" class="btn btn-danger" type="button">Reset both</button>
+      </div>
+    </header>
+
+    <div class="stage">
+
+      <!-- ================= LEFT SPACE ================= -->
+      <section class="half" data-side="A" aria-labelledby="headA">
+        <div class="half-top">
+          <div class="half-title">
+            <span class="space-badge badge-a">Space&nbsp;A</span>
+            <h2 id="headA" class="sr-only">Set up the first probability</h2>
+          </div>
+
+          <form class="setup" novalidate>
+            <div class="outcome-block">
+              <div class="frac" role="group" aria-label="Probability of outcome 1, Space A">
+                <input class="f-num" type="number" inputmode="numeric" min="0" max="20" step="1" value="1" aria-label="Numerator of outcome 1">
+                <span class="f-bar" aria-hidden="true"></span>
+                <input class="f-den" type="number" inputmode="numeric" min="1" max="20" step="1" value="2" aria-label="Denominator of outcome 1">
+              </div>
+              <input class="f-label" type="text" maxlength="18" placeholder="e.g. Heads" aria-label="Label for outcome 1">
+            </div>
+
+            <div class="outcome-block">
+              <div class="frac" role="group" aria-label="Probability of outcome 2, Space A">
+                <input class="f-num" type="number" inputmode="numeric" min="0" max="20" step="1" value="1" aria-label="Numerator of outcome 2">
+                <span class="f-bar" aria-hidden="true"></span>
+                <input class="f-den" type="number" inputmode="numeric" min="1" max="20" step="1" value="2" aria-label="Denominator of outcome 2">
+              </div>
+              <input class="f-label" type="text" maxlength="18" placeholder="e.g. Tails" aria-label="Label for outcome 2">
+            </div>
+
+            <button class="btn btn-primary btn-build" type="submit">Build grid</button>
+          </form>
+
+          <div class="summary" hidden>
+            <div class="legend"></div>
+            <button class="btn btn-ghost btn-sm btn-edit" type="button">Edit</button>
+          </div>
+
+          <p class="form-error" role="alert" hidden></p>
+        </div>
+
+        <div class="grid-area">
+          <div class="grid-empty">
+            <span class="grid-empty-mark" aria-hidden="true">?</span>
+            <p>Choose a fraction and two outcome names, then press <strong>Build grid</strong>.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= CENTER CONTROL ================= -->
+      <div class="divider" aria-hidden="false">
+        <button id="manipulateBtn" class="btn btn-primary btn-manipulate" type="button" disabled
+                aria-describedby="manipulateHint">
+          <span class="mani-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round">
+              <path d="M5 12h14M12 5v14"/>
+            </svg>
+          </span>
+          Manipulate
+        </button>
+        <span id="manipulateHint" class="mani-hint">Build both grids to unlock</span>
+      </div>
+
+      <!-- ================= RIGHT SPACE ================= -->
+      <section class="half" data-side="B" aria-labelledby="headB">
+        <div class="half-top">
+          <div class="half-title">
+            <span class="space-badge badge-b">Space&nbsp;B</span>
+            <h2 id="headB" class="sr-only">Set up the second probability</h2>
+          </div>
+
+          <form class="setup" novalidate>
+            <div class="outcome-block">
+              <div class="frac" role="group" aria-label="Probability of outcome 1, Space B">
+                <input class="f-num" type="number" inputmode="numeric" min="0" max="20" step="1" value="1" aria-label="Numerator of outcome 1">
+                <span class="f-bar" aria-hidden="true"></span>
+                <input class="f-den" type="number" inputmode="numeric" min="1" max="20" step="1" value="4" aria-label="Denominator of outcome 1">
+              </div>
+              <input class="f-label" type="text" maxlength="18" placeholder="e.g. Red" aria-label="Label for outcome 1">
+            </div>
+
+            <div class="outcome-block">
+              <div class="frac" role="group" aria-label="Probability of outcome 2, Space B">
+                <input class="f-num" type="number" inputmode="numeric" min="0" max="20" step="1" value="3" aria-label="Numerator of outcome 2">
+                <span class="f-bar" aria-hidden="true"></span>
+                <input class="f-den" type="number" inputmode="numeric" min="1" max="20" step="1" value="4" aria-label="Denominator of outcome 2">
+              </div>
+              <input class="f-label" type="text" maxlength="18" placeholder="e.g. Blue" aria-label="Label for outcome 2">
+            </div>
+
+            <button class="btn btn-primary btn-build" type="submit">Build grid</button>
+          </form>
+
+          <div class="summary" hidden>
+            <div class="legend"></div>
+            <button class="btn btn-ghost btn-sm btn-edit" type="button">Edit</button>
+          </div>
+
+          <p class="form-error" role="alert" hidden></p>
+        </div>
+
+        <div class="grid-area">
+          <div class="grid-empty">
+            <span class="grid-empty-mark" aria-hidden="true">?</span>
+            <p>Choose a fraction and two outcome names, then press <strong>Build grid</strong>.</p>
+          </div>
+        </div>
+      </section>
+
+    </div><!-- /.stage -->
+
+    <!-- ================= MANIPULATE DIALOG ================= -->
+    <div class="overlay" id="maniOverlay" hidden>
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="maniTitle">
+        <div class="modal-head">
+          <h2 id="maniTitle">Manipulate the two spaces</h2>
+          <button class="icon-btn" type="button" data-close aria-label="Close">&times;</button>
+        </div>
+
+        <div class="modal-body">
+          <fieldset class="op-picker">
+            <legend>1. Pick an operation</legend>
+            <div class="op-row">
+              <button class="op-btn is-on" type="button" data-op="add">
+                <span class="op-sign" aria-hidden="true">+</span>
+                <span class="op-name">Add &mdash; <em>or</em></span>
+                <span class="op-note">Either one happens, or both do</span>
+                <span class="op-rule">P(A) + P(B) &minus; P(A and B)</span>
+              </button>
+              <button class="op-btn" type="button" data-op="multiply">
+                <span class="op-sign" aria-hidden="true">&times;</span>
+                <span class="op-name">Multiply &mdash; <em>and</em></span>
+                <span class="op-note">Both happen in the same scenario</span>
+                <span class="op-rule">P(A) &times; P(B)</span>
+              </button>
+            </div>
+          </fieldset>
+
+          <fieldset class="pick-row">
+            <legend>2. Pick one fraction from each side</legend>
+            <div class="pick-grid">
+              <label class="pick">
+                <span class="pick-cap"><i class="dot dot-a"></i> From Space A</span>
+                <select id="pickA"></select>
+              </label>
+              <span class="pick-op" id="pickOpSign" aria-hidden="true">+</span>
+              <label class="pick">
+                <span class="pick-cap"><i class="dot dot-b"></i> From Space B</span>
+                <select id="pickB"></select>
+              </label>
+            </div>
+          </fieldset>
+
+          <div class="preview" id="maniPreview" aria-live="polite"></div>
+        </div>
+
+        <div class="modal-foot">
+          <button class="btn btn-ghost" type="button" data-close>Cancel</button>
+          <button class="btn btn-primary btn-lg" id="computeBtn" type="button">Show the result</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= RESULT (FULL SCREEN) ================= -->
+    <div class="overlay overlay-full" id="resultOverlay" hidden>
+      <div class="result" role="dialog" aria-modal="true" aria-labelledby="resultTitle">
+        <div class="result-head">
+          <h2 id="resultTitle" class="equation"></h2>
+          <div class="result-actions">
+            <button class="btn btn-ghost" type="button" id="backToMani">Change it</button>
+            <button class="icon-btn" type="button" data-close aria-label="Close result">&times;</button>
+          </div>
+        </div>
+
+        <p class="result-note" id="resultNote"></p>
+
+        <div class="grid-area result-grid-area" id="resultGridArea"></div>
+
+        <div class="result-legend" id="resultLegend"></div>
+      </div>
+    </div>
+
+    <!-- ================= HELP ================= -->
+    <div class="overlay" id="helpOverlay" hidden>
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+        <div class="modal-head">
+          <h2 id="helpTitle">How it works</h2>
+          <button class="icon-btn" type="button" data-close aria-label="Close">&times;</button>
+        </div>
+        <div class="modal-body help-body">
+          <ol>
+            <li><strong>Type one fraction.</strong> The denominator copies to the other fraction, and the second numerator fills in as the complement &mdash; the two chances always total one whole.</li>
+            <li><strong>Name both outcomes</strong> and press <em>Build grid</em>. Each square is one equally likely result, painted in one of two contrasting colors.</li>
+            <li><strong>Do it again on the other side</strong> for a second experiment.</li>
+            <li><strong>Press Manipulate</strong> and pick an operation. <em>Add</em> answers <strong>or</strong> &mdash; either one happens. <em>Multiply</em> answers <strong>and</strong> &mdash; both happen together.</li>
+            <li><strong>Every result is one scenario.</strong> The two spaces are independent experiments, so pairing them gives a grid of Space&nbsp;A across by Space&nbsp;B down, and every square in it is equally likely. The chances are never just added as fractions.</li>
+            <li><strong>Every square is named</strong> with its full outcome &mdash; <em>Heads, Red</em> &middot; <em>Heads, Blue</em> &middot; <em>Tails, Red</em> &middot; <em>Tails, Blue</em>. The squares that do not count toward the answer have a line struck through their name.</li>
+            <li><strong>Read the blend.</strong> Squares where both chosen outcomes happen are the two colors mixed, carrying both labels separated by a comma.</li>
+          </ol>
+          <p class="help-tip">Colors are re-rolled every time you build, and are always kept pale so the dark labels stay readable on a projector.</p>
+        </div>
+        <div class="modal-foot">
+          <button class="btn btn-primary" type="button" data-close>Got it</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =============================================================
+       TEACHER NOTES (below the tool)
+       ============================================================= -->
+  <section class="tool-info" id="about-tool" aria-labelledby="about-tool-title">
+    <div class="container tool-info__grid">
+      <article class="prose">
+        <p class="overline">Teacher notes</p>
+        <h2 id="about-tool-title">Seeing compound probability: AND, OR and the sample space</h2>
+        <p class="lead">Why do we multiply for “and” but add, then subtract the overlap, for “or”? The
+          Probability Manipulator answers that with a picture: two simple experiments become one grid
+          of equally likely outcomes, and the answer is just the squares that count.</p>
+
+        <h3>How to use it in class</h3>
+        <ol>
+          <li><strong>Build Space A.</strong> Enter one probability, such as 1/2, and name both outcomes, such as <em>Heads</em> and <em>Tails</em>. The second fraction fills in automatically so the two always add up to one whole. Press <em>Build grid</em>.</li>
+          <li><strong>Build Space B</strong> the same way, for example a spinner that lands on <em>Red</em> 1/4 of the time and <em>Blue</em> 3/4.</li>
+          <li><strong>Press Manipulate.</strong> Choose <em>Add (or)</em> or <em>Multiply (and)</em>, then pick one outcome from each space. A live preview shows the equation before you commit.</li>
+          <li><strong>Show the result.</strong> A full-screen grid pairs every outcome of A with every outcome of B. Each square is labeled with its full outcome, such as “Heads, Red,” and squares that don't count are struck through.</li>
+        </ol>
+
+        <h3>Multiplying: P(A and B)</h3>
+        <p>For independent events, the squares where both chosen outcomes happen are painted in the
+          blended color of the two. For Heads (1/2) and Red (1/4), that's 1 square out of 8, matching
+          P(A) × P(B) = 1/8. Students can count it.</p>
+
+        <h3>Adding: P(A or B)</h3>
+        <p>The “or” result paints every square where at least one chosen outcome happens. The legend
+          splits that region into three pieces that don't overlap: only A, only B, and both. It shows
+          why the addition rule subtracts P(A and B): otherwise the overlap would be counted twice.</p>
+
+        <div class="callout">
+          <p><strong>Projector tip:</strong> the outcome colors are new every time you build a grid, but
+            they are always pale enough for the dark labels to stay readable on a washed-out projector.
+            If two colors look too similar, just press <em>Build grid</em> again.</p>
+        </div>
+
+        <h2>Frequently asked questions</h2>
+        <div class="faq">
+          <details>
+            <summary>What denominators can I use?</summary>
+            <div><p>Any whole number from 1 to 20. Each space has two outcomes whose probabilities share that denominator and add to 1.</p></div>
+          </details>
+          <details>
+            <summary>Does the tool assume the events are independent?</summary>
+            <div><p>Yes. The two spaces are treated as separate experiments, such as a coin and a spinner, so pairing them gives a joint sample space of every combination. This is the setting for the multiplication rule taught in grade 7 and high school statistics.</p></div>
+          </details>
+          <details>
+            <summary>Is it free to use with my class?</summary>
+            <div><p>Yes. It's free, needs no account, and runs in any modern browser on a smartboard, laptop, Chromebook or tablet.</p></div>
+          </details>
+        </div>
+      </article>
+
+      <aside aria-label="About this tool">
+        <section class="aside-card">
+          <h2>At a glance</h2>
+          <dl class="facts">
+            <div><dt>Grade level</dt><dd>Grade 7 through high school statistics</dd></div>
+            <div><dt>Topics</dt><dd>Compound events, sample spaces, independent events, addition and multiplication rules</dd></div>
+            <div><dt>Common Core</dt><dd>7.SP.C.8, HSS-CP.A.2, HSS-CP.B.7</dd></div>
+            <div><dt>Works on</dt><dd>Projectors, smartboards, laptops, tablets</dd></div>
+            <div><dt>Cost</dt><dd><span class="tag tag--free">Free</span></dd></div>
+          </dl>
+        </section>
+        <section class="aside-card">
+          <h2>Related tools</h2>
+          <ul class="link-list">
+            <li><a href="../bell-curve-simulator/">Bell Curve Simulator<small>Simulate many trials</small></a></li>
+            <li><a href="../fraction-visualizer/">Fraction Visualizer<small>Multiply fractions with an area model</small></a></li>
+          </ul>
+        </section>
+      </aside>
+    </div>
+  </section>
+
+  </main>
+
+  <!-- ===== Site footer ===== -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="site-footer__grid">
+        <div class="site-footer__about">
+          <a class="brand" href="../../">
+            <img class="brand__mark" src="../../assets/img/logo.svg" alt="" width="32" height="32">
+            <span class="brand__name">Math<span>Visuals</span></span>
+          </a>
+          <p>Free interactive math visuals for projectors and smartboards, designed by a math teacher with a UX/UI background.</p>
+        </div>
+        <nav aria-label="Number Sense & Operations tools">
+          <h2>Number Sense</h2>
+          <ul>
+            <li><a href="../../tools/integer-number-line/">Integer Number Line</a></li>
+            <li><a href="../../tools/fraction-visualizer/">Fraction Visualizer</a></li>
+          </ul>
+        </nav>
+        <nav aria-label="Algebra & Graphing tools">
+          <h2>Algebra & Graphing</h2>
+          <ul>
+            <li><a href="../../tools/graphing-explorer/">Graphing Explorer</a></li>
+            <li><a href="../../tools/real-life-graphs/">Graphs in Real Life</a></li>
+          </ul>
+        </nav>
+        <nav aria-label="Probability & Statistics tools">
+          <h2>Statistics</h2>
+          <ul>
+            <li><a href="../../tools/probability-manipulator/">Probability Manipulator</a></li>
+            <li><a href="../../tools/bell-curve-simulator/">Bell Curve Simulator</a></li>
+          </ul>
+        </nav>
+      </div>
+      <div class="site-footer__bottom">
+        <p>© <span data-year>2026</span> Mordechai Klein. All rights reserved. The tools are free to use for now, but their design and code are my copyright and may not be copied or republished.</p>
+        <p><a href="../../#about">About</a> · <a href="../../#contact">Suggest a tool</a> · <a href="../../privacy.html">Privacy</a> · <a href="../../style-guide.html">Style guide</a></p>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

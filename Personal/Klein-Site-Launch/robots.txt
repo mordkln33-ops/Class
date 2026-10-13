@@ -1,0 +1,7 @@
+# robots.txt — tells search engines what they may crawl.
+# TODO: replace yourdomain.com with your real domain.
+
+User-agent: *
+Allow: /
+
+Sitemap: https://www.yourdomain.com/sitemap.xml

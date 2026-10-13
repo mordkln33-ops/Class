@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Number Line — Horizontal</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="layout-horizontal">
+  <main class="page">
+
+    <!-- ---------- TOP THIRD: the horizontal number line ---------- -->
+    <section class="gauge-area" aria-label="Horizontal number line from negative 20 to positive 20">
+      <div class="gauge gauge-horizontal">
+        <div class="track track-horizontal">
+          <div class="fill fill-horizontal" id="horizontalFill"></div>
+          <span class="zero-line zero-line-horizontal"></span>
+        </div>
+        <div class="scale scale-horizontal" id="horizontalScale"></div>
+      </div>
+    </section>
+
+    <!-- ---------- BOTTOM LEFT: the two operations ---------- -->
+    <section class="panel controls">
+      <header>
+        <h1>Number Line</h1>
+        <p class="subtitle">Same operations, shown on a horizontal scale.</p>
+      </header>
+
+      <div class="value-card">
+        <span class="value-label">Current value</span>
+        <strong id="currentValue" class="value-number">0</strong>
+        <span id="rangeNote" class="value-note"></span>
+      </div>
+
+      <form class="op-form" id="addForm" novalidate>
+        <label for="addInput">Add</label>
+        <div class="op-row">
+          <input id="addInput" type="number" step="any" placeholder="e.g. 5 or −3" required>
+          <button class="btn btn-add" type="submit">Submit</button>
+        </div>
+      </form>
+
+      <form class="op-form" id="subtractForm" novalidate>
+        <label for="subtractInput">Subtract</label>
+        <div class="op-row">
+          <input id="subtractInput" type="number" step="any" placeholder="e.g. 5 or −3" required>
+          <button class="btn btn-sub" type="submit">Submit</button>
+        </div>
+      </form>
+
+      <a class="page-link" href="index.html">← Vertical version</a>
+    </section>
+
+    <!-- ---------- BOTTOM RIGHT: history ---------- -->
+    <aside class="panel history" aria-label="History">
+      <div class="history-head">
+        <h2>History</h2>
+        <button class="btn btn-ghost" id="clearHistory" type="button">Clear</button>
+      </div>
+      <ol class="history-list" id="historyList">
+        <li class="history-empty" data-placeholder>No operations yet.</li>
+      </ol>
+    </aside>
+
+  </main>
+
+  <script src="script.js"></script>
+</body>
+
+</html>

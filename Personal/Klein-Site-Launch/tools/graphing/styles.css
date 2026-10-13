@@ -1,0 +1,1589 @@
+/* ============================================================
+   Graphing Explorer — Algebra 1
+   ------------------------------------------------------------
+   Tuned for projection. Projectors lift blacks toward grey and
+   soften edges, so every colour here is checked against white:
+   text sits at 7:1 or better (WCAG AAA) and no line, border or
+   rule is thinner than the projector can resolve.
+
+   Two scales work together:
+     --ui-scale  sizes the html chrome, and steps down on short
+                 laptop screens so nothing overflows.
+     the graph's own font and stroke vars are overwritten by
+                 script.js from the measured pixel size of the
+                 plane, so labels on the coordinate plane keep a
+                 constant SIZE ON SCREEN however large or small
+                 the panel happens to be.
+   ============================================================ */
+
+:root {
+  /* ---- Type scale ------------------------------------------
+     Every font-size in the file comes from these steps. Raise
+     --ui-scale for a dim room or a deep classroom; everything
+     grows together and the panels keep their proportions. */
+  --ui-scale: 1;
+  --fs-3xs: calc(13px * var(--ui-scale));
+  --fs-2xs: calc(14px * var(--ui-scale));
+  --fs-xs: calc(15px * var(--ui-scale));
+  --fs-sm: calc(16px * var(--ui-scale));
+  --fs-md: calc(18px * var(--ui-scale));
+  --fs-lg: calc(20px * var(--ui-scale));
+  --fs-xl: calc(23px * var(--ui-scale));
+  --fs-2xl: calc(28px * var(--ui-scale));
+
+  /* ---- Coordinate-plane type and strokes -------------------
+     Values are SVG user units. script.js recomputes them from
+     the rendered size of the graph; these are the fallbacks
+     that apply before it runs, sized for a full-screen graph. */
+  --fs-axis-num: 16px;
+  --fs-axis-name: 22px;
+  --fs-line-tag: 18px;
+  --fs-point-label: 19px;
+  --fs-travel-cap: 18px;
+  --sw-line: 5px;
+  --sw-guide: 3px;
+  --sw-grid: 1.5px;
+  --sw-grid-five: 2.4px;
+  --sw-axis: 4px;
+  --sw-frame: 2.5px;
+  --sw-dot: 3.5px;
+  --dot-r: 9px;
+  --dot-pop: 19px;
+  --dot-dip: 6px;
+
+  /* ---- Surfaces --------------------------------------------
+     The page sits a clear step darker than the panels so the
+     panel edges survive a washed-out image. */
+  --bg: #dbe3ec;
+  --surface: #ffffff;
+  --surface-2: #eef2f7;
+  --border: #8296b0;
+  /* 3.0:1 on white — the WCAG floor for UI parts */
+  --border-strong: #5b6b80;
+  /* 5.4:1 */
+
+  /* ---- Ink -------------------------------------------------
+     Contrast against --surface is noted for each. Nothing here
+     is a "muted grey" any more; the old #94a3b8 measured 2.6:1
+     and disappeared completely under a projector. */
+  --text: #0b1220;
+  /* 18.7:1 */
+  --text-soft: #1e293b;
+  /* 14.6:1 */
+  --text-mute: #455568;
+  /*  7.6:1 — still AAA */
+
+  /* ---- Accents ---------------------------------------------
+     Shifted two steps darker than the original palette. Bright
+     mid-tone blues/reds/teals bleach out when projected. */
+  --accent: #1d4ed8;
+  /*  6.7:1 — solid fills, white text on top */
+  --accent-dark: #1e3a8a;
+  /* 10.4:1 — hover, and accent text on white */
+  --accent-soft: #dbeafe;
+  --danger: #9f1239;
+  /*  8.0:1 — deep rose; bright red washes out */
+  --danger-dark: #7f0f2e;
+  --danger-soft: #ffe4e6;
+  --success: #115e59;
+  /*  7.6:1 */
+  --plot: #5b21b6;
+  /*  9.0:1 */
+
+  /* ---- Graph strokes ---------------------------------------
+     A 1px #e6ecf3 grid line measures 1.2:1 and is simply not
+     there on a projected image. These read like real graph
+     paper and step clearly: 2.5:1, then 4.8:1, then the axis
+     at 18.7:1, so squares can be counted from the back row. */
+  --grid: #94a7c0;
+  --grid-five: #64748b;
+  --axis: #0b1220;
+
+  --radius: 14px;
+  --radius-sm: 9px;
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, .10), 0 1px 3px rgba(15, 23, 42, .08);
+  --shadow-md: 0 4px 12px rgba(15, 23, 42, .14), 0 2px 4px rgba(15, 23, 42, .08);
+  --shadow-lg: 0 18px 45px rgba(15, 23, 42, .30);
+
+  --header-h: calc(76px * var(--ui-scale));
+  --card-gap: 14px;
+  /* must match CARD_GAP in script.js */
+
+  /* Space between and inside the four panels. The graph is a square limited
+     by the height it is given, so every pixel taken out of these goes
+     straight into making it bigger. They tighten on short screens. */
+  --gap: 12px;
+  --pad: 12px;
+  --body-pad: 12px 14px;
+
+  --font: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", Arial, sans-serif;
+  --mono: "Cascadia Mono", "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
+}
+
+/* ---- Laptop screens --------------------------------------
+   The layout is one fixed screenful, so vertical room is what
+   runs out first. Each step keeps the chrome at or above its
+   original size while giving the panels room to breathe. */
+
+@media (max-height: 900px) {
+  :root {
+    --ui-scale: .95;
+    --gap: 9px;
+    --pad: 9px;
+    --body-pad: 10px 12px;
+  }
+}
+
+@media (max-height: 820px) {
+  :root {
+    --ui-scale: .88;
+    --gap: 8px;
+    --pad: 8px;
+    --body-pad: 9px 11px;
+  }
+}
+
+@media (max-height: 720px) {
+  :root {
+    --ui-scale: .8;
+    --gap: 7px;
+    --pad: 7px;
+    --body-pad: 8px 10px;
+  }
+}
+
+/* A large, distant display is the case this file is tuned for:
+   take the extra room and push everything up a step. */
+@media (min-width: 1900px) and (min-height: 1000px) {
+  :root {
+    --ui-scale: 1.12;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Author `display` rules outrank the browser's built-in [hidden] rule,
+   so state this explicitly for every element toggled with el.hidden. */
+[hidden] {
+  display: none !important;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  font-size: var(--fs-sm);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+/* ---------------- Header ---------------- */
+
+.app-header {
+  height: var(--header-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 0 18px;
+  background: var(--surface);
+  border-bottom: 2px solid var(--border-strong);
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  z-index: 5;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.brand-logo {
+  display: grid;
+  place-items: center;
+  width: calc(44px * var(--ui-scale));
+  height: calc(44px * var(--ui-scale));
+  border-radius: 11px;
+  background: var(--accent-dark);
+  color: #fff;
+  flex: none;
+}
+
+.brand-logo svg {
+  width: 60%;
+  height: 60%;
+}
+
+.brand-text h1 {
+  font-size: var(--fs-xl);
+  font-weight: 800;
+  letter-spacing: -.01em;
+}
+
+.brand-text p {
+  font-size: var(--fs-2xs);
+  font-weight: 600;
+  color: var(--text-mute);
+  margin-top: 2px;
+}
+
+.header-actions {
+  display: flex;
+  gap: 10px;
+  flex: none;
+}
+
+/* ---------------- Buttons ---------------- */
+
+.btn {
+  font: inherit;
+  font-weight: 700;
+  font-size: var(--fs-sm);
+  border: 2px solid transparent;
+  border-radius: var(--radius-sm);
+  padding: calc(10px * var(--ui-scale)) calc(18px * var(--ui-scale));
+  cursor: pointer;
+  transition: background .15s, border-color .15s, color .15s, transform .08s, box-shadow .15s;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  white-space: nowrap;
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+/* A pale focus ring is invisible when projected — use the solid accent. */
+.btn:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent-dark);
+}
+
+.btn-primary:hover {
+  background: var(--accent-dark);
+}
+
+.btn-ghost {
+  background: var(--surface);
+  border-color: var(--border-strong);
+  color: var(--text-soft);
+}
+
+.btn-ghost:hover {
+  background: var(--surface-2);
+  border-color: var(--text-soft);
+  color: var(--text);
+}
+
+.btn-danger {
+  color: var(--danger);
+  border-color: var(--danger);
+}
+
+.btn-danger:hover {
+  background: var(--danger-soft);
+  border-color: var(--danger-dark);
+  color: var(--danger-dark);
+}
+
+.btn-solid-danger {
+  background: var(--danger);
+  color: #fff;
+  border-color: var(--danger-dark);
+}
+
+.btn-solid-danger:hover {
+  background: var(--danger-dark);
+}
+
+.btn-quiet {
+  background: var(--surface);
+  color: var(--text-soft);
+  border-color: var(--border-strong);
+}
+
+.btn-quiet:hover {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+/* ---------------- Layout ---------------- */
+
+/*
+  Three rows, and only the middle one is elastic:
+
+    row 1  auto   the input forms — exactly as tall as they need, so they can
+                  never be cut off or need scrolling
+    row 2  1fr    all the slack
+    row 3  auto   the list of plotted points, capped so it cannot run away
+
+  Each panel spans two of them so both columns still fill the screen exactly:
+  left is input + (lines spanning 2-3), right is (graph spanning 1-2) + points.
+  Because the graph covers rows 1 and 2, the input panel growing by a line of
+  status text shrinks row 2 by the same amount and leaves the graph untouched.
+
+  This replaces a grid of twelve equal rows, which handed the input and points
+  panels more height than their contents ever used and starved the graph of
+  the rest.
+
+  The columns are not even: the graph is a square limited by its height, so a
+  half-width column left 150-240px of dead space beside it on a laptop. 1.38fr
+  is the ratio at which the square fills its column on a 16:9 or 16:10 screen,
+  and the width that frees up goes to the tables.
+*/
+.layout {
+  height: calc(100vh - var(--header-h));
+  display: grid;
+  grid-template-columns: 1.38fr 1fr;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: var(--gap);
+  padding: var(--pad);
+}
+
+.panel-input {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.panel-lines {
+  grid-column: 1;
+  grid-row: 2 / span 2;
+}
+
+.panel-graph {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+}
+
+.panel-points {
+  grid-column: 2;
+  grid-row: 3;
+  /* sized by its chips, but never at the graph's expense */
+  max-height: 26vh;
+}
+
+/*
+  On a genuinely narrow screen the graph runs out of width before it runs out
+  of height, so the lopsided split starves it instead of saving space. Go back
+  to even columns there.
+*/
+@media (max-width: 1150px) {
+  .layout {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.panel {
+  background: var(--surface);
+  border: 2px solid var(--border-strong);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: calc(9px * var(--ui-scale)) 14px;
+  border-bottom: 2px solid var(--border);
+  background: var(--surface-2);
+  flex: none;
+}
+
+.panel-head h2 {
+  font-size: var(--fs-xs);
+  font-weight: 800;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--text);
+}
+
+.panel-hint {
+  font-size: var(--fs-2xs);
+  font-weight: 600;
+  color: var(--text-mute);
+}
+
+/* everything that sits on the right of a panel heading */
+.head-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 0 1 auto;
+}
+
+.panel-body {
+  flex: 1;
+  min-height: 0;
+  padding: var(--body-pad);
+  overflow: auto;
+}
+
+.badge {
+  font-size: var(--fs-2xs);
+  font-weight: 800;
+  color: var(--accent-dark);
+  background: var(--accent-soft);
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  padding: 3px 11px;
+}
+
+/* ---------------- Magnify a section ---------------- */
+
+.zoom-btn {
+  flex: none;
+  width: calc(32px * var(--ui-scale));
+  height: calc(32px * var(--ui-scale));
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 2px solid var(--border-strong);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text-soft);
+  cursor: pointer;
+  transition: background .15s, color .15s, border-color .15s;
+}
+
+.zoom-btn svg {
+  width: 62%;
+  height: 62%;
+}
+
+.zoom-btn:hover {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent-dark);
+}
+
+.zoom-btn:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.zoom-btn .icon-out {
+  display: none;
+}
+
+.panel.is-zoomed .zoom-btn {
+  background: var(--accent);
+  border-color: var(--accent-dark);
+  color: #fff;
+}
+
+.panel.is-zoomed .zoom-btn:hover {
+  background: var(--accent-dark);
+}
+
+.panel.is-zoomed .zoom-btn .icon-in {
+  display: none;
+}
+
+.panel.is-zoomed .zoom-btn .icon-out {
+  display: block;
+}
+
+/*
+  A magnified panel leaves the grid and becomes a floating window: it keeps its
+  normal layout width/height (set in js) and is drawn at twice that size, so the
+  graph, the tables and every control inside stay fully interactive. This is the
+  fastest way to make one section readable from the very back of the room.
+*/
+.panel.is-zoomed {
+  position: fixed;
+  transform: scale(2);
+  transform-origin: top left;
+  border-color: var(--text);
+  box-shadow: var(--shadow-lg);
+}
+
+.panel.is-zoomed .panel-head {
+  cursor: move;
+  touch-action: none;
+}
+
+.panel.is-zoomed.is-dragging {
+  user-select: none;
+}
+
+.panel.is-zoomed.is-dragging .panel-head {
+  cursor: grabbing;
+}
+
+/* the dashed placeholder left behind in the grid */
+.panel-ghost {
+  border: 3px dashed var(--border-strong);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  display: grid;
+  place-items: center;
+  text-align: center;
+  padding: 10px;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  color: var(--text-mute);
+}
+
+.ghost-icon {
+  font-size: var(--fs-2xl);
+}
+
+.ghost-text {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  line-height: 1.5;
+  margin-top: 6px;
+}
+
+.ghost-text strong {
+  color: var(--text);
+}
+
+/* ---------------- Empty states ---------------- */
+
+.empty-state {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 7px;
+  padding: 12px 6%;
+  color: var(--text-mute);
+}
+
+.empty-icon {
+  font-size: calc(40px * var(--ui-scale));
+}
+
+.empty-title {
+  font-size: var(--fs-md);
+  font-weight: 800;
+  color: var(--text);
+}
+
+.empty-sub {
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  line-height: 1.6;
+  max-width: 46ch;
+  color: var(--text-soft);
+}
+
+.empty-sub strong {
+  color: var(--accent-dark);
+  font-weight: 800;
+}
+
+/* ---------------- Graph ---------------- */
+
+.graph-body {
+  display: grid;
+  place-items: center;
+  padding: 8px;
+  /* nothing here is ever allowed to be cut off — see .graph-stage */
+  overflow: visible;
+}
+
+/*
+  Fallback sizing: a square as tall as the box, narrowed if that overflows.
+  max-width can leave the svg letterboxed but never clipped.
+*/
+.graph-stage {
+  position: relative;
+  height: 100%;
+  aspect-ratio: 1 / 1;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+/*
+  The real rule. cqmin is the smaller of the container's two sides, so this is
+  exactly the largest square that fits — no overflow to hide in either
+  direction, whichever way the panel happens to be proportioned.
+*/
+@supports (width: 1cqmin) {
+  .graph-body {
+    container-type: size;
+  }
+
+  .graph-stage {
+    width: 100cqmin;
+    height: 100cqmin;
+  }
+}
+
+#graph {
+  width: 100%;
+  height: 100%;
+  display: block;
+  touch-action: none;
+  cursor: crosshair;
+  user-select: none;
+}
+
+.graph-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.overlay-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.overlay-layer>* {
+  pointer-events: auto;
+}
+
+.overlay-layer.tips>* {
+  pointer-events: none;
+}
+
+/*
+  SVG element styling. Sizes are SVG user units, so they shrink with the
+  plane; script.js rewrites the --fs-* vars from the measured pixel size to
+  hold the labels at a constant size on screen. The halos are derived from
+  the font size so they follow it automatically.
+*/
+.grid-line {
+  stroke: var(--grid);
+  stroke-width: var(--sw-grid);
+}
+
+.grid-line.five {
+  stroke: var(--grid-five);
+  stroke-width: var(--sw-grid-five);
+}
+
+.plot-frame {
+  fill: none;
+  stroke: var(--border-strong);
+  stroke-width: var(--sw-frame);
+  rx: 4;
+}
+
+.axis {
+  stroke: var(--axis);
+  stroke-width: var(--sw-axis);
+}
+
+.axis-num {
+  font: 800 var(--fs-axis-num) var(--font);
+  fill: var(--text);
+  paint-order: stroke;
+  stroke: #fff;
+  stroke-width: calc(var(--fs-axis-num) * .28);
+  stroke-linejoin: round;
+}
+
+.axis-name {
+  font: 800 var(--fs-axis-name) var(--font);
+  fill: var(--text);
+}
+
+.line-path {
+  stroke-width: var(--sw-line);
+  fill: none;
+  stroke-linecap: round;
+  pointer-events: none;
+}
+
+.point:hover .point-dot {
+  r: calc(var(--dot-r) * 1.22);
+}
+
+.line-tag {
+  font: 800 var(--fs-line-tag) var(--font);
+  paint-order: stroke;
+  stroke: #fff;
+  stroke-width: calc(var(--fs-line-tag) * .28);
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+
+.point {
+  cursor: grab;
+}
+
+.point.dragging {
+  cursor: grabbing;
+}
+
+.point-hit {
+  fill: transparent;
+}
+
+.point-dot {
+  stroke: #fff;
+  stroke-width: var(--sw-dot);
+  transition: r .12s;
+}
+
+.point-ring {
+  fill: none;
+  stroke-width: var(--sw-dot);
+  opacity: 0;
+  transition: opacity .15s;
+}
+
+.point.selected .point-ring {
+  opacity: .8;
+}
+
+.point-label {
+  font: 800 var(--fs-point-label) var(--font);
+  paint-order: stroke;
+  stroke: #fff;
+  stroke-width: calc(var(--fs-point-label) * .29);
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+
+.hover-dot {
+  fill: #fff;
+  stroke-width: calc(var(--sw-dot) * 1.3);
+}
+
+.hover-guide {
+  stroke-dasharray: 7 5;
+  stroke-width: var(--sw-guide);
+  opacity: .9;
+}
+
+/* --- travelling point animation --- */
+.travel-trail {
+  fill: none;
+  stroke: var(--plot);
+  stroke-width: 4.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 9 7;
+  opacity: .75;
+}
+
+.travel-ring {
+  fill: none;
+  stroke: var(--plot);
+  stroke-width: 3.5;
+}
+
+.travel-dot {
+  fill: var(--plot);
+  stroke: #fff;
+  stroke-width: 3.5;
+}
+
+.travel-caption {
+  font: 800 var(--fs-travel-cap) var(--font);
+  fill: var(--plot);
+  paint-order: stroke;
+  stroke: #fff;
+  stroke-width: calc(var(--fs-travel-cap) * .3);
+  stroke-linejoin: round;
+  text-anchor: middle;
+}
+
+.shock {
+  fill: none;
+}
+
+.spark {
+  stroke: none;
+}
+
+/* A white flash is invisible on a white plane — the landing burst is tinted. */
+.flash {
+  fill: var(--plot);
+}
+
+/* the point that just landed gives one quick bounce. The radii are set from
+   script.js so the bounce tracks the dot size on small screens. */
+.point.just-landed .point-dot {
+  animation: landPop .5s cubic-bezier(.2, .9, .3, 1.5);
+}
+
+.point.just-landed .point-label {
+  animation: labelIn .45s ease-out;
+}
+
+@keyframes landPop {
+  0% {
+    r: var(--dot-pop);
+  }
+
+  55% {
+    r: var(--dot-dip);
+  }
+
+  100% {
+    r: var(--dot-r);
+  }
+}
+
+@keyframes labelIn {
+  0% {
+    opacity: 0;
+  }
+
+  55% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Floating delete button over a selected point */
+.point-action {
+  position: absolute;
+  transform: translate(-50%, -100%);
+  background: var(--danger);
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  font: 800 var(--fs-sm) var(--font);
+  padding: 8px 16px;
+  cursor: pointer;
+  box-shadow: 0 5px 14px rgba(15, 23, 42, .45);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  animation: pop .16s ease-out;
+  white-space: nowrap;
+}
+
+.point-action:hover {
+  background: var(--danger-dark);
+}
+
+.point-action::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  transform: translateX(-50%);
+  border: 7px solid transparent;
+  border-top-color: var(--danger);
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -90%) scale(.9);
+  }
+}
+
+/* Hover read-out next to the cursor */
+.hover-tip {
+  position: absolute;
+  transform: translate(16px, -50%);
+  z-index: 2;
+  background: var(--text);
+  color: #fff;
+  border: 2px solid #fff;
+  border-radius: 9px;
+  padding: 7px 12px;
+  font: 800 var(--fs-md) var(--mono);
+  box-shadow: var(--shadow-md);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.hover-tip.flip {
+  transform: translate(calc(-100% - 16px), -50%);
+}
+
+.hover-tip .tip-name {
+  display: block;
+  font: 800 var(--fs-3xs) var(--font);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  opacity: .95;
+  margin-bottom: 2px;
+}
+
+/* ---------------- Equation cards + carousel ---------------- */
+
+.panel-lines .panel-body {
+  padding: 12px;
+  overflow: hidden;
+}
+
+.cards-viewport {
+  height: 100%;
+  overflow: hidden;
+}
+
+.cards-track {
+  display: flex;
+  gap: var(--card-gap);
+  width: 100%;
+  height: 100%;
+  transition: transform .35s cubic-bezier(.4, 0, .2, 1);
+}
+
+.line-card {
+  flex: 0 0 calc((100% - var(--card-gap)) / 2);
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  border: 2px solid var(--border);
+  /* the colour band is the card's identity at a distance — make it read */
+  border-top: 7px solid var(--card-color, var(--accent));
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.cards-track.single .line-card {
+  flex-basis: 100%;
+}
+
+.card-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 11px;
+  border-bottom: 2px solid var(--border);
+  background: var(--surface-2);
+}
+
+.card-name {
+  font-size: var(--fs-2xs);
+  font-weight: 800;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  color: var(--card-color, var(--accent));
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-close {
+  border: none;
+  background: transparent;
+  color: var(--text-soft);
+  font-size: var(--fs-xl);
+  line-height: 1;
+  width: calc(30px * var(--ui-scale));
+  height: calc(30px * var(--ui-scale));
+  border-radius: 7px;
+  cursor: pointer;
+  flex: none;
+}
+
+.card-close:hover {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.card-eq {
+  font: 800 clamp(18px, 2.4vw, 28px) var(--mono);
+  color: var(--text);
+  text-align: center;
+  padding: calc(12px * var(--ui-scale)) 8px calc(9px * var(--ui-scale));
+  word-break: break-word;
+}
+
+.card-facts {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  padding: 0 8px calc(10px * var(--ui-scale));
+}
+
+.fact {
+  font-size: var(--fs-3xs);
+  font-weight: 600;
+  color: var(--text-soft);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 3px 10px;
+}
+
+.fact b {
+  font-family: var(--mono);
+  color: var(--text);
+  font-weight: 800;
+}
+
+.table-wrap {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  border-top: 2px solid var(--border);
+}
+
+table.vt {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--mono);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+}
+
+table.vt th {
+  position: sticky;
+  top: 0;
+  background: var(--surface-2);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: var(--fs-3xs);
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  padding: calc(7px * var(--ui-scale)) 4px;
+  border-bottom: 2px solid var(--border-strong);
+  z-index: 1;
+}
+
+table.vt td {
+  text-align: center;
+  padding: calc(6px * var(--ui-scale)) 4px;
+  border-bottom: 1px solid var(--border);
+  transition: background .1s;
+}
+
+/* zebra striping has to be visible after the projector flattens it */
+table.vt tr:nth-child(even) td {
+  background: var(--surface-2);
+}
+
+table.vt tr.off td {
+  color: var(--text-mute);
+}
+
+table.vt tr.hl td {
+  background: var(--card-color, var(--accent)) !important;
+  color: #fff;
+  font-weight: 800;
+}
+
+.card-note {
+  font-size: var(--fs-3xs);
+  font-weight: 600;
+  color: var(--text-soft);
+  text-align: center;
+  padding: 6px 8px 8px;
+}
+
+.carousel-nav {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.nav-btn {
+  width: calc(30px * var(--ui-scale));
+  height: calc(30px * var(--ui-scale));
+  border-radius: 7px;
+  border: 2px solid var(--border-strong);
+  background: var(--surface);
+  color: var(--text-soft);
+  font-size: var(--fs-lg);
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.nav-btn:hover:not(:disabled) {
+  background: var(--accent-soft);
+  color: var(--accent-dark);
+  border-color: var(--accent);
+}
+
+.nav-btn:disabled {
+  opacity: .35;
+  cursor: default;
+}
+
+.page-dots {
+  display: flex;
+  gap: 6px;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 2px solid var(--border-strong);
+  padding: 0;
+  cursor: pointer;
+}
+
+.dot.active {
+  background: var(--accent);
+  border-color: var(--accent-dark);
+  transform: scale(1.25);
+}
+
+/* ---------------- Points field ---------------- */
+
+.points-field {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  align-content: flex-start;
+}
+
+.pt-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font: 800 var(--fs-sm) var(--mono);
+  background: var(--surface);
+  border: 2px solid var(--border-strong);
+  border-radius: 999px;
+  padding: calc(6px * var(--ui-scale)) 14px calc(6px * var(--ui-scale)) 10px;
+  cursor: pointer;
+  color: var(--text);
+  transition: background .13s, border-color .13s, transform .08s, box-shadow .13s;
+}
+
+.pt-chip:hover {
+  background: var(--surface-2);
+  border-color: var(--chip-color, var(--accent));
+  transform: translateY(-1px);
+}
+
+.pt-chip.is-selected {
+  border-color: var(--chip-color, var(--accent));
+  background: var(--surface);
+  box-shadow: 0 0 0 3px var(--chip-color, var(--accent));
+}
+
+.pt-dot {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--chip-color, var(--accent));
+  flex: none;
+}
+
+.pt-tag {
+  font: 700 var(--fs-3xs) var(--font);
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  color: var(--text-mute);
+}
+
+.points-empty {
+  color: var(--text-soft);
+  font-size: var(--fs-sm);
+  line-height: 1.6;
+  padding: 4px 2px;
+}
+
+.points-empty strong {
+  color: var(--text);
+}
+
+/* ---------------- Equation input ---------------- */
+
+/*
+  This panel sits in an `auto` grid row, so it is exactly as tall as the two
+  forms and never scrolls or clips them. That also makes centring pointless —
+  and centring here was the bug that used to push the first label out of the
+  top of a too-short panel, where `overflow: auto` could not scroll back to it.
+*/
+.panel-input .panel-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 0;
+  padding: var(--body-pad);
+  overflow: visible;
+}
+
+.mini-form {
+  display: flex;
+  flex-direction: column;
+  gap: calc(7px * var(--ui-scale));
+}
+
+.form-divider {
+  height: 2px;
+  background: var(--border);
+  margin: calc(16px * var(--ui-scale)) 0 calc(14px * var(--ui-scale));
+  flex: none;
+}
+
+.eq-label {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--text-soft);
+}
+
+.eq-label code {
+  font-family: var(--mono);
+  font-weight: 800;
+  background: var(--accent-soft);
+  color: var(--accent-dark);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: var(--fs-xs);
+}
+
+.eq-row {
+  display: flex;
+  gap: 9px;
+}
+
+.eq-input {
+  flex: 1;
+  min-width: 0;
+  font: 800 var(--fs-lg) var(--mono);
+  padding: calc(11px * var(--ui-scale)) 15px;
+  border: 2px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+  transition: border-color .15s, box-shadow .15s, background .15s;
+}
+
+.eq-input::placeholder {
+  color: var(--text-mute);
+  font-weight: 600;
+}
+
+.eq-input:focus {
+  outline: none;
+  background: #fff;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent);
+}
+
+.eq-input.invalid {
+  border-color: var(--danger);
+  box-shadow: 0 0 0 3px var(--danger);
+}
+
+.eq-error {
+  font-size: var(--fs-xs);
+  color: var(--danger);
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.eq-error:empty {
+  display: none;
+}
+
+.eq-error.ok {
+  color: var(--success);
+}
+
+.eq-error.busy {
+  color: var(--plot);
+}
+
+.btn-plot {
+  background: var(--plot);
+  color: #fff;
+  border-color: #4c1d95;
+}
+
+.btn-plot:hover {
+  background: #4c1d95;
+}
+
+.btn:disabled {
+  opacity: .55;
+  cursor: default;
+  box-shadow: none;
+}
+
+.btn:disabled:hover {
+  background: var(--plot);
+}
+
+.eq-input:disabled {
+  opacity: .6;
+  cursor: default;
+}
+
+/* ---------------- Modal ---------------- */
+
+.modal-root {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: none;
+}
+
+.modal-root.open {
+  display: block;
+}
+
+.modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(11, 18, 32, .62);
+  backdrop-filter: blur(2px);
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  animation: fade .15s ease-out;
+  overflow: auto;
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}
+
+.modal {
+  background: var(--surface);
+  border: 2px solid var(--text);
+  border-radius: 16px;
+  box-shadow: var(--shadow-lg);
+  width: min(calc(540px * var(--ui-scale)), 100%);
+  padding: calc(24px * var(--ui-scale));
+  animation: rise .18s cubic-bezier(.2, .9, .3, 1.2);
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(.97);
+  }
+}
+
+.modal-title {
+  font-size: var(--fs-xl);
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+
+.modal-body {
+  font-size: var(--fs-md);
+  color: var(--text-soft);
+  line-height: 1.6;
+}
+
+.modal-body .coords {
+  font-family: var(--mono);
+  font-weight: 800;
+  color: var(--text);
+  background: var(--accent-soft);
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  padding: 1px 7px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 9px;
+  margin-top: 22px;
+  flex-wrap: wrap;
+}
+
+.edit-grid {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.edit-field {
+  flex: 1;
+}
+
+.edit-field label {
+  display: block;
+  font-size: var(--fs-3xs);
+  font-weight: 800;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: var(--text-soft);
+  margin-bottom: 5px;
+}
+
+.edit-field input {
+  width: 100%;
+  font: 800 var(--fs-xl) var(--mono);
+  text-align: center;
+  padding: 9px;
+  border: 2px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+}
+
+.edit-field input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent);
+  background: #fff;
+}
+
+.modal-error {
+  color: var(--danger);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  min-height: 18px;
+  margin-top: 8px;
+}
+
+.help-list {
+  margin: 12px 0 0;
+  padding-left: 22px;
+}
+
+.help-list li {
+  margin-bottom: 9px;
+}
+
+.help-list code {
+  font-family: var(--mono);
+  font-weight: 800;
+  color: var(--text);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1px 5px;
+}
+
+/* ---------------- Scrollbars ---------------- */
+
+::-webkit-scrollbar {
+  width: 13px;
+  height: 13px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--surface-2);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #7b8ba1;
+  border-radius: 999px;
+  border: 3px solid var(--surface);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-soft);
+}
+
+/* ---------------- Narrow screens ---------------- */
+
+@media (max-width: 1000px) {
+  .layout {
+    grid-template-columns: 1fr;
+    grid-template-rows: none;
+    grid-auto-rows: auto;
+    height: auto;
+    overflow: auto;
+  }
+
+  html,
+  body {
+    overflow: auto;
+  }
+
+  .panel-input,
+  .panel-lines,
+  .panel-graph,
+  .panel-points {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  /* the page scrolls here, so the points list has no reason to be capped */
+  .panel-points {
+    max-height: none;
+  }
+
+  /* graph leads on narrow screens */
+  .panel-graph {
+    order: -1;
+    height: 62vh;
+    min-height: 380px;
+  }
+
+  .panel-lines {
+    min-height: 460px;
+  }
+
+  .panel-points,
+  .panel-input {
+    min-height: 190px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+  }
+}
+
+/*
+  Windows / macOS high-contrast preference: go all the way to black ink,
+  black borders and no soft tints.
+*/
+@media (prefers-contrast: more) {
+  :root {
+    --text: #000000;
+    --text-soft: #000000;
+    --text-mute: #1f2937;
+    --border: #000000;
+    --border-strong: #000000;
+    --grid: #6b7a8f;
+    --grid-five: #3f4c5e;
+  }
+
+  .panel,
+  .modal {
+    box-shadow: none;
+  }
+}

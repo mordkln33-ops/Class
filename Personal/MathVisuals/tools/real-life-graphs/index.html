@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en" class="is-tool">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+  <!-- ===== SEO: title + description are unique to this page ===== -->
+  <title>Real-Life Graphs: Rate of Change &amp; Slope | MathVisuals</title>
+  <meta name="description" content="Label the axes with real units, plot data, then show a line of best fit, the y-intercept and rate of change as rise over run. Free and projector-ready.">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <link rel="canonical" href="https://mathvisuals.online/tools/real-life-graphs/">
+  <meta name="author" content="Mordechai Klein">
+
+  <!-- ===== Social sharing (Open Graph + X/Twitter) ===== -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="MathVisuals">
+  <meta property="og:title" content="Real-Life Graphs: Rate of Change &amp; Slope | MathVisuals">
+  <meta property="og:description" content="Label the axes with real units, plot data, then show a line of best fit, the y-intercept and rate of change as rise over run. Free and projector-ready.">
+  <meta property="og:url" content="https://mathvisuals.online/tools/real-life-graphs/">
+  <meta property="og:image" content="https://mathvisuals.online/assets/img/og/real-life-graphs.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Graph of distance in miles over time in hours with a line of best fit, its equation, and a rise-over-run triangle showing a rate of 2.5 miles per hour">
+  <meta property="og:locale" content="en_US">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- ===== Theme + icons ===== -->
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#111a2e" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="../../assets/img/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" href="../../assets/img/apple-touch-icon.png">
+  <link rel="manifest" href="../../site.webmanifest">
+
+  <!-- Applies saved light/dark mode before the page paints (must not be deferred) -->
+  <script src="../../assets/js/theme-init.js"></script>
+
+  <!-- ===== Styles: font → global style guide → this page ===== -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&amp;display=swap">
+  <link rel="stylesheet" href="../../assets/css/site.css">
+  <link rel="stylesheet" href="../../assets/css/tools/real-life-graphs.css">
+
+  <!-- ===== Scripts (deferred: run after the HTML is parsed) ===== -->
+  <script src="../../assets/js/tools/real-life-graphs.js" defer></script>
+  <script src="../../assets/js/site.js" defer></script>
+
+  <!-- ===== Structured data (schema.org JSON-LD) for search engines ===== -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": [
+      "WebApplication",
+      "LearningResource"
+    ],
+    "name": "Graphs in Real Life",
+    "url": "https://mathvisuals.online/tools/real-life-graphs/",
+    "description": "Label the axes with real units, plot data, then show a line of best fit, the y-intercept and rate of change as rise over run. Free and projector-ready.",
+    "image": "https://mathvisuals.online/assets/img/og/real-life-graphs.jpg",
+    "applicationCategory": "EducationalApplication",
+    "operatingSystem": "Any (runs in a web browser)",
+    "browserRequirements": "Requires JavaScript",
+    "inLanguage": "en",
+    "isAccessibleForFree": true,
+    "copyrightYear": 2026,
+    "copyrightHolder": { "@id": "https://mathvisuals.online/#person" },
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "learningResourceType": "Interactive simulation",
+    "educationalUse": [
+      "Classroom demonstration",
+      "Whole-class instruction"
+    ],
+    "educationalLevel": "Grades 7–10",
+    "teaches": [
+      "Rate of change",
+      "Slope as rise over run",
+      "Line of best fit",
+      "Scatter plots",
+      "Interpreting the y-intercept",
+      "Units of rate"
+    ],
+    "audience": {
+      "@type": "EducationalAudience",
+      "educationalRole": "teacher"
+    },
+    "author": {
+      "@id": "https://mathvisuals.online/#person"
+    },
+    "publisher": {
+      "@id": "https://mathvisuals.online/#person"
+    }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://mathvisuals.online/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Algebra & Graphing",
+        "item": "https://mathvisuals.online/#algebra"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": "Graphs in Real Life",
+        "item": "https://mathvisuals.online/tools/real-life-graphs/"
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#tool">Skip to the tool</a>
+
+  <!-- ===== Site header: brand, breadcrumb, navigation, dark-mode toggle ===== -->
+  <header class="site-header">
+    <div class="site-header__inner container">
+      <a class="brand" href="../../" aria-label="MathVisuals home">
+        <img class="brand__mark" src="../../assets/img/logo.svg" alt="" width="32" height="32">
+        <span class="brand__name">Math<span>Visuals</span></span>
+      </a>
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ol>
+          <li><a href="../../">Home</a></li>
+          <li><a href="../../#algebra">Algebra & Graphing</a></li>
+          <li><span aria-current="page">Graphs in Real Life</span></li>
+        </ol>
+      </nav>
+
+      <div class="site-nav">
+        <nav aria-label="Main">
+          <ul class="site-nav__list" id="site-nav-list">
+            <li><a class="site-nav__link" href="#about-tool">Teacher notes</a></li>
+            <li><a class="site-nav__link" href="../../#tools">All tools</a></li>
+            <li><a class="site-nav__link" href="../../#contact">Suggest a tool</a></li>
+          </ul>
+        </nav>
+
+        <!-- Dark-mode switch (wired up in site.js) -->
+        <button class="theme-toggle" type="button" aria-pressed="false" aria-label="Switch to dark mode">
+          <span class="theme-toggle__thumb">
+            <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></svg>
+            <svg class="icon-moon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M20.5 14.6A8.6 8.6 0 0 1 9.4 3.5a8.6 8.6 0 1 0 11.1 11.1z"/></svg>
+          </span>
+        </button>
+
+        <!-- Menu button: only visible on narrow screens -->
+        <button class="nav-toggle btn btn-ghost btn-icon" type="button" aria-expanded="false" aria-controls="site-nav-list" aria-label="Open menu">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+  <!-- =============================================================
+       TOOL: Graphs in Real Life
+       Original markup inside div.tool-frame; the inner <main> became a
+       <div>, and the buttons use the shared button classes.
+       ============================================================= -->
+  <div class="tool-frame" id="tool">
+    <header class="topbar">
+      <h1>Graphs in Real Life</h1>
+      <div class="topbar-actions">
+        <button type="button" id="rocBtn" class="btn btn-primary btn-roc">Rate of change tool</button>
+        <button type="button" id="clearBtn" class="btn btn-danger">Clear all</button>
+      </div>
+    </header>
+
+    <div class="rl-main">
+      <section class="graph-wrap" id="graphWrap" aria-label="Graph">
+        <svg id="graph" role="img" aria-label="Coordinate graph from 0 to 30 on the x-axis and 0 to 20 on the y-axis">
+          <g id="scene"></g>
+          <g id="hoverLayer" pointer-events="none"></g>
+        </svg>
+
+        <div id="toast" class="toast" role="status" hidden></div>
+
+        <div id="pointMenu" class="point-menu" hidden>
+          <p class="point-menu-title">Point <span id="pointMenuCoords"></span></p>
+          <button type="button" id="menuRoc" class="btn btn-primary btn-roc">Find rate of change from here</button>
+          <button type="button" id="menuDelete" class="btn btn-solid-danger">Delete this point</button>
+          <button type="button" id="menuCancel" class="btn btn-ghost">Cancel</button>
+        </div>
+      </section>
+
+      <section class="controls" aria-label="Graph settings">
+        <div class="row labels-row">
+          <label class="field">
+            <span class="field-label">Y-axis label</span>
+            <input id="yLabel" type="text" placeholder="e.g. Distance" autocomplete="off">
+          </label>
+          <label class="field">
+            <span class="field-label">Units</span>
+            <input id="yUnits" type="text" placeholder="e.g. miles" autocomplete="off">
+          </label>
+          <label class="field">
+            <span class="field-label">X-axis label</span>
+            <input id="xLabel" type="text" placeholder="e.g. Time" autocomplete="off">
+          </label>
+          <label class="field">
+            <span class="field-label">Units</span>
+            <input id="xUnits" type="text" placeholder="e.g. hours" autocomplete="off">
+          </label>
+        </div>
+
+        <div class="row coords-row">
+          <label class="field field-wide">
+            <span class="field-label">Coordinates</span>
+            <input id="coords" type="text" placeholder="Click the graph, or type points like (2, 5), (4, 9)" autocomplete="off" spellcheck="false">
+          </label>
+          <p id="coordsMsg" class="coords-msg" role="status"></p>
+        </div>
+
+        <div class="row radio-row" role="radiogroup" aria-label="Graph display">
+          <label class="radio">
+            <input type="radio" name="mode" value="fit">
+            <span class="swatch swatch-fit" aria-hidden="true"></span>
+            Line of best fit
+          </label>
+          <label class="radio">
+            <input type="radio" name="mode" value="connect">
+            <span class="swatch swatch-connect" aria-hidden="true"></span>
+            Connect the dots
+          </label>
+          <label class="radio">
+            <input type="radio" name="mode" value="none" checked>
+            None
+          </label>
+        </div>
+
+        <div class="row equation-row" id="equationRow" hidden>
+          <p id="equation" class="equation"></p>
+        </div>
+      </section>
+    </div>
+
+    <!-- Floating, draggable rate-of-change window -->
+    <div id="rocPanel" class="roc-panel" role="dialog" aria-labelledby="rocTitle" hidden>
+      <div class="roc-header" id="rocHeader">
+        <span id="rocTitle" class="roc-title">Rate of Change</span>
+        <button type="button" id="rocClose" class="roc-close">&#x2715; Close</button>
+      </div>
+      <div class="roc-body">
+        <p id="rocInstr" class="roc-instr"></p>
+        <div class="roc-points">
+          <div class="roc-point"><span class="roc-badge">1</span> Point 1: <strong id="rocP1">—</strong></div>
+          <div class="roc-point"><span class="roc-badge">2</span> Point 2: <strong id="rocP2">—</strong></div>
+        </div>
+        <div id="rocResult" class="roc-result" hidden></div>
+        <p class="roc-tip">Tip: close this tool to delete points.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- =============================================================
+       TEACHER NOTES (below the tool)
+       ============================================================= -->
+  <section class="tool-info" id="about-tool" aria-labelledby="about-tool-title">
+    <div class="container tool-info__grid">
+      <article class="prose">
+        <p class="overline">Teacher notes</p>
+        <h2 id="about-tool-title">Rate of change, slope and best-fit lines with real units</h2>
+        <p class="lead">Slope is easier to understand when it has units. In Graphs in Real Life, students
+          label the axes with real quantities, such as distance in miles and time in hours, plot
+          data, and see the rate of change read back as “3 miles per hour,” not just “3.”</p>
+
+        <h3>How to use it in class</h3>
+        <ol>
+          <li><strong>Name the axes.</strong> Type a label and units for each axis, for example <em>Distance</em> (miles) and <em>Time</em> (hours). The graph updates as you type.</li>
+          <li><strong>Plot the data.</strong> Click the graph to place points, or type them into the Coordinates box, like <em>(1, 3), (2, 7), (4, 12)</em>. Each x-value can only be used once, so the data always describes a function.</li>
+          <li><strong>Choose a display.</strong> <em>Connect the dots</em> joins the points in order. <em>Line of best fit</em> draws the least-squares line and writes its equation, such as <em>y = 2.9x + 0.4</em>.</li>
+          <li><strong>Find the rate of change.</strong> Open the <em>Rate of change tool</em> and pick two points. A rise-over-run triangle appears on the graph, and the panel works through change in y ÷ change in x with the units included.</li>
+        </ol>
+
+        <h3>Reading the y-intercept</h3>
+        <p>When the line of best fit crosses the y-axis on the graph, a labeled diamond marks the
+          y-intercept at x = 0, with the x-axis units shown. That gives the class a concrete place to
+          discuss starting values: “at 0 hours, the car had already gone…”</p>
+
+        <h3>Ideas for real-world data</h3>
+        <ul>
+          <li>Distance traveled over time, then compare speeds of two trips</li>
+          <li>Cost of a phone plan or taxi ride: a starting fee plus a rate</li>
+          <li>Plant height over days from a class science experiment</li>
+          <li>Temperature over the course of a school day</li>
+        </ul>
+
+        <div class="callout">
+          <p><strong>Projector tip:</strong> the rate of change window can be dragged anywhere on the
+            screen by its orange title bar, so it never covers the part of the graph you're talking about.
+            Press Escape to close it.</p>
+        </div>
+
+        <h2>Frequently asked questions</h2>
+        <div class="faq">
+          <details>
+            <summary>What range does the graph cover?</summary>
+            <div><p>The x-axis runs from 0 to 30 and the y-axis from 0 to 20, which suits most first-quadrant word problems. Clicked points snap to whole numbers; typed points can be decimals.</p></div>
+          </details>
+          <details>
+            <summary>How is the line of best fit calculated?</summary>
+            <div><p>It uses least-squares linear regression, the same method as a graphing calculator's linear regression. It needs at least two points.</p></div>
+          </details>
+          <details>
+            <summary>How do I delete a point?</summary>
+            <div><p>Click the point and choose <em>Delete this point</em>, or remove it from the Coordinates box. <em>Clear all</em> removes every point.</p></div>
+          </details>
+        </div>
+      </article>
+
+      <aside aria-label="About this tool">
+        <section class="aside-card">
+          <h2>At a glance</h2>
+          <dl class="facts">
+            <div><dt>Grade level</dt><dd>Grades 7–10, Algebra 1</dd></div>
+            <div><dt>Topics</dt><dd>Rate of change, slope, line of best fit, scatter plots, y-intercept</dd></div>
+            <div><dt>Common Core</dt><dd>8.F.B.4, 8.SP.A.2, 8.SP.A.3, HSS-ID.B.6, HSS-ID.C.7</dd></div>
+            <div><dt>Works on</dt><dd>Projectors, smartboards, laptops, tablets</dd></div>
+            <div><dt>Cost</dt><dd><span class="tag tag--free">Free</span></dd></div>
+          </dl>
+        </section>
+        <section class="aside-card">
+          <h2>Related tools</h2>
+          <ul class="link-list">
+            <li><a href="../graphing-explorer/">Graphing Explorer<small>Lines in slope-intercept form</small></a></li>
+            <li><a href="../bell-curve-simulator/">Bell Curve Simulator<small>Data, spread and the normal curve</small></a></li>
+          </ul>
+        </section>
+      </aside>
+    </div>
+  </section>
+
+  </main>
+
+  <!-- ===== Site footer ===== -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="site-footer__grid">
+        <div class="site-footer__about">
+          <a class="brand" href="../../">
+            <img class="brand__mark" src="../../assets/img/logo.svg" alt="" width="32" height="32">
+            <span class="brand__name">Math<span>Visuals</span></span>
+          </a>
+          <p>Free interactive math visuals for projectors and smartboards, designed by a math teacher with a UX/UI background.</p>
+        </div>
+        <nav aria-label="Number Sense & Operations tools">
+          <h2>Number Sense</h2>
+          <ul>
+            <li><a href="../../tools/integer-number-line/">Integer Number Line</a></li>
+            <li><a href="../../tools/fraction-visualizer/">Fraction Visualizer</a></li>
+          </ul>
+        </nav>
+        <nav aria-label="Algebra & Graphing tools">
+          <h2>Algebra & Graphing</h2>
+          <ul>
+            <li><a href="../../tools/graphing-explorer/">Graphing Explorer</a></li>
+            <li><a href="../../tools/real-life-graphs/">Graphs in Real Life</a></li>
+          </ul>
+        </nav>
+        <nav aria-label="Probability & Statistics tools">
+          <h2>Statistics</h2>
+          <ul>
+            <li><a href="../../tools/probability-manipulator/">Probability Manipulator</a></li>
+            <li><a href="../../tools/bell-curve-simulator/">Bell Curve Simulator</a></li>
+          </ul>
+        </nav>
+      </div>
+      <div class="site-footer__bottom">
+        <p>© <span data-year>2026</span> Mordechai Klein. All rights reserved. The tools are free to use for now, but their design and code are my copyright and may not be copied or republished.</p>
+        <p><a href="../../#about">About</a> · <a href="../../#contact">Suggest a tool</a> · <a href="../../privacy.html">Privacy</a> · <a href="../../style-guide.html">Style guide</a></p>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

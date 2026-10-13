@@ -22,19 +22,20 @@
       <dl class="stat-list">
         <div class="stat-row"><dt><span class="key key-mean"></span>Mean</dt><dd id="stMean">—</dd></div>
         <div class="stat-row"><dt><span class="key key-median"></span>Median</dt><dd id="stMedian">—</dd></div>
-        <div class="stat-row"><dt><span class="key key-sd"></span>Std. Dev. (SD)</dt><dd id="stSD">—</dd></div>
+        <div class="stat-row"><dt><span class="key key-sd"></span>Std. Dev. (SD)<button class="q-btn how-btn" type="button" data-explain="sd" aria-label="How the standard deviation was found" title="How was this found?" disabled>?</button></dt><dd id="stSD">—</dd></div>
         <div class="stat-row" title="95% margin of error: about 95% of the time, the true value is within this distance of the result."><dt>Margin of error <small>(95%)</small></dt><dd id="stMOE">—</dd></div>
         <div class="stat-row"><dt>Range</dt><dd id="stRange">—</dd></div>
         <div class="stat-row"><dt>Lowest / Highest</dt><dd id="stMinMax">—</dd></div>
       </dl>
 
       <ul class="legend" aria-label="Legend">
-        <li><span class="lg lg-dot"></span>One dot = one <span id="lgUnit">run</span></li>
+        <li><span class="lg lg-dot"></span>One dot = <span id="lgUnit">one run</span></li>
         <li><span class="lg lg-curve"></span>Bell curve</li>
         <li><span class="lg lg-mean"></span>Mean</li>
         <li><span class="lg lg-median"></span>Median</li>
         <li><span class="lg lg-band"></span>Within 1 SD of mean</li>
         <li><span class="lg lg-sdline"></span>1, 2 &amp; 3 SD from mean</li>
+        <li><span class="lg lg-sel"></span>Selected range</li>
       </ul>
     </aside>
 
@@ -65,6 +66,34 @@
 
   <!-- ================= EXPLANATIONS (bottom third) ================= -->
   <section class="explain-area" aria-label="What the numbers mean">
+    <article class="card card-range" aria-labelledby="rangeTitle">
+      <div class="card-head">
+        <h2 id="rangeTitle">Range Finder</h2>
+        <div class="quick-btns" role="group" aria-label="Quick ranges">
+          <button class="btn btn-small quick-btn" type="button" data-sd="1" disabled>±1 SD</button>
+          <button class="btn btn-small quick-btn" type="button" data-sd="2" disabled>±2 SD</button>
+          <button class="btn btn-small quick-btn" type="button" data-sd="3" disabled>±3 SD</button>
+          <button class="btn btn-small quick-btn" type="button" data-sd="clear" disabled>Clear</button>
+        </div>
+      </div>
+      <div class="range-inputs">
+        <label for="rgFrom">From</label>
+        <input type="number" id="rgFrom" step="any" placeholder="lowest" disabled>
+        <label for="rgTo">to</label>
+        <input type="number" id="rgTo" step="any" placeholder="highest" disabled>
+        <span class="rg-unit" id="rgUnit"></span>
+      </div>
+      <p class="range-hint" id="rgHint"></p>
+      <div class="range-results" id="rgResults" aria-live="polite" hidden>
+        <div class="rg-big"><span id="rgPct">—</span><small id="rgWhat"></small></div>
+        <div class="rg-detail">
+          <p id="rgCount"></p>
+          <p id="rgDots"></p>
+          <div class="rg-z" id="rgZ"></div>
+        </div>
+      </div>
+    </article>
+
     <article class="card card-mean">
       <div class="card-head">
         <h2>Mean</h2>
@@ -82,16 +111,6 @@
       </div>
       <p>The <strong>middle</strong> result. Line up every result from smallest to largest &mdash; half are below this number and half are above.</p>
     </article>
-
-    <article class="card card-sd">
-      <div class="card-head">
-        <h2>Standard Deviation</h2>
-        <span class="card-value" id="cardSD">—</span>
-        <button class="btn btn-small how-btn" type="button" data-explain="sd" disabled>How? <span aria-hidden="true">⤢</span></button>
-      </div>
-      <p>How <strong>spread out</strong> the results are. A small SD means the dots crowd close to the mean; a large SD means they spread out wide.</p>
-      <p class="card-note" id="cardSDNote"></p>
-    </article>
   </section>
 </main>
 
@@ -105,8 +124,7 @@
 
     <div class="tabs" role="tablist">
       <button class="tab active" role="tab" type="button" data-tab="single" aria-selected="true">Single</button>
-      <button class="tab" role="tab" type="button" data-tab="average" aria-selected="false">Average</button>
-      <button class="tab" role="tab" type="button" data-tab="random" aria-selected="false">Random</button>
+      <button class="tab" role="tab" type="button" data-tab="bell" aria-selected="false">Bell Curve</button>
     </div>
 
     <div class="modal-body">
@@ -149,66 +167,39 @@
         <div class="form-actions"><button type="submit" class="btn btn-primary btn-big">Simulate</button></div>
       </form>
 
-      <!-- ---------- AVERAGE ---------- -->
-      <form class="tab-panel" id="formAverage" data-panel="average" novalidate hidden>
+      <!-- ---------- BELL CURVE ---------- -->
+      <form class="tab-panel" id="formBell" data-panel="bell" novalidate hidden>
         <div class="instructions">
-          <p><strong>How it works:</strong> each run picks a group of random numbers (the <em>sample</em>) between the lowest and highest number, then finds their <strong>average</strong>.</p>
-          <p>Each dot on the graph is the average of one sample.</p>
+          <p><strong>How it works:</strong> builds a <em>perfect</em> bell curve. Each dot is one member of the sample (for example, one man).</p>
+          <p>The <strong>lowest</strong> and <strong>highest</strong> numbers are 3 SDs below and above the mean &mdash; almost everyone (99.7%) is in this range. The mean is in the middle, and 1 SD = range ÷ 6.</p>
         </div>
         <div class="field-grid">
           <label class="field field-wide">
-            <span>Name <small>(what is being measured)</small></span>
-            <input type="text" id="aName" maxlength="40" value="Dice roll">
+            <span>Title <small>(what is being measured)</small></span>
+            <input type="text" id="bTitle" maxlength="60" value="Height of Adult Men in America">
           </label>
           <label class="field">
             <span>Lowest number</span>
-            <input type="number" id="aLow" step="any" value="1">
+            <input type="number" id="bLow" step="any" value="60">
           </label>
           <label class="field">
             <span>Highest number</span>
-            <input type="number" id="aHigh" step="any" value="6">
+            <input type="number" id="bHigh" step="any" value="78">
           </label>
           <label class="field">
-            <span>Unit name</span>
-            <input type="text" id="aUnit" maxlength="30" value="points">
+            <span>Units</span>
+            <input type="text" id="bUnit" maxlength="30" value="inches">
           </label>
           <label class="field">
-            <span>Sample size <small>(numbers per run)</small></span>
-            <input type="number" id="aSample" min="1" max="10000" step="1" value="10">
+            <span>Sample size <small>(how many dots)</small></span>
+            <input type="number" id="bSample" min="2" max="10000" step="1" value="1000">
           </label>
           <label class="field">
-            <span>Number of runs <small>(dots)</small></span>
-            <input type="number" id="aRuns" min="1" max="5000" step="1" value="200">
+            <span>Who or what is counted <small>(plural)</small></span>
+            <input type="text" id="bCounted" maxlength="30" value="men">
           </label>
         </div>
-        <p class="form-error" aria-live="polite"></p>
-        <div class="form-actions"><button type="submit" class="btn btn-primary btn-big">Simulate</button></div>
-      </form>
-
-      <!-- ---------- RANDOM ---------- -->
-      <form class="tab-panel" id="formRandom" data-panel="random" novalidate hidden>
-        <div class="instructions">
-          <p><strong>How it works:</strong> the computer picks random numbers between the lowest and highest number. Each dot is <strong>one random number</strong>.</p>
-          <p>Notice: plain random numbers usually do <em>not</em> make a bell shape. Compare this with the <em>Average</em> tab!</p>
-        </div>
-        <div class="field-grid">
-          <label class="field field-wide">
-            <span>Name</span>
-            <input type="text" id="rName" maxlength="40" value="Random number">
-          </label>
-          <label class="field">
-            <span>Lowest number</span>
-            <input type="number" id="rLow" step="any" value="1">
-          </label>
-          <label class="field">
-            <span>Highest number</span>
-            <input type="number" id="rHigh" step="any" value="20">
-          </label>
-          <label class="field">
-            <span>Sample size <small>(how many numbers)</small></span>
-            <input type="number" id="rSample" min="1" max="5000" step="1" value="200">
-          </label>
-        </div>
+        <div class="bell-preview" id="bellPreview" aria-live="polite"></div>
         <p class="form-error" aria-live="polite"></p>
         <div class="form-actions"><button type="submit" class="btn btn-primary btn-big">Simulate</button></div>
       </form>

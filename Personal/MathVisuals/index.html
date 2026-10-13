@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+  <!-- ===== SEO: title + description are unique to this page ===== -->
+  <title>Free Interactive Math Tools for Teachers | MathVisuals</title>
+  <meta name="description" content="Free interactive math tools for teachers: number lines, fraction models, coordinate planes, probability grids and bell curves, built for projectors.">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <link rel="canonical" href="https://mathvisuals.online/">
+  <meta name="author" content="Mordechai Klein">
+
+  <!-- ===== Social sharing (Open Graph + X/Twitter) ===== -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="MathVisuals">
+  <meta property="og:title" content="MathVisuals: Free, projector-ready math tools for teachers">
+  <meta property="og:description" content="Free interactive math tools for teachers: number lines, fraction models, coordinate planes, probability grids and bell curves, built for projectors.">
+  <meta property="og:url" content="https://mathvisuals.online/">
+  <meta property="og:image" content="https://mathvisuals.online/assets/img/og/home.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="MathVisuals: free interactive math tools for projectors and smartboards">
+  <meta property="og:locale" content="en_US">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- ===== Theme + icons ===== -->
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#111a2e" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="assets/img/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+  <link rel="manifest" href="site.webmanifest">
+
+  <!-- Applies saved light/dark mode before the page paints (must not be deferred) -->
+  <script src="assets/js/theme-init.js"></script>
+
+  <!-- ===== Styles: font → global style guide → this page ===== -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&amp;display=swap">
+  <link rel="stylesheet" href="assets/css/site.css">
+  <link rel="stylesheet" href="assets/css/home.css">
+
+  <!-- ===== Scripts (deferred: run after the HTML is parsed) ===== -->
+
+  <script src="assets/js/site.js" defer></script>
+
+  <!-- ===== Structured data (schema.org JSON-LD) for search engines ===== -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "@id": "https://mathvisuals.online/#website",
+    "name": "MathVisuals",
+    "url": "https://mathvisuals.online/",
+    "description": "Free, projector-ready interactive math tools for teachers.",
+    "inLanguage": "en",
+    "publisher": {
+      "@id": "https://mathvisuals.online/#person"
+    }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "@id": "https://mathvisuals.online/#person",
+    "name": "Mordechai Klein",
+    "url": "https://mathvisuals.online/#about",
+    "jobTitle": "Math teacher and UX/UI designer",
+    "description": "An experienced math teacher with a UX/UI design background who builds free visual tools for math classrooms.",
+    "knowsAbout": [
+      "Mathematics education",
+      "UX/UI design",
+      "Educational technology",
+      "Data visualization"
+    ]
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "Free interactive math tools for teachers",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Integer Number Line",
+        "url": "https://mathvisuals.online/tools/integer-number-line/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Fraction Visualizer",
+        "url": "https://mathvisuals.online/tools/fraction-visualizer/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": "Graphing Explorer",
+        "url": "https://mathvisuals.online/tools/graphing-explorer/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 4,
+        "name": "Graphs in Real Life",
+        "url": "https://mathvisuals.online/tools/real-life-graphs/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 5,
+        "name": "Probability Manipulator",
+        "url": "https://mathvisuals.online/tools/probability-manipulator/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 6,
+        "name": "Bell Curve Simulator",
+        "url": "https://mathvisuals.online/tools/bell-curve-simulator/"
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!-- ===== Site header: brand, breadcrumb, navigation, dark-mode toggle ===== -->
+  <header class="site-header">
+    <div class="site-header__inner container">
+      <a class="brand" href="./" aria-label="MathVisuals home">
+        <img class="brand__mark" src="assets/img/logo.svg" alt="" width="32" height="32">
+        <span class="brand__name">Math<span>Visuals</span></span>
+      </a>
+
+      <div class="site-nav">
+        <nav aria-label="Main">
+          <ul class="site-nav__list" id="site-nav-list">
+            <li><a class="site-nav__link" href="./#tools">Tools</a></li>
+            <li><a class="site-nav__link" href="./#about">About</a></li>
+            <li><a class="site-nav__link" href="./#contact">Suggest a tool</a></li>
+          </ul>
+        </nav>
+
+        <!-- Dark-mode switch (wired up in site.js) -->
+        <button class="theme-toggle" type="button" aria-pressed="false" aria-label="Switch to dark mode">
+          <span class="theme-toggle__thumb">
+            <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></svg>
+            <svg class="icon-moon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M20.5 14.6A8.6 8.6 0 0 1 9.4 3.5a8.6 8.6 0 1 0 11.1 11.1z"/></svg>
+          </span>
+        </button>
+
+        <!-- Menu button: only visible on narrow screens -->
+        <button class="nav-toggle btn btn-ghost btn-icon" type="button" aria-expanded="false" aria-controls="site-nav-list" aria-label="Open menu">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+
+    <!-- =============================================================
+         HERO — the page's single <h1> carries the main search phrase
+         ============================================================= -->
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="container hero__grid">
+        <div class="hero__copy">
+          <p class="overline">Free for every classroom</p>
+          <h1 id="hero-title">Interactive math visuals built for the projector</h1>
+          <p class="hero__lead">Free, interactive tools for math teachers: number lines, fraction models,
+            coordinate planes, probability grids and bell curves. Every one is designed to be read from the
+            back row of a classroom on a projector or smartboard.</p>
+          <div class="hero__actions">
+            <a class="btn btn-primary btn-lg" href="#tools">Browse the tools</a>
+            <a class="btn btn-ghost btn-lg" href="#contact">Suggest a tool</a>
+          </div>
+          <ul class="hero__points" aria-label="Highlights">
+            <li>No sign-up or download</li>
+            <li>Works on any smartboard</li>
+            <li>Light and dark mode</li>
+          </ul>
+        </div>
+
+        <figure class="hero__visual">
+          <div class="screen">
+            <img src="assets/img/tools/graphing-explorer.webp"
+                 alt="Graphing Explorer on a classroom screen: two lines on a coordinate plane with their equations and tables of values"
+                 width="960" height="600" fetchpriority="high" decoding="async">
+          </div>
+          <figcaption>The Graphing Explorer, as students see it on the board.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- =============================================================
+         TOOLS — grouped by what they teach
+         ============================================================= -->
+    <section class="section" id="tools" aria-labelledby="tools-title">
+      <div class="container">
+        <header class="section__head">
+          <p class="overline">The tools</p>
+          <h2 id="tools-title">Free math tools for teachers, grouped by topic</h2>
+          <p>Each tool opens full screen, ready to project. Below every tool you'll find teacher notes:
+            how to use it in a lesson, what students should notice, and the Common Core standards it supports.</p>
+        </header>
+
+        <!-- ---------- Number Sense & Operations ---------- -->
+        <section class="category" id="number-sense" aria-labelledby="cat-number-sense">
+          <div class="category__head">
+            <h3 id="cat-number-sense">Number Sense &amp; Operations</h3>
+            <p>Make integer and fraction operations visible, from adding a negative to dividing fractions.</p>
+          </div>
+          <ul class="tool-grid">
+            <li class="tool-card">
+              <img class="tool-card__img" src="assets/img/tools/integer-number-line.webp"
+                   alt="Vertical integer number line from −20 to 20 filled up to 7, beside add and subtract controls and a history of operations"
+                   width="960" height="600" loading="lazy" decoding="async">
+              <div class="tool-card__body">
+                <h4 class="tool-card__title"><a class="tool-card__link" href="tools/integer-number-line/">Integer Number Line</a></h4>
+                <p>Add and subtract positive and negative numbers and watch the bar rise, fall and turn red below zero. Every step is recorded as an equation.</p>
+                <ul class="tool-card__tags" aria-label="Details">
+                  <li class="tag">Grades 6–7</li>
+                  <li class="tag">Integers</li>
+                </ul>
+                <a class="tool-card__alt" href="tools/integer-number-line/horizontal.html">Or open the horizontal version</a>
+              </div>
+            </li>
+            <li class="tool-card">
+              <img class="tool-card__img" src="assets/img/tools/fraction-visualizer.webp"
+                   alt="Fraction Visualizer showing 1/2 × 2/3 as an area model grid, with the overlapping region outlined as the answer"
+                   width="960" height="600" loading="lazy" decoding="async">
+              <div class="tool-card__body">
+                <h4 class="tool-card__title"><a class="tool-card__link" href="tools/fraction-visualizer/">Fraction Visualizer</a></h4>
+                <p>Fraction bars for any fraction, plus adding, subtracting, multiplying and dividing two fractions with common denominators and area models.</p>
+                <ul class="tool-card__tags" aria-label="Details">
+                  <li class="tag">Grades 3–6</li>
+                  <li class="tag">Fractions</li>
+                </ul>
+              </div>
+            </li>
+          </ul>
+        </section>
+
+        <!-- ---------- Algebra & Graphing ---------- -->
+        <section class="category" id="algebra" aria-labelledby="cat-algebra">
+          <div class="category__head">
+            <h3 id="cat-algebra">Algebra &amp; Graphing</h3>
+            <p>Connect points, equations and tables, and give slope a real-world meaning.</p>
+          </div>
+          <ul class="tool-grid">
+            <li class="tool-card">
+              <img class="tool-card__img" src="assets/img/tools/graphing-explorer.webp"
+                   alt="Interactive coordinate plane with two colored lines, their slope-intercept equations and tables of values"
+                   width="960" height="600" loading="lazy" decoding="async">
+              <div class="tool-card__body">
+                <h4 class="tool-card__title"><a class="tool-card__link" href="tools/graphing-explorer/">Graphing Explorer</a></h4>
+                <p>A four-quadrant coordinate plane: plot ordered pairs, join two points into a line, or graph y = mx + b with a live table of values.</p>
+                <ul class="tool-card__tags" aria-label="Details">
+                  <li class="tag">Grades 5–9</li>
+                  <li class="tag">Linear equations</li>
+                </ul>
+              </div>
+            </li>
+            <li class="tool-card">
+              <img class="tool-card__img" src="assets/img/tools/real-life-graphs.webp"
+                   alt="Graph of distance in miles over time in hours with a line of best fit and a rise-over-run triangle showing the rate of change"
+                   width="960" height="600" loading="lazy" decoding="async">
+              <div class="tool-card__body">
+                <h4 class="tool-card__title"><a class="tool-card__link" href="tools/real-life-graphs/">Graphs in Real Life</a></h4>
+                <p>Label the axes with real units, plot data, and show the line of best fit, the y-intercept and the rate of change as rise over run.</p>
+                <ul class="tool-card__tags" aria-label="Details">
+                  <li class="tag">Grades 7–10</li>
+                  <li class="tag">Rate of change</li>
+                </ul>
+              </div>
+            </li>
+          </ul>
+        </section>
+
+        <!-- ---------- Probability & Statistics ---------- -->
+        <section class="category" id="statistics" aria-labelledby="cat-statistics">
+          <div class="category__head">
+            <h3 id="cat-statistics">Probability &amp; Statistics</h3>
+            <p>See compound probability and the normal distribution, not just the formulas.</p>
+          </div>
+          <ul class="tool-grid">
+            <li class="tool-card">
+              <img class="tool-card__img" src="assets/img/tools/probability-manipulator.webp"
+                   alt="Joint sample space grid for a coin and a spinner, with the Heads-and-Red square highlighted as 1/8"
+                   width="960" height="600" loading="lazy" decoding="async">
+              <div class="tool-card__body">
+                <h4 class="tool-card__title"><a class="tool-card__link" href="tools/probability-manipulator/">Probability Manipulator</a></h4>
+                <p>Build two probability spaces as colored grids, then multiply (AND) or add (OR) them to see the answer as one joint sample space.</p>
+                <ul class="tool-card__tags" aria-label="Details">
+                  <li class="tag">Grades 7–12</li>
+                  <li class="tag">Compound events</li>
+                </ul>
+              </div>
+            </li>
+            <li class="tool-card">
+              <img class="tool-card__img" src="assets/img/tools/bell-curve-simulator.webp"
+                   alt="Dot plot of 1,000 heights forming a bell curve, with the middle 68% within one standard deviation highlighted"
+                   width="960" height="600" loading="lazy" decoding="async">
+              <div class="tool-card__body">
+                <h4 class="tool-card__title"><a class="tool-card__link" href="tools/bell-curve-simulator/">Bell Curve Simulator</a></h4>
+                <p>Simulate coin flips or build a perfect bell curve, then explore mean, median, standard deviation, margin of error and the 68-95-99.7 rule.</p>
+                <ul class="tool-card__tags" aria-label="Details">
+                  <li class="tag">Grades 6–12</li>
+                  <li class="tag">Statistics</li>
+                </ul>
+              </div>
+            </li>
+          </ul>
+        </section>
+      </div>
+    </section>
+
+    <!-- =============================================================
+         WHY — what makes the tools classroom-ready
+         ============================================================= -->
+    <section class="section section--tint" aria-labelledby="why-title">
+      <div class="container">
+        <header class="section__head">
+          <p class="overline">Designed for the front of the room</p>
+          <h2 id="why-title">Made to be read from the back row</h2>
+        </header>
+        <ul class="feature-grid">
+          <li class="feature">
+            <svg class="feature__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 6h16M4 12h10M4 18h7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+            <h3>Large type, strong contrast</h3>
+            <p>Text sits at 7:1 contrast or better, and type scales up on big screens automatically, so a washed-out projector can't fade it.</p>
+          </li>
+          <li class="feature">
+            <svg class="feature__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20.5 14.6A8.6 8.6 0 0 1 9.4 3.5a8.6 8.6 0 1 0 11.1 11.1z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg>
+            <h3>Light and dark mode</h3>
+            <p>Switch any page to dark mode to cut the glare in a dim room. Your choice is remembered on every tool.</p>
+          </li>
+          <li class="feature">
+            <svg class="feature__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M8 20h8M12 16v4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+            <h3>Any screen, any device</h3>
+            <p>Projectors, interactive whiteboards, laptops, Chromebooks, tablets and phones. Touch targets are sized for fingers and styluses.</p>
+          </li>
+          <li class="feature">
+            <svg class="feature__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <h3>Free, with nothing to install</h3>
+            <p>No accounts, no ads and no downloads. Open a link and teach. Every tool is currently free of charge.</p>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- =============================================================
+         ABOUT
+         ============================================================= -->
+    <section class="section" id="about" aria-labelledby="about-title">
+      <div class="container about">
+        <div class="about__badge" aria-hidden="true">
+          <span>MK</span>
+        </div>
+        <div class="about__copy">
+          <p class="overline">About</p>
+          <h2 id="about-title">A math teacher who designs for the classroom</h2>
+          <p class="about__lead">I'm Mordechai Klein, an experienced math teacher with a background in UX/UI
+            design. I build the visual tools I always wanted at the front of my own classroom.</p>
+          <p>Five years teaching high school taught me quickly what holds a room's attention and what
+            doesn't. The hardest moments were rarely about the math itself. They were about <em>seeing</em> it:
+            why subtracting a negative goes up, why the area model gives the product, why “or” means adding
+            and then subtracting the overlap. A quick sketch on the whiteboard often wasn't enough.</p>
+          <p>Each tool here starts from one of those moments. Then I design it the way a UX designer would.
+            The user is a teacher at a projector with thirty students watching, so every screen shows one
+            idea, uses type you can read from the back row, and shows <em>why</em> the answer is right, not
+            just what it is.</p>
+          <ul class="about__principles">
+            <li><strong>Readable from the back row.</strong> Large type, thick lines, high contrast.</li>
+            <li><strong>One idea per screen.</strong> Nothing on the board that doesn't help.</li>
+            <li><strong>Shows the reasoning.</strong> The picture explains the procedure.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- =============================================================
+         FAQ — common questions teachers ask
+         ============================================================= -->
+    <section class="section section--tint" aria-labelledby="faq-title">
+      <div class="container faq-wrap">
+        <header class="section__head">
+          <p class="overline">Questions</p>
+          <h2 id="faq-title">Frequently asked questions</h2>
+        </header>
+        <div class="faq">
+          <details>
+            <summary>Are these math tools really free?</summary>
+            <div><p>Yes. Every tool on MathVisuals is currently free of charge for teachers, students and parents. There are no ads and no paid tiers.</p><p>The tools themselves, including their design and code, are copyright Mordechai Klein. You are welcome to use them with your classes and to share links to them, but please don’t copy, download or republish them elsewhere.</p></div>
+          </details>
+          <details>
+            <summary>Do my students or I need an account?</summary>
+            <div><p>No. Open the link and the tool is ready. Nothing is saved to a server, so there's no student data to worry about.</p></div>
+          </details>
+          <details>
+            <summary>Will they work on my interactive whiteboard?</summary>
+            <div><p>Yes. The tools run in any modern web browser, so they work on an interactive whiteboard or touch panel driven by a classroom computer, as well as on laptops, Chromebooks, tablets and phones. Buttons and points are sized for touch.</p></div>
+          </details>
+          <details>
+            <summary>Can I share the tools with students for homework?</summary>
+            <div><p>Of course. Share a tool's link in Google Classroom, Canvas or any learning platform. The tools work on student devices just as they do on the board.</p></div>
+          </details>
+          <details>
+            <summary>Can you build a tool for a topic I teach?</summary>
+            <div><p>I'd love to hear your idea. Use the form below to describe what you want students to see. Teacher suggestions decide what I build next.</p></div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- =============================================================
+         CONTACT — teachers suggest new tools (posts to contact.php)
+         ============================================================= -->
+    <section class="section" id="contact" aria-labelledby="contact-title">
+      <div class="container contact">
+        <div class="contact__intro">
+          <p class="overline">Suggest a tool</p>
+          <h2 id="contact-title">What do you wish you could show your class?</h2>
+          <p>Is there a concept your students struggle to picture, or a diagram you redraw on the board every
+            year? Tell me about it. The best ideas come from teachers in the classroom, and I read every
+            suggestion.</p>
+          <ul class="contact__steps">
+            <li><span><strong>Describe the moment</strong> in a lesson where a visual would help.</span></li>
+            <li><span><strong>I'll reply</strong> if I have questions about how you teach it.</span></li>
+            <li><span><strong>New tools are free</strong> for everyone, like all the others.</span></li>
+          </ul>
+        </div>
+
+        <form class="contact-form" id="contact-form" action="contact.php" method="post" novalidate>
+          <div class="form-row">
+            <div class="form-field">
+              <label for="cf-name">Your name</label>
+              <input class="form-control" id="cf-name" name="name" type="text" autocomplete="name" required maxlength="100" aria-describedby="cf-name-error">
+              <p class="form-error" id="cf-name-error" hidden></p>
+            </div>
+            <div class="form-field">
+              <label for="cf-email">Email</label>
+              <input class="form-control" id="cf-email" name="email" type="email" autocomplete="email" required maxlength="200" aria-describedby="cf-email-hint cf-email-error">
+              <p class="form-hint" id="cf-email-hint">Only used to reply about your idea. See the <a href="privacy.html">privacy policy</a>.</p>
+              <p class="form-error" id="cf-email-error" hidden></p>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-field">
+              <label for="cf-role">I am a… <span class="optional">(optional)</span></label>
+              <select class="form-control" id="cf-role" name="role">
+                <option value="">Choose one</option>
+                <option>Classroom teacher</option>
+                <option>Math coach or specialist</option>
+                <option>Tutor</option>
+                <option>School leader</option>
+                <option>Student or parent</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label for="cf-grade">Grade level <span class="optional">(optional)</span></label>
+              <select class="form-control" id="cf-grade" name="grade">
+                <option value="">Choose one</option>
+                <option>Elementary (K–5)</option>
+                <option>Middle school (6–8)</option>
+                <option>High school (9–12)</option>
+                <option>College</option>
+                <option>Other</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label for="cf-topic">Your tool idea, in a few words</label>
+            <input class="form-control" id="cf-topic" name="topic" type="text" required maxlength="150" placeholder="e.g. Visual model for solving two-step equations" aria-describedby="cf-topic-error">
+            <p class="form-error" id="cf-topic-error" hidden></p>
+          </div>
+
+          <div class="form-field">
+            <label for="cf-message">Describe it</label>
+            <textarea class="form-control" id="cf-message" name="message" required minlength="20" maxlength="4000" rows="6" aria-describedby="cf-message-hint cf-message-error"></textarea>
+            <p class="form-hint" id="cf-message-hint">What should students see? What's hard to show on a whiteboard?</p>
+            <p class="form-error" id="cf-message-error" hidden></p>
+          </div>
+
+          <!-- Spam traps: a field people never see (bots fill it in) and the time the form was loaded -->
+          <div class="hp" aria-hidden="true">
+            <label for="cf-website">Leave this field empty</label>
+            <input id="cf-website" name="website" type="text" tabindex="-1" autocomplete="off">
+          </div>
+          <input type="hidden" name="started" value="">
+
+          <div class="form-actions">
+            <button class="btn btn-primary btn-lg" type="submit">Send my idea</button>
+          </div>
+          <p class="form-status" id="form-status" role="status" tabindex="-1" hidden></p>
+        </form>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===== Site footer ===== -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="site-footer__grid">
+        <div class="site-footer__about">
+          <a class="brand" href="./">
+            <img class="brand__mark" src="assets/img/logo.svg" alt="" width="32" height="32">
+            <span class="brand__name">Math<span>Visuals</span></span>
+          </a>
+          <p>Free interactive math visuals for projectors and smartboards, designed by a math teacher with a UX/UI background.</p>
+        </div>
+        <nav aria-label="Number Sense & Operations tools">
+          <h2>Number Sense</h2>
+          <ul>
+            <li><a href="tools/integer-number-line/">Integer Number Line</a></li>
+            <li><a href="tools/fraction-visualizer/">Fraction Visualizer</a></li>
+          </ul>
+        </nav>
+        <nav aria-label="Algebra & Graphing tools">
+          <h2>Algebra & Graphing</h2>
+          <ul>
+            <li><a href="tools/graphing-explorer/">Graphing Explorer</a></li>
+            <li><a href="tools/real-life-graphs/">Graphs in Real Life</a></li>
+          </ul>
+        </nav>
+        <nav aria-label="Probability & Statistics tools">
+          <h2>Statistics</h2>
+          <ul>
+            <li><a href="tools/probability-manipulator/">Probability Manipulator</a></li>
+            <li><a href="tools/bell-curve-simulator/">Bell Curve Simulator</a></li>
+          </ul>
+        </nav>
+      </div>
+      <div class="site-footer__bottom">
+        <p>© <span data-year>2026</span> Mordechai Klein. All rights reserved. The tools are free to use for now, but their design and code are my copyright and may not be copied or republished.</p>
+        <p><a href="./#about">About</a> · <a href="./#contact">Suggest a tool</a> · <a href="./privacy.html">Privacy</a> <!-- · <a href="style-guide.html">Style guide</a>--></p> 
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

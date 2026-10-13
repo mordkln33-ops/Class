@@ -22,6 +22,26 @@
     return (Object.is(r, -0) ? 0 : r).toLocaleString(undefined, { maximumFractionDigits: d });
   }
 
+  // z-score with an explicit sign: +1.25 / −0.50
+  function fmtZ(z) {
+    const r = Math.round(z * 100) / 100;
+    return (r > 0 ? '+' : r < 0 ? '−' : '') + Math.abs(r).toFixed(2);
+  }
+
+  // Share → "68.27%" (always 2 decimals so 68 – 95 – 99.7 line up)
+  function fmtPct(p) { return `${(p * 100).toFixed(2)}%`; }
+
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  }
+
+  // 1, 2 or 5 × a power of ten, close to `raw`
+  function niceStep(raw) {
+    const p = 10 ** Math.floor(Math.log10(raw));
+    const f = raw / p;
+    return (f < 1.5 ? 1 : f < 3 ? 2 : f < 7 ? 5 : 10) * p;
+  }
+
   const X_TICKS = 20;
   const Y_TICKS = 10;
   const MAX_EXACT_BINS = 81; // more possible values than this → group into bins
@@ -37,6 +57,9 @@
 
   // ---------------- State ----------------
   let sim = null;      // the current simulation (config + values + binning)
+  let stats = null;    // statistics, once every dot is on the graph
+  let selRange = null; // Range Finder selection { a, b } in data units (±Infinity = no limit)
+  let inSel = null;    // per dot: 1 if it is inside the selection
   let shown = 0;       // how many dots are on screen
   let animId = null;
   let lastConfig = null;
@@ -81,11 +104,43 @@
     return Math.exp(-0.5 * z * z) / (sd * Math.sqrt(2 * Math.PI));
   }
 
+  // Share of a bell curve below z (Abramowitz & Stegun erf, error < 2e-7)
+  function normalCdf(z) {
+    if (z === Infinity) return 1;
+    if (z === -Infinity) return 0;
+    const x = Math.abs(z) / Math.SQRT2;
+    const t = 1 / (1 + 0.3275911 * x);
+    const erf = 1 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-x * x);
+    return 0.5 * (1 + (z < 0 ? -erf : erf));
+  }
+
+  // z below which a share p of a bell curve lies (Acklam's approximation)
+  function normalInv(p) {
+    const a = [-3.969683028665376e+01, 2.209460984245205e+02, -2.759285104469687e+02, 1.383577518672690e+02, -3.066479806614716e+01, 2.506628277459239e+00];
+    const b = [-5.447609879822406e+01, 1.615858368580409e+02, -1.556989798598866e+02, 6.680131188771972e+01, -1.328068155288572e+01];
+    const c = [-7.784894002430293e-03, -3.223964580411365e-01, -2.400758277161838e+00, -2.549732539343734e+00, 4.374664141464968e+00, 2.938163982698783e+00];
+    const d = [7.784695709041462e-03, 3.224671290700398e-01, 2.445134137142996e+00, 3.754408661907416e+00];
+    const tail = q => (((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) / ((((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1);
+    if (p < 0.02425) return tail(Math.sqrt(-2 * Math.log(p)));
+    if (p > 1 - 0.02425) return -tail(Math.sqrt(-2 * Math.log(1 - p)));
+    const q = p - 0.5, r = q * q;
+    return (((((a[0] * r + a[1]) * r + a[2]) * r + a[3]) * r + a[4]) * r + a[5]) * q /
+      (((((b[0] * r + b[1]) * r + b[2]) * r + b[3]) * r + b[4]) * r + 1);
+  }
+
   // =========================================================
   //  Building simulations
   // =========================================================
-  function randInt(lo, hi) { return lo + Math.floor(Math.random() * (hi - lo + 1)); }
-  function randReal(lo, hi) { return lo + Math.random() * (hi - lo); }
+  function shuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  // Mean = middle of the range, SD = range ÷ 6 (so the range covers ±3 SD).
+  function bellParams(lo, hi) { return { mean: (lo + hi) / 2, sd: (hi - lo) / 6 }; }
 
   function buildSim(cfg) {
     const s = { cfg };
@@ -105,48 +160,34 @@
       s.subtitle = `${fmt(runs, 0)} runs · ${fmt(n, 0)} tries per run · P(${groupLabel}) = ${pText}`;
       s.xLabel = percent ? `Percent ${groupLabel} in one run` : `Number of ${groupLabel} in one run`;
       s.yLabel = 'Number of runs';
-      s.unitName = 'run';
-      s.expected = percent ? p * 100 : n * p;
+      s.unitName = 'one run';
+      s.countNoun = 'runs';
       s.suffix = percent ? '%' : '';
+      s.unit = '';
+      s.withUnit = v => fmt(v) + s.suffix;
       s.tip = i => `${fmt(s.values[i])}${s.suffix} ${groupLabel}`;
-    } else if (cfg.type === 'average') {
-      const { name, lo, hi, unit, n, runs } = cfg;
-      const ints = Number.isInteger(lo) && Number.isInteger(hi);
-      s.values = new Array(runs);
-      for (let r = 0; r < runs; r++) {
-        let sum = 0;
-        for (let t = 0; t < n; t++) sum += ints ? randInt(lo, hi) : randReal(lo, hi);
-        s.values[r] = sum / n;
-      }
-      s.xMin = lo;
-      s.xMax = hi;
-      s.step = ints ? 1 / n : null;
-      s.intTicks = ints;
-      s.title = `Average ${name} per Sample of ${fmt(n, 0)}`;
-      s.subtitle = `${fmt(runs, 0)} runs · each dot = the average of ${fmt(n, 0)} random ${ints ? 'whole ' : ''}numbers from ${fmt(lo)} to ${fmt(hi)}`;
-      s.xLabel = `Average ${name} (${unit})`;
-      s.yLabel = 'Number of runs';
-      s.unitName = 'run';
-      s.expected = (lo + hi) / 2;
-      s.suffix = '';
-      s.tip = i => `${fmt(s.values[i])} ${unit}`;
     } else {
-      const { name, lo, hi, n } = cfg;
-      const ints = Number.isInteger(lo) && Number.isInteger(hi);
-      s.values = new Array(n);
-      for (let r = 0; r < n; r++) s.values[r] = ints ? randInt(lo, hi) : randReal(lo, hi);
-      s.xMin = lo;
-      s.xMax = hi;
-      s.step = ints ? 1 : null;
-      s.intTicks = ints;
-      s.title = `${name}: ${fmt(n, 0)} Random Values`;
-      s.subtitle = `Each dot is one random ${ints ? 'whole ' : ''}number from ${fmt(lo)} to ${fmt(hi)}`;
-      s.xLabel = `${name} value`;
-      s.yLabel = 'How many times';
-      s.unitName = 'number';
-      s.expected = (lo + hi) / 2;
+      // A perfect bell curve: each dot sits at an evenly spaced percentile of the
+      // normal curve, rescaled so the mean and SD come out exactly as asked.
+      const { title, lo, hi, unit, n, counted } = cfg;
+      const { mean, sd } = bellParams(lo, hi);
+      const z = Array.from({ length: n }, (_, i) => normalInv((i + 0.5) / n));
+      const zsd = Math.sqrt(z.reduce((a, v) => a + v * v, 0) / n);
+      s.values = shuffle(z.map(v => mean + (sd * v) / zsd));
+      s.xMin = mean - 4 * sd;
+      s.xMax = mean + 4 * sd;
+      s.binWidth = sd / 5;          // 5 columns per SD, so SD lines fall on column edges
+      s.niceTicks = true;
+      s.title = title;
+      s.subtitle = `A perfect bell curve of ${fmt(n, 0)} ${counted} · mean ${fmt(mean)} ${unit} · SD ${fmt(sd)} ${unit}`;
+      s.xLabel = `${title} (${unit})`;
+      s.yLabel = `Number of ${counted}`;
+      s.unitName = `one of the ${counted}`;
+      s.countNoun = counted;
       s.suffix = '';
-      s.tip = i => fmt(s.values[i]);
+      s.unit = unit;
+      s.withUnit = v => `${fmt(v)} ${unit}`;
+      s.tip = i => `${fmt(s.values[i])} ${unit}`;
     }
     setupBins(s);
     return s;
@@ -163,9 +204,9 @@
       s.binCenter = b => s.xMin + b * s.step;
     } else {
       s.perValue = false;
-      s.binCount = BIN_COUNT;
-      s.binWidth = span / BIN_COUNT;
-      s.binIndex = v => Math.min(BIN_COUNT - 1, Math.max(0, Math.floor((v - s.xMin) / s.binWidth)));
+      s.binCount = s.binWidth ? Math.round(span / s.binWidth) : BIN_COUNT;
+      s.binWidth = span / s.binCount;
+      s.binIndex = v => Math.min(s.binCount - 1, Math.max(0, Math.floor((v - s.xMin) / s.binWidth)));
       s.binCenter = b => s.xMin + (b + 0.5) * s.binWidth;
     }
     const counts = new Array(s.binCount).fill(0);
@@ -202,16 +243,21 @@
     return { w, h, m, pw, ph, rem, x, xInv, y, countPx, binPx, r, d0, d1 };
   }
 
-  function xTickValues() {
+  function xTicks() {
     const span = sim.xMax - sim.xMin;
-    const roundInts = sim.intTicks && span >= X_TICKS - 1;
     const out = [];
+    if (sim.niceTicks) {
+      const step = niceStep(span / 14);
+      for (let v = Math.ceil(sim.xMin / step) * step; v <= sim.xMax + step * 1e-6; v += step) out.push(Math.round(v / step) * step);
+      return { values: out, decimals: Math.max(0, -Math.floor(Math.log10(step) + 1e-9)) };
+    }
+    const roundInts = sim.intTicks && span >= X_TICKS - 1;
     for (let k = 0; k < X_TICKS; k++) {
       let v = sim.xMin + (span * k) / (X_TICKS - 1);
       if (roundInts) v = Math.round(v);
       out.push(v);
     }
-    return out;
+    return { values: out, decimals: roundInts ? 0 : span >= 19 ? 0 : span >= 2 ? 1 : 2 };
   }
 
   function drawStatic() {
@@ -228,12 +274,15 @@
     layers = {
       grid: svgEl('g', {}, chart),
       band: svgEl('g', { 'clip-path': 'url(#plotClip)' }, chart),
+      sel: svgEl('g', { 'clip-path': 'url(#plotClip)' }, chart),
       dots: svgEl('g', {}, chart),
       curve: svgEl('g', { 'clip-path': 'url(#plotClip)' }, chart),
       lines: svgEl('g', {}, chart),
+      selTop: svgEl('g', {}, chart),
       axes: svgEl('g', {}, chart),
       hover: svgEl('g', {}, chart),
     };
+    inSel = new Uint8Array(sim.values.length);
 
     // Y grid + labels (0 … yMax in 10 equal steps)
     for (let k = 0; k <= Y_TICKS; k++) {
@@ -246,9 +295,8 @@
     }
 
     // X ticks (20 numbers from lowest to highest possible)
-    const span = sim.xMax - sim.xMin;
-    const decimals = sim.intTicks && span >= X_TICKS - 1 ? 0 : span >= 19 ? 0 : span >= 2 ? 1 : 2;
-    for (const v of xTickValues()) {
+    const { values: tickValues, decimals } = xTicks();
+    for (const v of tickValues) {
       const px = x(v);
       svgEl('line', { class: 'tick-mark', x1: px, x2: px, y1: m.t + ph, y2: m.t + ph + 7 }, layers.axes);
       const t = svgEl('text', { class: 'tick-label', x: px, y: m.t + ph + 9 + rem * 0.8, 'text-anchor': 'middle' }, layers.axes);
@@ -301,12 +349,15 @@
     if (st.sd > 0 && x(st.mean + st.sd) - x(st.mean) >= 4) {
       const roomForLabels = x(st.mean + st.sd) - x(st.mean) >= rem * 2.6;
       for (const z of [-3, -2, -1, 1, 2, 3]) {
-        const px = x(st.mean + z * st.sd);
+        const v = st.mean + z * st.sd;
+        const px = x(v);
         if (px < m.l || px > m.l + L.pw) continue;
         svgEl('line', { class: 'sd-line', x1: px, x2: px, y1: top, y2: base }, layers.band);
         if (roomForLabels) {
           const t = svgEl('text', { class: 'sd-label', x: px, y: top + rem * 0.75, 'text-anchor': 'middle' }, layers.band);
           t.textContent = `${z > 0 ? '+' : '−'}${Math.abs(z)} SD`;
+          const tv = svgEl('text', { class: 'sd-label sd-val', x: px, y: top + rem * 1.4, 'text-anchor': 'middle' }, layers.band);
+          tv.textContent = fmt(v) + sim.suffix;
         }
       }
     }
@@ -342,26 +393,21 @@
     const sfx = sim ? sim.suffix : '';
     const set = (id, v) => { $(id).textContent = v; };
     if (!st) {
-      ['#stMean', '#stMedian', '#stSD', '#stMOE', '#stRange', '#stMinMax', '#cardMean', '#cardMedian', '#cardSD'].forEach(id => set(id, '—'));
-      $('#cardSDNote').textContent = '';
+      ['#stMean', '#stMedian', '#stSD', '#stMOE', '#stRange', '#stMinMax', '#cardMean', '#cardMedian'].forEach(id => set(id, '—'));
       $$('.how-btn').forEach(b => { b.disabled = true; });
       return;
     }
     set('#stMean', fmt(st.mean) + sfx);
     set('#stMedian', fmt(st.median) + sfx);
     set('#stSD', fmt(st.sd) + sfx);
-    // Each dot in Single/Average is already a sample result, so its spread (SD) is the standard error.
-    // In Random each dot is one raw number, so the margin of error is for their mean: SD ÷ √N.
-    const se = sim.cfg.type === 'random' ? st.sd / Math.sqrt(st.n) : st.sd;
+    // Each dot in Single is already a sample result, so its spread (SD) is the standard error.
+    // In Bell Curve each dot is one individual, so the margin of error is for their mean: SD ÷ √N.
+    const se = sim.cfg.type === 'bell' ? st.sd / Math.sqrt(st.n) : st.sd;
     set('#stMOE', '± ' + fmt(2 * se) + sfx);
     set('#stRange', fmt(st.max - st.min) + sfx);
     set('#stMinMax', `${fmt(st.min)} / ${fmt(st.max)}`);
     set('#cardMean', fmt(st.mean) + sfx);
     set('#cardMedian', fmt(st.median) + sfx);
-    set('#cardSD', fmt(st.sd) + sfx);
-    $('#cardSDNote').textContent = st.sd > 0
-      ? `Here, ${fmt(st.within[0] * 100, 1)}% of the dots are within 1 SD of the mean (a perfect bell curve has about 68%).`
-      : '';
     $$('.how-btn').forEach(b => { b.disabled = false; });
   }
 
@@ -369,14 +415,218 @@
 
   // Statistics (sidebar, cards, and graph overlays) only appear once every dot is on the graph.
   function refresh(reveal = false) {
-    const st = isDone() ? computeStats(sim.values) : null;
+    stats = isDone() ? computeStats(sim.values) : null;
     if (layers) {
-      drawOverlay(st);
+      drawOverlay(stats);
+      drawSelection();
       if (reveal) [layers.band, layers.curve, layers.lines].forEach(g => g.classList.add('reveal'));
     }
-    updateNumbers(st);
-    return st;
+    updateNumbers(stats);
+    updateRangeCard();
+    return stats;
   }
+
+  // =========================================================
+  //  Range Finder: select any range and see what share is inside
+  // =========================================================
+  const rgFrom = $('#rgFrom');
+  const rgTo = $('#rgTo');
+  const quickBtns = $$('.quick-btn');
+  let selFrame = null;
+
+  // Where the selection's edges are drawn. When results are whole steps (Single tab),
+  // each value owns a column one step wide, so the edges sit on the outside of the
+  // end columns — then the shaded area matches the dots that are counted.
+  function drawnRange() {
+    const h = sim.perValue ? sim.step / 2 : 0;
+    return { a: selRange.a - h, b: selRange.b + h };
+  }
+
+  function bellShare(st) {
+    const { a, b } = drawnRange();
+    if (st.sd === 0) return st.mean >= a && st.mean <= b ? 1 : 0;
+    return Math.max(0, normalCdf((b - st.mean) / st.sd) - normalCdf((a - st.mean) / st.sd));
+  }
+
+  function setSel(a, b, fromInputs = false) {
+    let swapped = false;
+    if (a > b) { [a, b] = [b, a]; swapped = true; }
+    selRange = { a, b };
+    if (!fromInputs) syncInputs();
+    scheduleSel();
+    return swapped;
+  }
+
+  function clearSel() {
+    selRange = null;
+    syncInputs();
+    scheduleSel();
+  }
+
+  function syncInputs() {
+    const show = v => (isFinite(v) ? String(Math.round(v * 100) / 100) : '');
+    rgFrom.value = selRange ? show(selRange.a) : '';
+    rgTo.value = selRange ? show(selRange.b) : '';
+  }
+
+  function scheduleSel() {
+    if (selFrame) return;
+    selFrame = requestAnimationFrame(() => {
+      selFrame = null;
+      drawSelection();
+      updateRangeCard();
+    });
+  }
+
+  // A label with a rounded background, kept inside the plot area.
+  function pill(parent, px, py, text, cls, anchor = 'middle') {
+    const g = svgEl('g', { class: `pill ${cls}` }, parent);
+    const r = svgEl('rect', { rx: 7 }, g);
+    const t = svgEl('text', { x: px, y: py, 'text-anchor': anchor, 'dominant-baseline': 'central' }, g);
+    t.textContent = text;
+    const bb = t.getBBox();
+    const padX = 7, padY = 3;
+    r.setAttribute('x', bb.x - padX);
+    r.setAttribute('y', bb.y - padY);
+    r.setAttribute('width', bb.width + padX * 2);
+    r.setAttribute('height', bb.height + padY * 2);
+    const left = bb.x - padX, right = bb.x + bb.width + padX;
+    const dx = left < L.m.l ? L.m.l - left : right > L.m.l + L.pw ? L.m.l + L.pw - right : 0;
+    if (dx) g.setAttribute('transform', `translate(${dx},0)`);
+    return g;
+  }
+
+  function drawSelection() {
+    if (!layers) return;
+    layers.sel.innerHTML = '';
+    layers.selTop.innerHTML = '';
+    const st = stats;
+    const active = !!(st && selRange);
+    layers.dots.classList.toggle('has-sel', active);
+
+    // Light up the dots inside the range
+    const dots = layers.dots.children;
+    for (let i = 0; i < shown; i++) {
+      const v = sim.values[i];
+      const inside = active && v >= selRange.a - 1e-9 && v <= selRange.b + 1e-9 ? 1 : 0;
+      if (inSel[i] !== inside) {
+        inSel[i] = inside;
+        dots[i].classList.toggle('in', !!inside);
+      }
+    }
+    if (!active) return;
+
+    const { m, pw, ph, x, y, rem } = L;
+    const top = m.t, base = m.t + ph;
+    const dr = drawnRange();
+    const lo = Math.max(L.d0, dr.a);
+    const hi = Math.min(L.d1, dr.b);
+    if (hi < lo) return;
+    const x1 = x(lo), x2 = x(hi);
+
+    svgEl('rect', { class: 'sel-col', x: x1, y: top, width: Math.max(0, x2 - x1), height: ph }, layers.sel);
+
+    // Shade the area under the bell curve
+    if (st.sd > 0 && st.n > 1) {
+      const pts = [`${x1.toFixed(1)},${base}`];
+      const steps = Math.max(2, Math.ceil(((x2 - x1) / pw) * 260));
+      for (let k = 0; k <= steps; k++) {
+        const v = lo + ((hi - lo) * k) / steps;
+        const cnt = st.n * sim.binWidth * normalPdf(v, st.mean, st.sd);
+        pts.push(`${x(v).toFixed(1)},${Math.max(top - 4, y(cnt)).toFixed(1)}`);
+      }
+      pts.push(`${x2.toFixed(1)},${base}`);
+      svgEl('polygon', { class: 'sel-area', points: pts.join(' ') }, layers.sel);
+    }
+
+    // Edges with a grip and their value + z-score
+    const edgeY = top + rem * 2.5;
+    [[selRange.a, dr.a, x1, 'end', -8], [selRange.b, dr.b, x2, 'start', 8]].forEach(([v, dv, px, anchor, off]) => {
+      if (!isFinite(v) || dv < L.d0 - 1e-9 || dv > L.d1 + 1e-9) return;
+      svgEl('line', { class: 'sel-edge', x1: px, x2: px, y1: top, y2: base }, layers.selTop);
+      svgEl('rect', { class: 'sel-grip', x: px - 5, y: top + ph / 2 - rem * 0.8, width: 10, height: rem * 1.6, rx: 5 }, layers.selTop);
+      const z = st.sd > 0 ? `  (${fmtZ((v - st.mean) / st.sd)} SD)` : '';
+      pill(layers.selTop, px + off, edgeY, `${fmt(v)}${sim.suffix}${z}`, 'edge', anchor);
+    });
+
+    const p = bellShare(st);
+    pill(layers.selTop, (x1 + x2) / 2, top + rem * 4.1, fmtPct(p), 'big');
+  }
+
+  function describeRange(a, b) {
+    const u = sim.withUnit;
+    if (!isFinite(a) && !isFinite(b)) return 'everything';
+    if (!isFinite(a)) return `below ${u(b)}`;
+    if (!isFinite(b)) return `above ${u(a)}`;
+    return `between ${u(a)} and ${u(b)}`;
+  }
+
+  function updateRangeCard() {
+    const st = stats;
+    const hint = $('#rgHint');
+    const res = $('#rgResults');
+    rgFrom.disabled = rgTo.disabled = !st;
+    quickBtns.forEach(b => { b.disabled = !st || (b.dataset.sd !== 'clear' && st.sd === 0); });
+    $('#rgUnit').textContent = sim ? (sim.unit || (sim.suffix === '%' ? '%' : '')) : '';
+
+    if (!st || !selRange) {
+      res.hidden = true;
+      hint.hidden = false;
+      hint.textContent = !sim
+        ? 'Run a simulation, then drag across the graph to select any range.'
+        : !st
+          ? 'The Range Finder turns on when all the dots are on the graph.'
+          : 'Drag across the graph to select any range, type numbers above, or pick a quick range. Drag to the edge of the graph to include everything above or below.';
+      return;
+    }
+    hint.hidden = true;
+    res.hidden = false;
+
+    const { a, b } = selRange;
+    const n = st.n;
+    const noun = esc(sim.countNoun);
+    const p = bellShare(st);
+    let dotsIn = 0;
+    for (const v of sim.values) if (v >= a - 1e-9 && v <= b + 1e-9) dotsIn++;
+
+    $('#rgPct').textContent = fmtPct(p);
+    $('#rgWhat').textContent = `of the bell curve is ${describeRange(a, b)}`;
+    $('#rgCount').innerHTML =
+      `<b>≈ ${fmt(Math.round(p * n), 0)} ${noun}</b> ` +
+      `<span class="rg-work">(${fmtPct(p)} × ${fmt(n, 0)} = ${fmt(p * n, 1)})</span>`;
+    $('#rgDots').innerHTML =
+      `Dots on the graph in this range: <b>${fmt(dotsIn, 0)}</b> of ${fmt(n, 0)} (${fmt((dotsIn / n) * 100, 1)}%)`;
+
+    if (st.sd > 0) {
+      const row = (label, v) => isFinite(v)
+        ? `<tr><th>${label}</th><td>(${fmt(v)} − ${fmt(st.mean)}) ÷ ${fmt(st.sd)} = <b>${fmtZ((v - st.mean) / st.sd)}</b></td></tr>`
+        : `<tr><th>${label}</th><td>no limit</td></tr>`;
+      $('#rgZ').innerHTML =
+        `<p class="rg-z-head">z-score (SDs from the mean) = (value − mean) ÷ SD</p>
+         <table>${row('From', a)}${row('To', b)}</table>`;
+    } else {
+      $('#rgZ').innerHTML = '';
+    }
+  }
+
+  function readInputs() {
+    const f = rgFrom.value.trim();
+    const t = rgTo.value.trim();
+    if (f === '' && t === '') { selRange = null; scheduleSel(); return; }
+    const a = f === '' ? -Infinity : Number(f);
+    const b = t === '' ? Infinity : Number(t);
+    if (Number.isNaN(a) || Number.isNaN(b)) return;
+    setSel(a, b, true);
+  }
+  rgFrom.addEventListener('input', readInputs);
+  rgTo.addEventListener('input', readInputs);
+
+  quickBtns.forEach(btn => btn.addEventListener('click', () => {
+    if (!stats) return;
+    if (btn.dataset.sd === 'clear') return clearSel();
+    const k = Number(btn.dataset.sd);
+    setSel(stats.mean - k * stats.sd, stats.mean + k * stats.sd);
+  }));
 
   // =========================================================
   //  Running a simulation (dots appear one by one)
@@ -386,6 +636,8 @@
     lastConfig = cfg;
     sim = buildSim(cfg);
     shown = 0;
+    selRange = null;
+    syncInputs();
 
     $('#graphTitle').textContent = sim.title;
     $('#graphSubtitle').textContent = sim.subtitle;
@@ -445,12 +697,69 @@
     if (hoverRing) { hoverRing.remove(); hoverRing = null; }
   }
 
-  chart.addEventListener('pointermove', e => {
-    if (!sim || !L || !shown) return hideTooltip();
+  // ---------------- Dragging a range ----------------
+  let drag = null; // { mode: 'new' | 'a' | 'b', startPx, anchor, moved }
+
+  function localPoint(e) {
     const rect = chart.getBoundingClientRect();
-    const px = e.clientX - rect.left;
-    const py = e.clientY - rect.top;
+    return { px: e.clientX - rect.left, py: e.clientY - rect.top };
+  }
+
+  // Pixel → value, rounded to a sensible step. Past the plot edge = no limit.
+  function pxToValue(px) {
+    if (px <= L.m.l) return -Infinity;
+    if (px >= L.m.l + L.pw) return Infinity;
+    const step = sim.perValue ? sim.step : niceStep((L.d1 - L.d0) / 400);
+    return Math.round(L.xInv(px) / step) * step;
+  }
+
+  function edgeAt(px) {
+    if (!selRange) return null;
+    const near = v => {
+      const ex = isFinite(v) ? L.x(v) : v < 0 ? L.m.l : L.m.l + L.pw;
+      return Math.abs(ex - px) <= 10;
+    };
+    const dr = drawnRange();
+    if (near(dr.a)) return 'a';
+    if (near(dr.b)) return 'b';
+    return null;
+  }
+
+  chart.addEventListener('pointerdown', e => {
+    if (!stats || !L || e.button !== 0) return;
+    const { px, py } = localPoint(e);
     const { m, pw, ph } = L;
+    if (px < m.l - 10 || px > m.l + pw + 10 || py < m.t - 10 || py > m.t + ph + 10) return;
+    const edge = edgeAt(px);
+    drag = { mode: edge || 'new', startPx: px, anchor: edge ? null : pxToValue(px), moved: false };
+    try { chart.setPointerCapture(e.pointerId); } catch { /* pointer already gone */ }
+    hideTooltip();
+    e.preventDefault();
+  });
+
+  function endDrag() { drag = null; }
+  chart.addEventListener('pointerup', endDrag);
+  chart.addEventListener('pointercancel', endDrag);
+
+  chart.addEventListener('pointermove', e => {
+    if (drag) {
+      const { px } = localPoint(e);
+      if (drag.mode === 'new') {
+        if (!drag.moved && Math.abs(px - drag.startPx) < 5) return;
+        drag.moved = true;
+        setSel(drag.anchor, pxToValue(px));
+      } else {
+        const v = pxToValue(px);
+        const swapped = drag.mode === 'a' ? setSel(v, selRange.b) : setSel(selRange.a, v);
+        if (swapped) drag.mode = drag.mode === 'a' ? 'b' : 'a';
+      }
+      return;
+    }
+    if (!sim || !L || !shown) return hideTooltip();
+    const { px, py } = localPoint(e);
+    const { m, pw, ph } = L;
+    const inPlot = px >= m.l && px <= m.l + pw && py >= m.t - 10 && py <= m.t + ph;
+    chart.style.cursor = !stats || !inPlot ? '' : edgeAt(px) ? 'ew-resize' : 'crosshair';
     if (px < m.l || px > m.l + pw || py < m.t - L.r || py > m.t + ph) return hideTooltip();
 
     const v = L.xInv(px);
@@ -477,6 +786,11 @@
     hoverRing.setAttribute('r', Math.max(L.r + 3, 7));
 
     tooltip.textContent = sim.tip(idx);
+    if (stats && stats.sd > 0) {
+      const small = document.createElement('small');
+      small.textContent = `${fmtZ((sim.values[idx] - stats.mean) / stats.sd)} SD from the mean`;
+      tooltip.appendChild(small);
+    }
     tooltip.hidden = false;
     const tw = tooltip.offsetWidth;
     const left = Math.max(tw / 2 + 4, Math.min(wrap.clientWidth - tw / 2 - 4, cx));
@@ -677,50 +991,48 @@
     });
   });
 
-  // ---------------- Submit: Average ----------------
-  $('#formAverage').addEventListener('submit', e => {
-    e.preventDefault();
-    const err = $('.form-error', e.currentTarget);
-    const errors = [];
-    const lo = $('#aLow'), hi = $('#aHigh');
-    const blank = [textField($('#aName')), textField($('#aUnit')), mark(lo, !isNum(lo.value)), mark(hi, !isNum(hi.value))].some(Boolean);
-    if (blank) errors.push('Fill in every field.');
-    else if (Number(hi.value) <= Number(lo.value)) { mark(hi, true); errors.push('The highest number must be bigger than the lowest number.'); }
-    if (intField($('#aSample'), 1, 10000)) errors.push('Sample size must be a whole number from 1 to 10,000.');
-    if (intField($('#aRuns'), 1, 5000)) errors.push('Number of runs must be a whole number from 1 to 5,000.');
-    if (errors.length) { err.textContent = errors[0]; return; }
-    err.textContent = '';
-    closeModal(simModal);
-    startSimulation({
-      type: 'average',
-      name: $('#aName').value,
-      unit: $('#aUnit').value,
-      lo: Number(lo.value),
-      hi: Number(hi.value),
-      n: Number($('#aSample').value),
-      runs: Number($('#aRuns').value),
-    });
-  });
+  // ---------------- Bell Curve tab ----------------
+  const bellPreview = $('#bellPreview');
 
-  // ---------------- Submit: Random ----------------
-  $('#formRandom').addEventListener('submit', e => {
+  function updateBellPreview() {
+    const lo = Number($('#bLow').value);
+    const hi = Number($('#bHigh').value);
+    const unit = esc($('#bUnit').value.trim());
+    if (!isNum($('#bLow').value) || !isNum($('#bHigh').value) || hi <= lo) {
+      bellPreview.innerHTML = '';
+      return;
+    }
+    const { mean, sd } = bellParams(lo, hi);
+    const band = (k, pct) => `<li><b>${pct}</b> between ${fmt(mean - k * sd)} and ${fmt(mean + k * sd)} <small>(±${k} SD)</small></li>`;
+    bellPreview.innerHTML = `
+      <p>Mean = <b>${fmt(mean)} ${unit}</b> <small>(the middle)</small> &nbsp;·&nbsp; 1 SD = <b>${fmt(sd)} ${unit}</b> <small>(${fmt(hi - lo)} ÷ 6)</small></p>
+      <ul>${band(1, '68%')}${band(2, '95%')}${band(3, '99.7%')}</ul>`;
+  }
+  ['#bLow', '#bHigh', '#bUnit'].forEach(id => $(id).addEventListener('input', updateBellPreview));
+  updateBellPreview();
+
+  // ---------------- Submit: Bell Curve ----------------
+  $('#formBell').addEventListener('submit', e => {
     e.preventDefault();
     const err = $('.form-error', e.currentTarget);
     const errors = [];
-    const lo = $('#rLow'), hi = $('#rHigh');
-    const blank = [textField($('#rName')), mark(lo, !isNum(lo.value)), mark(hi, !isNum(hi.value))].some(Boolean);
+    const lo = $('#bLow'), hi = $('#bHigh');
+    const blank = [textField($('#bTitle')), textField($('#bUnit')), textField($('#bCounted')),
+      mark(lo, !isNum(lo.value)), mark(hi, !isNum(hi.value))].some(Boolean);
     if (blank) errors.push('Fill in every field.');
     else if (Number(hi.value) <= Number(lo.value)) { mark(hi, true); errors.push('The highest number must be bigger than the lowest number.'); }
-    if (intField($('#rSample'), 1, 5000)) errors.push('Sample size must be a whole number from 1 to 5,000.');
+    if (intField($('#bSample'), 2, 10000)) errors.push('Sample size must be a whole number from 2 to 10,000.');
     if (errors.length) { err.textContent = errors[0]; return; }
     err.textContent = '';
     closeModal(simModal);
     startSimulation({
-      type: 'random',
-      name: $('#rName').value,
+      type: 'bell',
+      title: $('#bTitle').value,
+      unit: $('#bUnit').value,
+      counted: $('#bCounted').value,
       lo: Number(lo.value),
       hi: Number(hi.value),
-      n: Number($('#rSample').value),
+      n: Number($('#bSample').value),
     });
   });
 
@@ -849,4 +1161,6 @@
       openModal(explainModal);
     });
   });
+
+  updateRangeCard();
 })();

@@ -1,0 +1,2083 @@
+/* ==========================================================================
+   KLEIN SITE — WEBSITES FOR TUTORS, TUTORING CENTERS & SMALL SCHOOLS
+   --------------------------------------------------------------------------
+   MOBILE FIRST: base styles below are for phones. Larger screens are layered
+   on with min-width media queries placed right next to each component.
+
+   Breakpoints (em-based, so they respect the user's font size):
+       40em  ≈  640px   large phones / small tablets
+       48em  ≈  768px   tablets
+       64em  ≈ 1024px   laptops
+       80em  ≈ 1280px   desktops
+
+   Visual theme: "today's classroom" — a clean, gridded whiteboard, an interactive
+   display (graphite frame, lit screens) for the tools, deep green as the brand
+   color, pencil-yellow highlights, and red pen only for check marks.
+
+   CONTENTS
+       1.  Design tokens (colors, fonts, spacing)
+       2.  Reset & base
+       3.  Utilities
+       4.  Typography
+       5.  Buttons
+       6.  Header & navigation
+       7.  Hero
+       8.  Sections
+       9.  Image placeholders (.img-slot)
+       10. Cards
+       11. About
+       12. Website benefits (two groups)
+       13. Learning tools + hero demo
+       14. Process steps
+       15. Work (portfolio) cards
+       16. Pricing
+       17. FAQ
+       18. Contact form
+       19. Footer
+       20. Case-study pages (/work)
+       21. Scroll reveal animation
+   ========================================================================== */
+
+
+/* ==========================================================================
+   1. DESIGN TOKENS
+   Change a value here and it updates everywhere.
+   ========================================================================== */
+
+:root {
+    /* Backgrounds: a clean whiteboard, not paper */
+    --paper: #f8fafb;          /* main page background, whiteboard white */
+    --paper-tint: #eef2f4;     /* alternate section background, cool board grey */
+    --white: #ffffff;
+
+    /* Text */
+    --ink: #1d2433;            /* headings and body text */
+    --ink-soft: #4a5368;       /* secondary text (passes WCAG AA on paper) */
+
+    /* Brand */
+    --brand: #1f4d3f;          /* deep green — primary (buttons, links, headings accents) */
+    --brand-dark: #163a2f;     /* hover */
+    --brand-light: #dfeae5;    /* soft green fills */
+    --pencil: #f5c451;         /* pencil yellow — highlights */
+    --pencil-soft: #fbe6a6;
+    --redpen: #b8402b;         /* red pen — ONLY check marks, the logo dot, wrong answers and errors */
+
+    /* Interactive display (the dark tools section and footer) */
+    --bezel: #1c2228;          /* graphite screen frame */
+    --bezel-raised: #262e35;   /* panels set into the frame */
+    --screen-glow: rgba(120, 190, 255, 0.10); /* faint light from a lit screen */
+
+    /* Lines */
+    --line: #dce3e8;           /* borders */
+    --grid: rgba(60, 100, 140, 0.08); /* gridded math whiteboard lines */
+
+    /* Placeholder */
+    --slot-bg: #e8edf0;
+
+    /* Type */
+    --font-heading: "Fraunces", Georgia, "Times New Roman", serif;
+    --font-body: "Lexend", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+
+    /* Spacing scale */
+    --space-1: 0.25rem;
+    --space-2: 0.5rem;
+    --space-3: 0.75rem;
+    --space-4: 1rem;
+    --space-5: 1.5rem;
+    --space-6: 2rem;
+    --space-7: 3rem;
+    --space-8: 4rem;
+
+    /* Shape & depth */
+    --radius: 12px;
+    --radius-small: 8px;
+    --shadow: 0 1px 2px rgba(29, 36, 51, 0.06), 0 8px 24px rgba(29, 36, 51, 0.07);
+    --shadow-lift: 0 2px 4px rgba(29, 36, 51, 0.08), 0 16px 36px rgba(29, 36, 51, 0.12);
+
+    /* Layout */
+    --container: 72rem;        /* max content width (~1152px) */
+    --gutter: 1.25rem;         /* side padding on phones */
+    --header-height: 4rem;
+}
+
+@media (min-width: 48em) {
+    :root {
+        --gutter: 2rem;
+    }
+}
+
+
+/* ==========================================================================
+   2. RESET & BASE
+   ========================================================================== */
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html {
+    -webkit-text-size-adjust: 100%;
+    /* Keeps anchored headings from hiding under the sticky header */
+    scroll-padding-top: calc(var(--header-height) + 1rem);
+}
+
+/* Smooth scrolling only for people who haven't asked for reduced motion */
+@media (prefers-reduced-motion: no-preference) {
+    html {
+        scroll-behavior: smooth;
+    }
+}
+
+body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 1rem;           /* 16px — Lexend runs wide, so 16px reads like 17px */
+    line-height: 1.65;
+    text-rendering: optimizeLegibility;
+}
+
+img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+
+ul,
+ol {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+a {
+    color: var(--brand);
+    text-underline-offset: 0.18em;
+}
+
+a:hover {
+    color: var(--brand-dark);
+}
+
+/* Clear, consistent keyboard focus ring */
+:focus-visible {
+    outline: 3px solid var(--pencil);
+    outline-offset: 3px;
+    border-radius: 4px;
+}
+
+[hidden] {
+    display: none !important;
+}
+
+
+/* ==========================================================================
+   3. UTILITIES
+   ========================================================================== */
+
+.container {
+    width: 100%;
+    max-width: var(--container);
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+}
+
+.container--narrow {
+    max-width: 48rem;
+}
+
+/* Hidden visually, still read by screen readers */
+.visually-hidden {
+    position: absolute !important;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* "Skip to content" link — appears only when focused with the keyboard */
+.skip-link {
+    position: absolute;
+    left: var(--space-4);
+    top: -100px;
+    z-index: 100;
+    padding: var(--space-2) var(--space-4);
+    background: var(--brand);
+    color: var(--white);
+    border-radius: var(--radius-small);
+    text-decoration: none;
+}
+
+.skip-link:focus {
+    top: var(--space-4);
+    color: var(--white);
+}
+
+/* Gridded whiteboard background (hero + case-study headers), like the
+   graph-ruled boards in math classrooms */
+.graph-paper {
+    background-color: var(--paper);
+    background-image:
+        linear-gradient(var(--grid) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 24px 24px;
+}
+
+
+/* ==========================================================================
+   4. TYPOGRAPHY
+   Sizes use clamp(min, preferred, max) so headings scale smoothly
+   between phone and desktop without extra media queries.
+   ========================================================================== */
+
+h1,
+h2,
+h3,
+h4 {
+    margin: 0 0 var(--space-4);
+    font-family: var(--font-heading);
+    font-weight: 600;
+    line-height: 1.15;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+}
+
+h1 {
+    font-size: clamp(2.1rem, 1.4rem + 3.4vw, 3.6rem);
+    font-weight: 700;
+}
+
+h2 {
+    font-size: clamp(1.75rem, 1.3rem + 2vw, 2.6rem);
+}
+
+h3 {
+    font-size: clamp(1.2rem, 1.1rem + 0.4vw, 1.4rem);
+}
+
+h4 {
+    font-size: 1.1rem;
+}
+
+p {
+    margin: 0 0 var(--space-4);
+}
+
+p:last-child {
+    margin-bottom: 0;
+}
+
+/* Small label above headings */
+.eyebrow {
+    margin-bottom: var(--space-3);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--brand);
+}
+
+.eyebrow--light {
+    color: var(--pencil);
+}
+
+.lead {
+    font-size: clamp(1.1rem, 1rem + 0.4vw, 1.25rem);
+    color: var(--ink-soft);
+    max-width: 36rem;
+}
+
+/* Yellow highlighter effect behind key words */
+.highlight {
+    background: linear-gradient(transparent 58%, var(--pencil-soft) 58%, var(--pencil-soft) 92%, transparent 92%);
+    padding-inline: 0.1em;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+}
+
+.muted-light {
+    color: rgba(255, 255, 255, 0.75);
+}
+
+.fine-print {
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+}
+
+
+/* ==========================================================================
+   5. BUTTONS
+   ========================================================================== */
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    min-height: 48px;          /* comfortable tap target */
+    padding: 0.7rem 1.4rem;
+    border: 2px solid transparent;
+    border-radius: 999px;
+    font-family: var(--font-body);
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.2;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s, transform 0.2s;
+}
+
+.btn:active {
+    transform: translateY(1px);
+}
+
+.btn-primary {
+    background: var(--brand);
+    color: var(--white);
+}
+
+.btn-primary:hover {
+    background: var(--brand-dark);
+    color: var(--white);
+}
+
+.btn-secondary {
+    background: transparent;
+    border-color: var(--brand);
+    color: var(--brand);
+}
+
+.btn-secondary:hover {
+    background: var(--brand);
+    color: var(--white);
+}
+
+.btn-pencil {
+    background: var(--pencil);
+    color: var(--ink);
+}
+
+.btn-pencil:hover {
+    background: var(--pencil-soft);
+    color: var(--ink);
+}
+
+/* White outline button for dark (display or brand) backgrounds */
+.btn-outline-light {
+    background: transparent;
+    border-color: var(--white);
+    color: var(--white);
+}
+
+.btn-outline-light:hover {
+    background: var(--white);
+    color: var(--brand);
+}
+
+.btn-small {
+    min-height: 40px;
+    padding: 0.5rem 1.1rem;
+    font-size: 0.95rem;
+}
+
+.btn-block {
+    width: 100%;
+}
+
+.button-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-block: var(--space-5);
+}
+
+/* Inline "read more" style link */
+.text-link {
+    font-weight: 700;
+    color: var(--brand);
+}
+
+
+/* ==========================================================================
+   6. HEADER & NAVIGATION
+   Phone: logo + menu button; the menu drops down when opened.
+   Laptop+: links sit inline.
+   No JavaScript: the toggle is hidden and the links simply wrap below the logo.
+   ========================================================================== */
+
+.site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgba(248, 250, 251, 0.92);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--line);
+}
+
+.navbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    min-height: var(--header-height);
+    gap: var(--space-3);
+}
+
+.logo {
+    font-family: var(--font-heading);
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--ink);
+    text-decoration: none;
+}
+
+.logo-mark {
+    color: var(--redpen);
+}
+
+/* --- Menu button (hamburger) --- */
+.nav-toggle {
+    display: none;             /* shown only when JS is running (see .js rule below) */
+    position: relative;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-small);
+    background: transparent;
+    cursor: pointer;
+}
+
+.js .nav-toggle {
+    display: block;
+}
+
+/* Three bars made from one span and its ::before/::after */
+.nav-toggle-bar,
+.nav-toggle-bar::before,
+.nav-toggle-bar::after {
+    position: absolute;
+    left: 11px;
+    width: 22px;
+    height: 2px;
+    background: var(--ink);
+    border-radius: 2px;
+    transition: transform 0.25s, opacity 0.2s;
+}
+
+.nav-toggle-bar {
+    top: 21px;
+}
+
+.nav-toggle-bar::before,
+.nav-toggle-bar::after {
+    content: "";
+    left: 0;
+}
+
+.nav-toggle-bar::before {
+    top: -7px;
+}
+
+.nav-toggle-bar::after {
+    top: 7px;
+}
+
+/* Bars turn into an "X" when the menu is open */
+.nav-toggle[aria-expanded="true"] .nav-toggle-bar {
+    background: transparent;
+}
+
+.nav-toggle[aria-expanded="true"] .nav-toggle-bar::before {
+    transform: translateY(7px) rotate(45deg);
+}
+
+.nav-toggle[aria-expanded="true"] .nav-toggle-bar::after {
+    transform: translateY(-7px) rotate(-45deg);
+}
+
+/* --- Menu links (phone) --- */
+.nav-menu {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-4);
+    width: 100%;
+    padding-bottom: var(--space-3);
+}
+
+/* With JS, the phone menu is collapsed until opened */
+.js .nav-menu {
+    display: none;
+    flex-direction: column;
+    gap: 0;
+}
+
+.js .nav-menu.is-open {
+    display: flex;
+}
+
+.nav-menu a:not(.btn) {
+    display: block;
+    padding: var(--space-3) 0;
+    color: var(--ink);
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.js .nav-menu a:not(.btn) {
+    border-bottom: 1px solid var(--line);
+}
+
+.nav-menu a:not(.btn):hover,
+.nav-menu a.is-active {
+    color: var(--brand);
+}
+
+.js .nav-menu .btn {
+    margin-top: var(--space-4);
+    width: 100%;
+}
+
+/* --- Menu links (laptop+) --- */
+@media (min-width: 64em) {
+    .navbar {
+        flex-wrap: nowrap;
+    }
+
+    .js .nav-toggle {
+        display: none;
+    }
+
+    .nav-menu,
+    .js .nav-menu {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: var(--space-5);
+        width: auto;
+        padding: 0;
+    }
+
+    .js .nav-menu a:not(.btn) {
+        border: 0;
+    }
+
+    .nav-menu a:not(.btn) {
+        position: relative;
+        padding: var(--space-2) 0;
+        font-size: 0.97rem;
+    }
+
+    /* Pencil underline on hover / current section */
+    .nav-menu a:not(.btn)::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 2px;
+        height: 3px;
+        background: var(--pencil);
+        border-radius: 2px;
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.25s;
+    }
+
+    .nav-menu a:not(.btn):hover::after,
+    .nav-menu a.is-active::after {
+        transform: scaleX(1);
+    }
+
+    .js .nav-menu .btn {
+        margin-top: 0;
+        width: auto;
+    }
+}
+
+
+/* ==========================================================================
+   7. HERO
+   ========================================================================== */
+
+.hero {
+    padding-block: var(--space-7) var(--space-8);
+    border-bottom: 1px solid var(--line);
+}
+
+.hero-grid {
+    display: grid;
+    gap: var(--space-7);
+    align-items: center;
+}
+
+.hero-points {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-5);
+    font-size: 0.95rem;
+    color: var(--ink-soft);
+}
+
+/* Red-pen check mark before each point */
+.hero-points li::before {
+    content: "✓";
+    margin-right: var(--space-2);
+    color: var(--redpen);
+    font-weight: 700;
+}
+
+@media (min-width: 64em) {
+    .hero {
+        padding-block: var(--space-8) 5.5rem;
+    }
+
+    .hero-grid {
+        grid-template-columns: 1.15fr 1fr;
+        gap: var(--space-8);
+    }
+}
+
+
+/* ==========================================================================
+   8. SECTIONS
+   ========================================================================== */
+
+.section {
+    padding-block: var(--space-8);
+}
+
+.section--tinted {
+    background: var(--paper-tint);
+}
+
+/* Dark interactive-display section: a graphite frame with a faint screen glow */
+.section--board {
+    background:
+        radial-gradient(120% 70% at 50% 0%, var(--screen-glow), transparent 70%),
+        var(--bezel);
+    color: var(--white);
+}
+
+.section--board h2,
+.section--board h3 {
+    color: var(--white);
+}
+
+.section-header {
+    max-width: 40rem;
+    margin-bottom: var(--space-7);
+}
+
+.section-intro {
+    color: var(--ink-soft);
+}
+
+@media (min-width: 64em) {
+    .section {
+        padding-block: 6rem;
+    }
+}
+
+
+/* ==========================================================================
+   9. IMAGE PLACEHOLDERS (.img-slot)
+   --------------------------------------------------------------------------
+   How it works:
+     • The slot has a fixed aspect ratio and a repeating "Image goes here"
+       pattern as its background (an inline SVG, so no extra file).
+     • The <img> sits on top, filling the slot.
+     • If the image file doesn't exist yet, JS adds "is-empty" and hides the
+       broken image, leaving the placeholder visible.
+     • When the image loads, JS adds "is-loaded" and the pattern is removed.
+     • Without JS, the broken image's alt text is made invisible (color/font-size)
+       so the pattern still shows through.
+   ========================================================================== */
+
+.img-slot {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    border-radius: var(--radius);
+    background-color: var(--slot-bg);
+    /* Two staggered rows of "Image goes here" that tile across the slot */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='72'%3E%3Cg font-family='Arial,Helvetica,sans-serif' font-size='13' font-weight='700' fill='%238f9ba5'%3E%3Ctext x='8' y='24'%3EImage goes here%3C/text%3E%3Ctext x='128' y='60'%3EImage goes here%3C/text%3E%3C/g%3E%3C/svg%3E");
+    background-repeat: repeat;
+}
+
+/* Portfolio screenshots use a "Screenshot goes here" pattern */
+.img-slot--work {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='290' height='72'%3E%3Cg font-family='Arial,Helvetica,sans-serif' font-size='13' font-weight='700' fill='%238f9ba5'%3E%3Ctext x='8' y='24'%3EScreenshot goes here%3C/text%3E%3Ctext x='153' y='60'%3EScreenshot goes here%3C/text%3E%3C/g%3E%3C/svg%3E");
+}
+
+.img-slot img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* Hides alt text of a missing image (so the pattern shows) — no effect on real images */
+    color: transparent;
+    font-size: 0;
+}
+
+/* Image loaded → remove the pattern */
+.img-slot.is-loaded {
+    background-image: none;
+}
+
+/* Image missing → hide the broken image icon */
+.img-slot.is-empty img {
+    visibility: hidden;
+}
+
+/* Small label (added by JS) naming the file this slot is waiting for */
+.img-slot-label {
+    position: absolute;
+    left: var(--space-3);
+    bottom: var(--space-3);
+    max-width: calc(100% - 1.5rem);
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.9);
+    color: var(--ink-soft);
+    font-size: 0.75rem;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Aspect ratio variants */
+.img-slot--4x3  { aspect-ratio: 4 / 3; }
+.img-slot--3x2  { aspect-ratio: 3 / 2; }
+.img-slot--4x5  { aspect-ratio: 4 / 5; }
+.img-slot--16x10 { aspect-ratio: 16 / 10; }
+.img-slot--9x16 { aspect-ratio: 9 / 16; }
+
+/* Slightly lifted "photo on the desk" frame */
+.img-slot--framed {
+    border: 6px solid var(--white);
+    box-shadow: var(--shadow-lift);
+}
+
+
+/* ==========================================================================
+   10. CARDS
+   ========================================================================== */
+
+.card-grid {
+    display: grid;
+    gap: var(--space-5);
+}
+
+@media (min-width: 48em) {
+    .card-grid--3 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Two cards: two even columns from tablet up, so no empty third slot */
+@media (min-width: 48em) {
+    .card-grid--2 {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--space-6);
+    }
+}
+
+@media (min-width: 64em) {
+    .card-grid--3 {
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--space-6);
+    }
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+/* Images inside cards sit flush with the card edges */
+.card > .img-slot,
+.card .work-link > .img-slot {
+    border-radius: 0;
+}
+
+.card-body {
+    padding: var(--space-5);
+}
+
+.card-body p {
+    color: var(--ink-soft);
+}
+
+.tag {
+    margin-bottom: var(--space-2);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--brand);
+}
+
+
+/* ==========================================================================
+   11. ABOUT
+   ========================================================================== */
+
+.about-grid {
+    display: grid;
+    gap: var(--space-7);
+    align-items: center;
+}
+
+.about-media {
+    max-width: 22rem;
+}
+
+.fact-list {
+    display: grid;
+    gap: var(--space-3);
+    margin-top: var(--space-6);
+}
+
+.fact-list li {
+    padding: var(--space-3) var(--space-4);
+    background: var(--white);
+    border-left: 4px solid var(--pencil);
+    border-radius: var(--radius-small);
+}
+
+@media (min-width: 40em) {
+    .fact-list {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 64em) {
+    .about-grid {
+        grid-template-columns: 2fr 3fr;
+        gap: var(--space-8);
+    }
+
+    .about-media {
+        max-width: none;
+    }
+}
+
+
+/* ==========================================================================
+   12. WEBSITE BENEFITS ("What you get")
+   Two labeled groups ("For the families you serve" / "For you"), three
+   items each. Stacked on phones, side by side from tablet up.
+   ========================================================================== */
+
+.benefit-groups {
+    display: grid;
+    gap: var(--space-5);
+}
+
+.benefit-group {
+    padding: var(--space-5);
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+
+.benefit-heading {
+    margin-bottom: var(--space-5);
+    font-size: 0.85rem;
+    font-family: var(--font-body);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--brand);
+}
+
+.benefit-list {
+    display: grid;
+    gap: var(--space-5);
+}
+
+.benefit-list li {
+    position: relative;
+    padding-left: 2rem;
+}
+
+/* Red-pen check before each benefit (same icon as the pricing lists) */
+.benefit-list li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.2em;
+    width: 1.2rem;
+    height: 1.2rem;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M3 10.5l4.2 4.2L17 4.5' fill='none' stroke='%23b8402b' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat center / contain;
+}
+
+.benefit-list h4 {
+    margin-bottom: var(--space-1);
+}
+
+.benefit-list p {
+    color: var(--ink-soft);
+}
+
+@media (min-width: 48em) {
+    .benefit-groups {
+        grid-template-columns: 1fr 1fr;
+        gap: var(--space-6);
+    }
+
+    .benefit-group {
+        padding: var(--space-6);
+    }
+}
+
+
+/* ==========================================================================
+   13. LEARNING TOOLS (gallery, "what I can build") + HERO DEMO
+   ========================================================================== */
+
+/* --- Tool gallery: 1 column → 2 columns --- */
+.tool-grid {
+    display: grid;
+    gap: var(--space-5);
+}
+
+@media (min-width: 48em) {
+    .tool-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--space-6);
+    }
+}
+
+/* Each card is a lit screen set into the display frame */
+.tool-card {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: var(--bezel-raised);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: var(--radius);
+    box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.25);
+    transition: transform 0.2s, background-color 0.2s, box-shadow 0.2s;
+}
+
+/* Hover: the screen "wakes up" with a soft glow */
+.tool-card:hover {
+    transform: translateY(-4px);
+    background: #2c353d;
+    box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.25), 0 0 28px var(--screen-glow);
+}
+
+.tool-card .img-slot {
+    border-radius: 0;
+}
+
+.tool-body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: var(--space-5);
+}
+
+.tool-body p {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.tool-body .text-link {
+    margin-top: auto;
+    padding-top: var(--space-3);
+    color: var(--pencil);
+}
+
+.tool-body .text-link:hover {
+    color: var(--pencil-soft);
+}
+
+.tag--light {
+    color: var(--pencil);
+}
+
+/* --- "What I can build for you" --- */
+.build-block {
+    margin-top: var(--space-7);
+    padding: var(--space-6) var(--space-5);
+    background: var(--bezel-raised);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--radius);
+}
+
+.build-list {
+    display: grid;
+    gap: var(--space-5);
+    margin-block: var(--space-5) var(--space-6);
+}
+
+.build-list li {
+    padding-left: var(--space-4);
+    border-left: 3px solid var(--pencil);
+}
+
+.build-list h4 {
+    margin-bottom: var(--space-1);
+    color: var(--white);
+}
+
+.build-list p {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+@media (min-width: 48em) {
+    .build-block {
+        padding: var(--space-7);
+    }
+
+    .build-list {
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--space-6);
+    }
+}
+
+/* --- Hero demo card --- */
+.hero-demo {
+    width: 100%;
+    max-width: 30rem;
+}
+
+@media (min-width: 64em) {
+    .hero-demo {
+        justify-self: end;
+    }
+}
+
+.demo-card {
+    position: relative;
+    padding: var(--space-6) var(--space-5) var(--space-5);
+    background: var(--white);
+    color: var(--ink);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: 0 0 0 6px var(--bezel), var(--shadow-lift);
+}
+
+/* "Try it" sticker on the card's top edge */
+.demo-label {
+    position: absolute;
+    top: -0.95rem;
+    left: var(--space-5);
+    margin: 0;
+    padding: 0.2rem 0.8rem;
+    background: var(--pencil);
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.demo-top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-2);
+    margin-bottom: var(--space-4);
+}
+
+/* The demo title is an <h2> for document structure, but sized like a card heading */
+.demo-title {
+    margin: 0;
+    font-size: clamp(1.2rem, 1.1rem + 0.4vw, 1.4rem);
+    color: var(--ink);
+}
+
+.demo-progress {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+}
+
+.demo-choices {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-3);
+}
+
+.demo-choice {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 7rem;
+    border: 2px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--paper);
+    color: var(--ink);
+    cursor: pointer;
+    transition: border-color 0.2s, background-color 0.2s, transform 0.15s;
+}
+
+.demo-choice:hover:not(:disabled) {
+    border-color: var(--brand);
+    transform: translateY(-2px);
+}
+
+.demo-choice:disabled {
+    cursor: default;
+}
+
+.demo-choice.is-correct {
+    border-color: var(--brand);
+    background: var(--brand-light);
+}
+
+.demo-choice.is-wrong {
+    border-color: var(--redpen);
+    background: #f7e3de;
+}
+
+/* Stacked fraction: numerator over denominator */
+.frac {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: var(--font-heading);
+    font-size: 2rem;
+    font-weight: 600;
+    line-height: 1.1;
+}
+
+.frac-num {
+    padding: 0 0.3em 0.05em;
+    border-bottom: 3px solid currentColor;
+}
+
+.frac-den {
+    padding-top: 0.05em;
+}
+
+/* Bars that show each fraction's size */
+.demo-bars {
+    display: grid;
+    gap: var(--space-2);
+    margin-top: var(--space-4);
+}
+
+.demo-bar {
+    display: grid;
+    grid-template-columns: 3rem 1fr;
+    align-items: center;
+    gap: var(--space-3);
+    font-weight: 700;
+    font-size: 0.95rem;
+}
+
+.demo-bar-track {
+    height: 14px;
+    background: var(--paper-tint);
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.demo-bar-fill {
+    height: 100%;
+    width: 0;
+    background: var(--pencil);
+    border-radius: 999px;
+    transition: width 0.6s ease-out;
+}
+
+.demo-feedback {
+    min-height: 1.6em;
+    margin: var(--space-4) 0 var(--space-3);
+}
+
+
+/* ==========================================================================
+   14. PROCESS STEPS
+   A CSS counter numbers the steps automatically.
+   ========================================================================== */
+
+.steps {
+    display: grid;
+    gap: var(--space-6);
+    counter-reset: step;
+}
+
+.step {
+    position: relative;
+    padding-left: 3.75rem;
+    counter-increment: step;
+}
+
+/* Numbered circle */
+.step::before {
+    content: counter(step);
+    position: absolute;
+    left: 0;
+    top: -0.2rem;
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border: 2px solid var(--brand);
+    border-radius: 50%;
+    font-family: var(--font-heading);
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--brand);
+    background: var(--white);
+}
+
+.step h3 {
+    margin-bottom: var(--space-2);
+}
+
+.step p {
+    color: var(--ink-soft);
+}
+
+@media (min-width: 48em) {
+    .steps {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 64em) {
+    .steps {
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    /* On wide screens, number sits above the text instead of beside it */
+    .step {
+        padding-left: 0;
+        padding-top: 4rem;
+    }
+}
+
+
+/* ==========================================================================
+   15. WORK (PORTFOLIO) CARDS
+   The whole card is one link, for a larger tap target.
+   ========================================================================== */
+
+.work-link {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    color: inherit;
+    text-decoration: none;
+}
+
+.work-link:hover {
+    color: inherit;
+}
+
+.work-card {
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.work-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lift);
+}
+
+.work-card:hover .text-link {
+    text-decoration: underline;
+}
+
+.work-card .card-body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.work-card .text-link {
+    margin-top: auto;
+    padding-top: var(--space-3);
+}
+
+
+/* ==========================================================================
+   16. PRICING
+   Plain white cards; the featured plan gets a green frame.
+   ========================================================================== */
+
+.pricing-grid {
+    display: grid;
+    gap: var(--space-5);
+    align-items: start;
+}
+
+@media (min-width: 64em) {
+    .pricing-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--space-5);
+    }
+}
+
+/* Two plans: centered pair at a comfortable card width */
+@media (min-width: 48em) {
+    .pricing-grid--2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        max-width: 52rem;
+        margin-inline: auto;
+    }
+}
+
+/* "Every tool includes" line above the tool cards */
+.includes-strip {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-2) var(--space-5);
+    margin-bottom: var(--space-7);
+    padding: var(--space-4) var(--space-5);
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-small);
+}
+
+.includes-title {
+    margin: 0;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--brand);
+}
+
+.includes-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-5);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 0.95rem;
+}
+
+.includes-list li::before {
+    content: "✓";
+    margin-right: var(--space-2);
+    color: var(--redpen);
+    font-weight: 700;
+}
+
+.price-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: var(--space-6) var(--space-5) var(--space-5);
+    background-color: var(--white);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-small);
+    box-shadow: var(--shadow);
+}
+
+.price-card--featured {
+    border: 2px solid var(--brand);
+    box-shadow: var(--shadow-lift);
+}
+
+.price-flag {
+    position: absolute;
+    top: -0.9rem;
+    left: var(--space-5);
+    margin: 0;
+    padding: 0.2rem 0.75rem;
+    background: var(--pencil);
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+/* Quieter flag for cards that aren't the suggested pick */
+.price-flag--quiet {
+    background: var(--brand-light);
+}
+
+.price-title {
+    margin-bottom: var(--space-1);
+    font-size: 1.6rem;
+}
+
+/* "Learning tools" / "Websites" headings above each group of cards */
+.price-group-title {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    margin: var(--space-7) 0 var(--space-6);
+    font-size: clamp(1.4rem, 1.2rem + 0.8vw, 1.8rem);
+}
+
+/* Thin rule that runs from the heading to the right edge */
+.price-group-title::after {
+    content: "";
+    flex: 1;
+    height: 2px;
+    background: var(--line);
+}
+
+.price-group-title:first-of-type {
+    margin-top: 0;
+}
+
+/* --- Library strip (ready-made tools) --- */
+.library-strip {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3) var(--space-6);
+    margin-top: var(--space-5);
+    padding: var(--space-5);
+    background: var(--white);
+    border: 2px dashed var(--brand);
+    border-radius: var(--radius-small);
+}
+
+.library-strip h4 {
+    margin-bottom: var(--space-1);
+}
+
+.library-strip p {
+    max-width: 40rem;
+    color: var(--ink-soft);
+}
+
+.library-strip .library-price {
+    margin: 0;
+    color: var(--ink);
+}
+
+.price-for {
+    color: var(--ink-soft);
+}
+
+/* Price sits between two thin dividers */
+.price {
+    margin-bottom: var(--space-5);
+    padding-block: var(--space-4);
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+}
+
+.price-amount {
+    font-family: var(--font-heading);
+    font-size: 2.6rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.price-from,
+.price-note {
+    font-size: 0.95rem;
+    color: var(--ink-soft);
+}
+
+/* Red-pen checkmarks */
+.check-list {
+    display: grid;
+    gap: var(--space-2);
+    margin-bottom: var(--space-6);
+}
+
+.check-list li {
+    position: relative;
+    padding-left: 1.75rem;
+}
+
+.check-list li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.3em;
+    width: 1.1rem;
+    height: 1.1rem;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M3 10.5l4.2 4.2L17 4.5' fill='none' stroke='%23b8402b' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat center / contain;
+}
+
+.price-card .btn {
+    margin-top: auto;
+}
+
+/* --- After-launch support --- */
+.support-block,
+.addons {
+    margin-top: var(--space-7);
+    padding: var(--space-6) var(--space-5);
+    background: var(--paper-tint);
+    border-radius: var(--radius);
+}
+
+.support-sub {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    font-weight: 400;
+    color: var(--ink-soft);
+}
+
+.support-grid {
+    display: grid;
+    gap: var(--space-5);
+    margin-top: var(--space-5);
+}
+
+.support-item {
+    padding: var(--space-5);
+    background: var(--white);
+    border-radius: var(--radius-small);
+}
+
+.support-item h4 {
+    margin-bottom: var(--space-2);
+}
+
+.support-item p:last-child {
+    color: var(--ink-soft);
+    font-size: 0.97rem;
+}
+
+.support-price {
+    margin-bottom: var(--space-2);
+    font-family: var(--font-heading);
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--brand);
+}
+
+.support-price span {
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    font-weight: 400;
+    color: var(--ink-soft);
+}
+
+@media (min-width: 48em) {
+    .support-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .support-block,
+    .addons {
+        padding: var(--space-7);
+    }
+}
+
+/* --- Add-ons --- */
+.addons {
+    background: transparent;
+    border: 2px dashed var(--line);
+}
+
+.addon-list {
+    margin-bottom: var(--space-5);
+}
+
+/* Name on the left, price on the right; stacks on narrow phones */
+.addon-list li {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-1) var(--space-4);
+    padding-block: var(--space-3);
+    border-bottom: 1px solid var(--line);
+}
+
+.addon-list strong {
+    white-space: nowrap;
+    color: var(--brand);
+}
+
+
+/* ==========================================================================
+   17. FAQ
+   ========================================================================== */
+
+.faq-list {
+    display: grid;
+    gap: var(--space-3);
+}
+
+.faq {
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-small);
+}
+
+.faq summary {
+    position: relative;
+    padding: var(--space-4) 3rem var(--space-4) var(--space-5);
+    font-weight: 700;
+    cursor: pointer;
+    list-style: none;          /* removes the default triangle */
+}
+
+.faq summary::-webkit-details-marker {
+    display: none;
+}
+
+/* Plus sign that turns into a minus when open */
+.faq summary::after {
+    content: "+";
+    position: absolute;
+    right: var(--space-5);
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.5rem;
+    font-weight: 400;
+    color: var(--brand);
+}
+
+.faq[open] summary::after {
+    content: "–";
+}
+
+.faq p {
+    padding: 0 var(--space-5) var(--space-5);
+    color: var(--ink-soft);
+}
+
+
+/* ==========================================================================
+   18. CONTACT FORM
+   ========================================================================== */
+
+.contact-grid {
+    display: grid;
+    gap: var(--space-7);
+}
+
+.contact-direct {
+    font-weight: 700;
+}
+
+.contact-form {
+    display: grid;
+    gap: var(--space-4);
+    padding: var(--space-5);
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+.form-row {
+    display: grid;
+    gap: var(--space-2);
+}
+
+.form-row label {
+    font-weight: 700;
+    font-size: 0.95rem;
+}
+
+.contact-form input,
+.contact-form select,
+.contact-form textarea {
+    width: 100%;
+    min-height: 48px;
+    padding: 0.7rem 0.9rem;
+    border: 2px solid var(--line);
+    border-radius: var(--radius-small);
+    background: var(--paper);
+    color: var(--ink);
+    font: inherit;
+    font-size: 1rem;           /* 16px+ stops iOS from zooming in on focus */
+}
+
+.contact-form textarea {
+    resize: vertical;
+}
+
+.contact-form input:focus,
+.contact-form select:focus,
+.contact-form textarea:focus {
+    border-color: var(--brand);
+    outline: none;
+    box-shadow: 0 0 0 3px var(--brand-light);
+}
+
+/* Error state (JS adds aria-invalid="true") */
+.contact-form [aria-invalid="true"] {
+    border-color: var(--redpen);
+}
+
+.field-error {
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--redpen);
+}
+
+.form-status {
+    margin: var(--space-3) 0 0;
+    font-weight: 700;
+}
+
+.form-status.is-success {
+    color: var(--brand);
+}
+
+.form-status.is-error {
+    color: var(--redpen);
+}
+
+@media (min-width: 40em) {
+    .contact-form {
+        grid-template-columns: 1fr 1fr;
+        padding: var(--space-6);
+    }
+
+    .form-row--full {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (min-width: 64em) {
+    .contact-grid {
+        grid-template-columns: 2fr 3fr;
+        gap: var(--space-8);
+    }
+}
+
+
+/* ==========================================================================
+   19. FOOTER
+   ========================================================================== */
+
+.site-footer {
+    padding-block: var(--space-7) var(--space-5);
+    background: var(--bezel);
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.footer-grid {
+    display: grid;
+    gap: var(--space-5);
+    padding-bottom: var(--space-6);
+}
+
+.logo--footer {
+    margin-bottom: var(--space-2);
+    color: var(--white);
+}
+
+.logo--footer .logo-mark {
+    color: var(--pencil);
+}
+
+.footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-5);
+}
+
+.footer-links a {
+    color: var(--white);
+    text-decoration: none;
+}
+
+.footer-links a:hover {
+    color: var(--pencil);
+    text-decoration: underline;
+}
+
+.copyright {
+    padding-top: var(--space-5);
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    font-size: 0.9rem;
+}
+
+@media (min-width: 48em) {
+    .footer-grid {
+        grid-template-columns: 1fr auto;
+        align-items: center;
+    }
+}
+
+
+/* ==========================================================================
+   20. CASE-STUDY PAGES (/work/*.html)
+   ========================================================================== */
+
+/* Yellow-striped "this is a sample" banner */
+.sample-banner {
+    padding: var(--space-3) 0;
+    background: repeating-linear-gradient(-45deg, var(--pencil-soft) 0 14px, #fdf0c7 14px 28px);
+    border-bottom: 1px solid var(--pencil);
+    font-size: 0.95rem;
+}
+
+.sample-banner p {
+    margin: 0;
+}
+
+.case-hero {
+    padding-block: var(--space-6) var(--space-7);
+    border-bottom: 1px solid var(--line);
+}
+
+/* Breadcrumbs: Home › Work › Project */
+.breadcrumbs ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-bottom: var(--space-5);
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+}
+
+.breadcrumbs li + li::before {
+    content: "›";
+    margin-right: var(--space-2);
+}
+
+/* Project facts (client type, plan, timeline) */
+.case-meta {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-4);
+    margin: var(--space-6) 0 0;
+    padding: var(--space-5);
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+}
+
+.case-meta div {
+    margin: 0;
+}
+
+.case-meta dt {
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--brand);
+}
+
+.case-meta dd {
+    margin: 0;
+    font-weight: 700;
+}
+
+@media (min-width: 48em) {
+    .case-meta {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+/* Main article column with a readable line length */
+.case-body {
+    max-width: 46rem;
+}
+
+.case-body section {
+    margin-bottom: var(--space-7);
+}
+
+.case-body h2 {
+    font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2rem);
+}
+
+/* Bulleted lists inside articles get visible bullets back */
+.case-body .bullets {
+    padding-left: 1.25rem;
+    margin-bottom: var(--space-4);
+    list-style: disc;
+}
+
+.case-body .bullets li {
+    margin-bottom: var(--space-2);
+}
+
+.case-body .bullets li::marker {
+    color: var(--brand);
+}
+
+/* "The brief" box, styled like a note pinned to the page */
+.brief-box {
+    padding: var(--space-5);
+    background: var(--white);
+    border-left: 5px solid var(--pencil);
+    border-radius: var(--radius-small);
+    box-shadow: var(--shadow);
+}
+
+.brief-box dl {
+    display: grid;
+    gap: var(--space-4);
+    margin: 0;
+}
+
+.brief-box dt {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.brief-box dd {
+    margin: 0;
+    color: var(--ink-soft);
+}
+
+/* Simple sitemap diagram (nested list) */
+.sitemap {
+    padding: var(--space-5);
+    background: var(--white);
+    border: 1px dashed var(--line);
+    border-radius: var(--radius-small);
+    font-weight: 700;
+}
+
+.sitemap ul {
+    margin-top: var(--space-2);
+    padding-left: var(--space-5);
+    border-left: 2px solid var(--brand-light);
+    font-weight: 400;
+}
+
+.sitemap ul li {
+    padding-block: var(--space-1);
+}
+
+/* Desktop + phone screenshot pair */
+.screens {
+    display: grid;
+    grid-template-columns: 3fr 1fr;
+    gap: var(--space-4);
+    align-items: end;
+    margin-block: var(--space-5);
+}
+
+.screens figure {
+    margin: 0;
+}
+
+.screens figcaption {
+    margin-top: var(--space-2);
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+}
+
+/* Results still to come */
+.results-pending {
+    padding: var(--space-5);
+    border: 2px dashed var(--line);
+    border-radius: var(--radius-small);
+    color: var(--ink-soft);
+}
+
+/* Previous / next project links */
+.case-nav {
+    display: grid;
+    gap: var(--space-3);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--line);
+}
+
+.case-nav a {
+    display: block;
+    padding: var(--space-4) var(--space-5);
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-small);
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.case-nav a:hover {
+    border-color: var(--brand);
+}
+
+.case-nav span {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 400;
+    color: var(--ink-soft);
+}
+
+@media (min-width: 48em) {
+    .case-nav {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .case-nav .next {
+        text-align: right;
+    }
+
+    .case-nav .next:only-child {
+        grid-column: 2;
+    }
+}
+
+/* Closing call-to-action box */
+.cta-box {
+    padding: var(--space-6) var(--space-5);
+    background: var(--brand);
+    color: var(--white);
+    border-radius: var(--radius);
+    text-align: center;
+}
+
+.cta-box h2 {
+    color: var(--white);
+}
+
+.cta-box .button-row {
+    justify-content: center;
+    margin-bottom: 0;
+}
+
+
+/* ==========================================================================
+   21. SCROLL REVEAL ANIMATION
+   Elements with .reveal fade up as they scroll into view.
+   Only applies when JS is running (.js on <html>), so content is never
+   hidden for people without JavaScript or search engines.
+   ========================================================================== */
+
+.js .reveal {
+    opacity: 0;
+    transform: translateY(18px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.js .reveal.is-visible {
+    opacity: 1;
+    transform: none;
+}
+
+/* Respect "reduce motion" system settings */
+@media (prefers-reduced-motion: reduce) {
+    .js .reveal {
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
+
+    *,
+    *::before,
+    *::after {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+    }
+}

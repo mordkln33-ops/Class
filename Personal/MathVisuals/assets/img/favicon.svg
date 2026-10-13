@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="MathVisuals logo">
+  <!-- MathVisuals mark: a projector "screen" with graph-paper grid, axes and a bell curve -->
+  <rect width="64" height="64" rx="14" fill="#1d4ed8"/>
+  <g stroke="#ffffff" stroke-opacity=".28" stroke-width="2">
+    <path d="M12 22h40M12 32h40M12 42h40M22 12v40M32 12v40M42 12v40"/>
+  </g>
+  <path d="M12 52h40M12 12v40" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round"/>
+  <path d="M14 49c8 0 10-29 18-29s10 29 18 29" fill="none" stroke="#fbbf24" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

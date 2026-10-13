@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!--
+    SAMPLE CASE STUDY — INDEPENDENT TUTOR
+    =====================================
+    This page is a SAMPLE BRIEF, not a real client. It shows how you'd approach the project.
+
+    TO TURN IT INTO A REAL PORTFOLIO PIECE:
+        1. Build the homepage described below (as a concept, or for a real client).
+        2. Save screenshots as images/work-tutor-desktop.jpg and images/work-tutor-mobile.jpg
+           (and images/work-tutor.jpg for the card on the home page).
+        3. If it's a concept: change the yellow banner to "Concept project".
+           If it's a real client: remove the banner and update names and details.
+        4. Replace the "Measuring success" placeholder with real numbers.
+        5. Remove <meta name="robots" content="noindex"> and add this page to sitemap.xml.
+
+    Why noindex for now? Sample pages are thin, hypothetical content. Keeping them out of
+    Google until they're real protects your site's credibility in search.
+-->
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Sample Project: Website for an Independent Math Tutor | Klein Site</title>
+    <meta name="description"
+        content="Sample brief: a three-page website for an independent math tutor that answers parents' questions up front and turns inquiries into scheduled sessions.">
+
+    <!-- TODO: remove this line once this becomes a real project -->
+    <meta name="robots" content="noindex, follow">
+
+    <link rel="canonical" href="https://www.yourdomain.com/work/tutor-sample.html">
+    <meta name="theme-color" content="#1f4d3f">
+    <link rel="icon"
+        href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231f4d3f'/%3E%3Ctext x='32' y='44' font-family='Georgia,serif' font-size='36' font-weight='700' text-anchor='middle' fill='%23f5c451'%3EK%3C/text%3E%3C/svg%3E">
+
+    <meta property="og:type" content="article">
+    <meta property="og:site_name" content="Klein Site">
+    <meta property="og:title" content="Sample Project: Website for an Independent Math Tutor">
+    <meta property="og:description" content="How a three-page site can answer parents' questions before they text.">
+    <meta property="og:url" content="https://www.yourdomain.com/work/tutor-sample.html">
+    <meta property="og:image" content="https://www.yourdomain.com/images/work-tutor.jpg">
+    <meta name="twitter:card" content="summary_large_image">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap"
+        rel="stylesheet">
+
+    <script>document.documentElement.classList.add("js");</script>
+    <link rel="stylesheet" href="../css/styles.css">
+    <script src="../js/main.js" defer></script>
+
+    <!-- Breadcrumb structured data: Home › Work › This project -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.yourdomain.com/" },
+            { "@type": "ListItem", "position": 2, "name": "Work", "item": "https://www.yourdomain.com/#work" },
+            { "@type": "ListItem", "position": 3, "name": "Sample: Independent tutor" }
+        ]
+    }
+    </script>
+</head>
+
+
+<body>
+
+    <a class="skip-link" href="#main">Skip to main content</a>
+
+
+    <!-- =========================
+         HEADER / NAVIGATION (same as home page; links point back to it)
+    ========================== -->
+    <header class="site-header">
+        <nav class="navbar container" aria-label="Main">
+            <a href="../index.html" class="logo" aria-label="Klein Site home">
+                Klein Site<span class="logo-mark" aria-hidden="true">.</span>
+            </a>
+
+            <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-menu">
+                <span class="nav-toggle-bar" aria-hidden="true"></span>
+                <span class="visually-hidden">Menu</span>
+            </button>
+
+            <ul class="nav-menu" id="nav-menu">
+                <li><a href="../index.html#tools">Learning tools</a></li>
+                <li><a href="../index.html#websites" class="is-active" aria-current="true">Websites</a></li>
+                <li><a href="../index.html#about">About</a></li>
+                <li><a href="../index.html#pricing">Pricing</a></li>
+                <li><a href="../index.html#faq">FAQ</a></li>
+                <li><a href="../index.html#contact" class="btn btn-primary btn-small">Get in touch</a></li>
+            </ul>
+        </nav>
+    </header>
+
+
+    <!-- =========================
+         SAMPLE BANNER — makes it unmistakable that this isn't a real client
+    ========================== -->
+    <div class="sample-banner" role="note">
+        <div class="container">
+            <p><strong>Sample project.</strong> This is an example brief showing my process, not a real client.</p>
+        </div>
+    </div>
+
+
+
+    <main id="main">
+
+        <!-- =========================
+             CASE HERO
+        ========================== -->
+        <header class="case-hero graph-paper">
+            <div class="container">
+
+                <nav class="breadcrumbs" aria-label="Breadcrumb">
+                    <ol>
+                        <li><a href="../index.html">Home</a></li>
+                        <li><a href="../index.html#work">Work</a></li>
+                        <li aria-current="page">Independent tutor</li>
+                    </ol>
+                </nav>
+
+                <p class="eyebrow">Sample · Independent tutor</p>
+                <h1>Ruler &amp; Compass Math: a website for an independent math tutor</h1>
+                <p class="lead">
+                    A three-page site that answers parents' questions before they text,
+                    and turns first messages into scheduled sessions.
+                </p>
+
+                <!-- Quick facts. A <dl> (description list) pairs each label with its value. -->
+                <dl class="case-meta">
+                    <div>
+                        <dt>Client type</dt>
+                        <dd>Independent tutor</dd>
+                    </div>
+                    <div>
+                        <dt>Plan</dt>
+                        <dd>Tutor + Quick Check</dd>
+                    </div>
+                    <div>
+                        <dt>Pages</dt>
+                        <dd>3</dd>
+                    </div>
+                    <div>
+                        <dt>Timeline</dt>
+                        <dd>2 weeks</dd>
+                    </div>
+                </dl>
+
+            </div>
+        </header>
+
+
+
+        <div class="section">
+            <article class="container case-body">
+
+                <!-- =========================
+                     THE BRIEF
+                ========================== -->
+                <section aria-labelledby="brief-title">
+                    <h2 id="brief-title">The brief</h2>
+
+                    <div class="brief-box">
+                        <dl>
+                            <div>
+                                <dt>Who</dt>
+                                <dd>
+                                    A math tutor teaching Algebra I through Precalculus and SAT math to about
+                                    20 high school students a week, in person and online. <em>(Fictional client.)</em>
+                                </dd>
+                            </div>
+                            <div>
+                                <dt>The situation</dt>
+                                <dd>
+                                    Every new student comes from word of mouth. Parents find an old Facebook page,
+                                    then text the same questions: What do you charge? Which courses? Online or in person?
+                                    Any openings on Tuesdays? Answering them takes several hours each week.
+                                </dd>
+                            </div>
+                            <div>
+                                <dt>Goals</dt>
+                                <dd>
+                                    Answer common questions before the first message. Make inquiries arrive with
+                                    everything needed to reply with a time. Look established to parents who don't
+                                    know the tutor yet. Show up when local parents search for a math tutor.
+                                </dd>
+                            </div>
+                            <div>
+                                <dt>Constraints</dt>
+                                <dd>
+                                    A budget of about $1,200. No time for upkeep. No photos of students, for privacy.
+                                </dd>
+                            </div>
+                        </dl>
+                    </div>
+                </section>
+
+
+
+                <!-- =========================
+                     APPROACH (UX decisions)
+                ========================== -->
+                <section aria-labelledby="approach-title">
+                    <h2 id="approach-title">The approach</h2>
+                    <p>
+                        I started with the five questions parents actually ask and made sure a phone
+                        visitor could answer every one within a single scroll of the homepage.
+                    </p>
+                    <ul class="bullets">
+                        <li><strong>Rates shown openly,</strong> with a short note on what a session includes. This removes the most common text.</li>
+                        <li><strong>An inquiry form that does the sorting:</strong> course, grade, goal (catch up, keep up, get ahead or test prep) and preferred times. The tutor can reply with a proposed slot.</li>
+                        <li><strong>Trust without student photos:</strong> a friendly portrait, a three-sentence teaching approach and parent quotes once collected.</li>
+                        <li><strong>A "Text me" button</strong> fixed to the bottom of the screen on phones, since that's how parents already reach out.</li>
+                    </ul>
+                </section>
+
+
+
+                <!-- =========================
+                     SITE STRUCTURE
+                ========================== -->
+                <section aria-labelledby="structure-title">
+                    <h2 id="structure-title">Site structure</h2>
+                    <div class="sitemap">
+                        Home
+                        <ul>
+                            <li>Subjects and courses</li>
+                            <li>How sessions work</li>
+                            <li>Rates</li>
+                            <li>Parent questions</li>
+                        </ul>
+                        About
+                        <ul>
+                            <li>Teaching approach and background</li>
+                        </ul>
+                        Contact and availability
+                        <ul>
+                            <li>Inquiry form and service area</li>
+                        </ul>
+                    </div>
+                </section>
+
+
+
+                <!-- =========================
+                     SCREENS (portfolio placeholders)
+                ========================== -->
+                <section aria-labelledby="screens-title">
+                    <h2 id="screens-title">The design</h2>
+                    <div class="screens">
+                        <figure>
+                            <div class="img-slot img-slot--16x10 img-slot--work">
+                                <img src="../images/work-tutor-desktop.jpg"
+                                    alt="Desktop homepage for Ruler and Compass Math with subjects, rates and an inquiry button above the fold"
+                                    width="1600" height="1000" loading="lazy">
+                            </div>
+                            <figcaption>Homepage on a laptop</figcaption>
+                        </figure>
+                        <figure>
+                            <div class="img-slot img-slot--9x16 img-slot--work">
+                                <img src="../images/work-tutor-mobile.jpg"
+                                    alt="Mobile homepage for Ruler and Compass Math with a Text me button fixed at the bottom"
+                                    width="540" height="960" loading="lazy">
+                            </div>
+                            <figcaption>On a phone</figcaption>
+                        </figure>
+                    </div>
+                </section>
+
+
+
+                <!-- =========================
+                     INTERACTIVE TOOL
+                ========================== -->
+                <section aria-labelledby="tool-title">
+                    <h2 id="tool-title">The interactive tool: "Which course fits?"</h2>
+                    <p>
+                        A five-question check, with problems drawn from Algebra I through Precalculus,
+                        that suggests a starting point. Parents see the tutor's style before the first session,
+                        and the result is attached to the inquiry automatically.
+                    </p>
+                </section>
+
+
+
+                <!-- =========================
+                     MEASURING SUCCESS
+                     Replace with real numbers when this becomes a real project.
+                ========================== -->
+                <section aria-labelledby="results-title">
+                    <h2 id="results-title">Measuring success</h2>
+                    <p>What I'd track in the first three months:</p>
+                    <ul class="bullets">
+                        <li>Inquiries per month, and how many arrive with complete information</li>
+                        <li>Hours per week spent answering repeat questions</li>
+                        <li>Visitors who arrive from a Google search</li>
+                    </ul>
+                    <p class="results-pending">Results will appear here once this becomes a real project.</p>
+                </section>
+
+
+
+                <!-- =========================
+                     CALL TO ACTION
+                ========================== -->
+                <section class="cta-box" aria-labelledby="cta-title">
+                    <h2 id="cta-title">Tutoring on your own?</h2>
+                    <p>The Tutor plan starts at $850, with an optional learning tool.</p>
+                    <div class="button-row">
+                        <a href="../index.html#pricing" class="btn btn-pencil">See pricing</a>
+                        <a href="../index.html#contact" class="btn btn-outline-light">Get in touch</a>
+                    </div>
+                </section>
+
+
+
+                <!-- =========================
+                     PREVIOUS / NEXT PROJECT
+                ========================== -->
+                <nav class="case-nav" aria-label="More sample projects">
+                    <a href="center-sample.html" class="next"><span>Next →</span>Maple Street Learning Center</a>
+                </nav>
+
+            </article>
+        </div>
+
+    </main>
+
+
+
+    <footer class="site-footer">
+        <div class="container footer-grid">
+            <div>
+                <p class="logo logo--footer">Klein Site<span class="logo-mark" aria-hidden="true">.</span></p>
+                <p class="footer-tagline">Learning tools and websites for tutors, tutoring centers and small schools.</p>
+            </div>
+            <nav aria-label="Footer">
+                <ul class="footer-links">
+                    <li><a href="../index.html#tools">Learning tools</a></li>
+                    <li><a href="../index.html#websites">Websites</a></li>
+                    <li><a href="../index.html#about">About</a></li>
+                    <li><a href="../index.html#work">Sample projects</a></li>
+                    <li><a href="../index.html#pricing">Pricing</a></li>
+                    <li><a href="../index.html#faq">FAQ</a></li>
+                    <li><a href="../index.html#contact">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+        <div class="container">
+            <p class="copyright">© <span data-year>2026</span> Klein Site · Mordechai Klein</p>
+        </div>
+    </footer>
+
+</body>
+
+</html>

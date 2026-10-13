@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en" class="is-tool">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+  <!-- ===== SEO: title + description are unique to this page ===== -->
+  <title>Graphing Explorer: Interactive Coordinate Plane | MathVisuals</title>
+  <meta name="description" content="Plot ordered pairs, connect two points into a line, and graph y = mx + b with a live table of values. A free four-quadrant coordinate plane for projectors.">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <link rel="canonical" href="https://mathvisuals.online/tools/graphing-explorer/">
+  <meta name="author" content="Mordechai Klein">
+
+  <!-- ===== Social sharing (Open Graph + X/Twitter) ===== -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="MathVisuals">
+  <meta property="og:title" content="Graphing Explorer: Interactive Coordinate Plane | MathVisuals">
+  <meta property="og:description" content="Plot ordered pairs, connect two points into a line, and graph y = mx + b with a live table of values. A free four-quadrant coordinate plane for projectors.">
+  <meta property="og:url" content="https://mathvisuals.online/tools/graphing-explorer/">
+  <meta property="og:image" content="https://mathvisuals.online/assets/img/og/graphing-explorer.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Interactive coordinate plane with two colored lines, their slope-intercept equations and tables of values">
+  <meta property="og:locale" content="en_US">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- ===== Theme + icons ===== -->
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#111a2e" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="../../assets/img/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" href="../../assets/img/apple-touch-icon.png">
+  <link rel="manifest" href="../../site.webmanifest">
+
+  <!-- Applies saved light/dark mode before the page paints (must not be deferred) -->
+  <script src="../../assets/js/theme-init.js"></script>
+
+  <!-- ===== Styles: font → global style guide → this page ===== -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&amp;display=swap">
+  <link rel="stylesheet" href="../../assets/css/site.css">
+  <link rel="stylesheet" href="../../assets/css/tools/graphing-explorer.css">
+
+  <!-- ===== Scripts (deferred: run after the HTML is parsed) ===== -->
+  <script src="../../assets/js/tools/graphing-explorer.js" defer></script>
+  <script src="../../assets/js/site.js" defer></script>
+
+  <!-- ===== Structured data (schema.org JSON-LD) for search engines ===== -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": [
+      "WebApplication",
+      "LearningResource"
+    ],
+    "name": "Graphing Explorer",
+    "url": "https://mathvisuals.online/tools/graphing-explorer/",
+    "description": "Plot ordered pairs, connect two points into a line, and graph y = mx + b with a live table of values. A free four-quadrant coordinate plane for projectors.",
+    "image": "https://mathvisuals.online/assets/img/og/graphing-explorer.jpg",
+    "applicationCategory": "EducationalApplication",
+    "operatingSystem": "Any (runs in a web browser)",
+    "browserRequirements": "Requires JavaScript",
+    "inLanguage": "en",
+    "isAccessibleForFree": true,
+    "copyrightYear": 2026,
+    "copyrightHolder": { "@id": "https://mathvisuals.online/#person" },
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "learningResourceType": "Interactive simulation",
+    "educationalUse": [
+      "Classroom demonstration",
+      "Whole-class instruction"
+    ],
+    "educationalLevel": "Grades 5–9 (Algebra 1)",
+    "teaches": [
+      "Plotting ordered pairs",
+      "Four-quadrant coordinate plane",
+      "Slope-intercept form y = mx + b",
+      "Tables of values",
+      "Slope and y-intercept"
+    ],
+    "audience": {
+      "@type": "EducationalAudience",
+      "educationalRole": "teacher"
+    },
+    "author": {
+      "@id": "https://mathvisuals.online/#person"
+    },
+    "publisher": {
+      "@id": "https://mathvisuals.online/#person"
+    }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://mathvisuals.online/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Algebra & Graphing",
+        "item": "https://mathvisuals.online/#algebra"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": "Graphing Explorer",
+        "item": "https://mathvisuals.online/tools/graphing-explorer/"
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#tool">Skip to the tool</a>
+
+  <!-- ===== Site header: brand, breadcrumb, navigation, dark-mode toggle ===== -->
+  <header class="site-header">
+    <div class="site-header__inner container">
+      <a class="brand" href="../../" aria-label="MathVisuals home">
+        <img class="brand__mark" src="../../assets/img/logo.svg" alt="" width="32" height="32">
+        <span class="brand__name">Math<span>Visuals</span></span>
+      </a>
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ol>
+          <li><a href="../../">Home</a></li>
+          <li><a href="../../#algebra">Algebra & Graphing</a></li>
+          <li><span aria-current="page">Graphing Explorer</span></li>
+        </ol>
+      </nav>
+
+      <div class="site-nav">
+        <nav aria-label="Main">
+          <ul class="site-nav__list" id="site-nav-list">
+            <li><a class="site-nav__link" href="#about-tool">Teacher notes</a></li>
+            <li><a class="site-nav__link" href="../../#tools">All tools</a></li>
+            <li><a class="site-nav__link" href="../../#contact">Suggest a tool</a></li>
+          </ul>
+        </nav>
+
+        <!-- Dark-mode switch (wired up in site.js) -->
+        <button class="theme-toggle" type="button" aria-pressed="false" aria-label="Switch to dark mode">
+          <span class="theme-toggle__thumb">
+            <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></svg>
+            <svg class="icon-moon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M20.5 14.6A8.6 8.6 0 0 1 9.4 3.5a8.6 8.6 0 1 0 11.1 11.1z"/></svg>
+          </span>
+        </button>
+
+        <!-- Menu button: only visible on narrow screens -->
+        <button class="nav-toggle btn btn-ghost btn-icon" type="button" aria-expanded="false" aria-controls="site-nav-list" aria-label="Open menu">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+  <!-- =============================================================
+       TOOL: Graphing Explorer
+       Original markup inside div.tool-frame; <main class="layout"> became
+       a <div>, .brand became .brand-tool (the site header owns .brand),
+       and the buttons use the shared button classes.
+       ============================================================= -->
+  <div class="tool-frame" id="tool">
+    <header class="app-header">
+      <div class="brand-tool">
+        <span class="brand-logo" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 3v18h18"/><path d="M19 7L11 15l-3-3-4 4"/>
+          </svg>
+        </span>
+        <div class="brand-text">
+          <h1>Graphing Explorer</h1>
+          <p>Plot points &middot; build lines &middot; read the table</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button id="helpBtn" class="btn btn-ghost" type="button">
+          <span aria-hidden="true">?</span> How it works
+        </button>
+        <button id="clearBtn" class="btn btn-danger" type="button">Clear all</button>
+      </div>
+    </header>
+
+    <div class="layout">
+
+      <!-- ===== TOP LEFT: type in a point or a line ===== -->
+      <section class="panel panel-input" aria-labelledby="eqHeading">
+        <div class="panel-head">
+          <h2 id="eqHeading">Type It In</h2>
+          <div class="head-right">
+            <span class="panel-hint">a point or a line</span>
+            <button class="zoom-btn" type="button" data-zoom aria-pressed="false" title="Magnify this section" aria-label="Magnify this section">
+              <svg class="icon-in" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="10.5" cy="10.5" r="6.5"/><path d="M20 20l-4.9-4.9"/><path d="M10.5 7.6v5.8M7.6 10.5h5.8"/>
+              </svg>
+              <svg class="icon-out" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="10.5" cy="10.5" r="6.5"/><path d="M20 20l-4.9-4.9"/><path d="M7.6 10.5h5.8"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div class="panel-body">
+
+          <form id="ptForm" class="mini-form" autocomplete="off">
+            <label class="eq-label" for="ptInput">Point as an ordered pair <code>(x, y)</code></label>
+            <p id="ptError" class="eq-error" role="alert"></p>
+            <div class="eq-row">
+              <input id="ptInput" class="eq-input" type="text" placeholder="(3, 4)" aria-describedby="ptError">
+              <button id="ptBtn" class="btn btn-primary btn-plot" type="submit">Plot it</button>
+            </div>
+          </form>
+
+          <div class="form-divider" role="separator"></div>
+
+          <form id="eqForm" class="mini-form" autocomplete="off">
+            <label class="eq-label" for="eqInput">Line in slope-intercept form <code>y = mx + b</code></label>
+            <p id="eqError" class="eq-error" role="alert"></p>
+            <div class="eq-row">
+              <input id="eqInput" class="eq-input" type="text" placeholder="y = 2x + 1" aria-describedby="eqError">
+              <button class="btn btn-primary" type="submit">Graph it</button>
+            </div>
+          </form>
+
+        </div>
+      </section>
+
+      <!-- ===== LEFT, UNDER THE INPUTS: equations + tables ===== -->
+      <section class="panel panel-lines" aria-labelledby="linesHeading">
+        <div class="panel-head">
+          <h2 id="linesHeading">Equations &amp; Tables</h2>
+          <div class="head-right">
+            <div id="carouselNav" class="carousel-nav" hidden>
+              <button id="prevPage" class="nav-btn" type="button" aria-label="Previous lines">&#8249;</button>
+              <div id="pageDots" class="page-dots"></div>
+              <button id="nextPage" class="nav-btn" type="button" aria-label="Next lines">&#8250;</button>
+            </div>
+            <button class="zoom-btn" type="button" data-zoom aria-pressed="false" title="Magnify this section" aria-label="Magnify this section">
+              <svg class="icon-in" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="10.5" cy="10.5" r="6.5"/><path d="M20 20l-4.9-4.9"/><path d="M10.5 7.6v5.8M7.6 10.5h5.8"/>
+              </svg>
+              <svg class="icon-out" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="10.5" cy="10.5" r="6.5"/><path d="M20 20l-4.9-4.9"/><path d="M7.6 10.5h5.8"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="panel-body">
+          <div id="linesEmpty" class="empty-state">
+            <div class="empty-icon" aria-hidden="true">📈</div>
+            <p class="empty-title">No lines yet</p>
+            <p class="empty-sub">Click two grid corners on the graph, then say <strong>Yes</strong> when asked to draw a line. The equation and its table of values will show up right here.</p>
+          </div>
+          <div id="cardsViewport" class="cards-viewport" hidden>
+            <div id="cardsTrack" class="cards-track"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== TOP RIGHT: the graph ===== -->
+      <section class="panel panel-graph" aria-labelledby="graphHeading">
+        <div class="panel-head">
+          <h2 id="graphHeading">Coordinate Plane</h2>
+          <div class="head-right">
+            <p class="panel-hint">Click a corner to plot a point &middot; drag a point to move it</p>
+            <button class="zoom-btn" type="button" data-zoom aria-pressed="false" title="Magnify this section" aria-label="Magnify this section">
+              <svg class="icon-in" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="10.5" cy="10.5" r="6.5"/><path d="M20 20l-4.9-4.9"/><path d="M10.5 7.6v5.8M7.6 10.5h5.8"/>
+              </svg>
+              <svg class="icon-out" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="10.5" cy="10.5" r="6.5"/><path d="M20 20l-4.9-4.9"/><path d="M7.6 10.5h5.8"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div class="panel-body graph-body">
+          <div class="graph-stage" id="graphStage">
+            <svg id="graph" role="application" aria-label="Interactive coordinate plane from negative 10 to 10 on both axes"></svg>
+            <div id="overlay" class="graph-overlay"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== BOTTOM RIGHT: all coordinate pairs ===== -->
+      <section class="panel panel-points" aria-labelledby="pointsHeading">
+        <div class="panel-head">
+          <h2 id="pointsHeading">Points on the Graph</h2>
+          <div class="head-right">
+            <span id="pointsCount" class="badge">0 points</span>
+            <button class="zoom-btn" type="button" data-zoom aria-pressed="false" title="Magnify this section" aria-label="Magnify this section">
+              <svg class="icon-in" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="10.5" cy="10.5" r="6.5"/><path d="M20 20l-4.9-4.9"/><path d="M10.5 7.6v5.8M7.6 10.5h5.8"/>
+              </svg>
+              <svg class="icon-out" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="10.5" cy="10.5" r="6.5"/><path d="M20 20l-4.9-4.9"/><path d="M7.6 10.5h5.8"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div id="pointsField" class="points-field" aria-live="polite"></div>
+        </div>
+      </section>
+
+    </div><!-- /.layout -->
+
+    <div id="modalRoot" class="modal-root" aria-hidden="true"></div>
+  </div>
+
+  <!-- =============================================================
+       TEACHER NOTES (below the tool)
+       ============================================================= -->
+  <section class="tool-info" id="about-tool" aria-labelledby="about-tool-title">
+    <div class="container tool-info__grid">
+      <article class="prose">
+        <p class="overline">Teacher notes</p>
+        <h2 id="about-tool-title">An interactive coordinate plane for graphing lines</h2>
+        <p class="lead">Graphing Explorer connects the three ways students meet a linear function: points on
+          a coordinate plane, an equation in slope-intercept form, and a table of values. Change one, and
+          the others update with it.</p>
+
+        <h3>Plot ordered pairs</h3>
+        <p>Click any spot where two grid lines cross to plot a point, or type an ordered pair such as
+          <em>(3, −4)</em>. A typed point travels from the origin, first <em>across</em> to its x-value and
+          then <em>up or down</em> to its y-value. It shows why the x-coordinate comes first. The plane runs
+          from −10 to 10 on both axes, covering all four quadrants.</p>
+
+        <h3>Build a line from two points</h3>
+        <p>As soon as two points aren't yet part of a line, the tool asks whether to connect them. Say yes,
+          and the line is drawn across the whole plane with its equation in <em>y = mx + b</em> form and a
+          table of values. Drag either point and the slope, intercept and table update instantly, which is a
+          quick way to explore how slope changes.</p>
+
+        <h3>Graph an equation</h3>
+        <p>Type an equation such as <em>y = 2x + 1</em>, <em>y = −3x</em>, <em>y = 1/2x − 3</em> or a vertical
+          line like <em>x = 4</em>, and press <strong>Graph it</strong>. Each new line gets its own
+          high-contrast color, and its card shows the slope, y-intercept and table.</p>
+
+        <h3>Read the table from the graph</h3>
+        <p>Hover over a line to see the ordered pair at each whole x-value. The matching row in that line's
+          table lights up at the same time, so students see that every row of the table is a point on the line.</p>
+
+        <div class="callout">
+          <p><strong>Projector tip:</strong> press the magnifier button in any panel's heading to pop that
+            panel out at double size. It still works while magnified, and you can drag it by its heading to
+            anywhere on the screen. It's ideal for zooming in on one table or the graph for the back row.</p>
+        </div>
+
+        <h2>Frequently asked questions</h2>
+        <div class="faq">
+          <details>
+            <summary>Which equation formats does it understand?</summary>
+            <div><p>Slope-intercept form (<em>y = mx + b</em>) with whole numbers, decimals or fractions for the slope and intercept, horizontal lines such as <em>y = 5</em>, and vertical lines such as <em>x = −2</em>.</p></div>
+          </details>
+          <details>
+            <summary>How do I move or delete a point?</summary>
+            <div><p>Drag a point to move it; it snaps to the nearest grid corner. Click a point once and press <em>Delete point</em> to remove it, or click its coordinates in the <em>Points on the Graph</em> list.</p></div>
+          </details>
+          <details>
+            <summary>Does it work on a touchscreen or interactive whiteboard?</summary>
+            <div><p>Yes. Points can be plotted and dragged with a finger or stylus, and all buttons are sized for touch.</p></div>
+          </details>
+        </div>
+      </article>
+
+      <aside aria-label="About this tool">
+        <section class="aside-card">
+          <h2>At a glance</h2>
+          <dl class="facts">
+            <div><dt>Grade level</dt><dd>Grades 5–9, Algebra 1</dd></div>
+            <div><dt>Topics</dt><dd>Ordered pairs, four-quadrant plane, slope-intercept form, tables of values</dd></div>
+            <div><dt>Common Core</dt><dd>5.G.A.1, 6.NS.C.8, 8.EE.B.6, 8.F.A.3, HSF-IF.C.7a</dd></div>
+            <div><dt>Works on</dt><dd>Projectors, smartboards, laptops, tablets</dd></div>
+            <div><dt>Cost</dt><dd><span class="tag tag--free">Free</span></dd></div>
+          </dl>
+        </section>
+        <section class="aside-card">
+          <h2>Related tools</h2>
+          <ul class="link-list">
+            <li><a href="../real-life-graphs/">Graphs in Real Life<small>Rate of change with real units</small></a></li>
+            <li><a href="../integer-number-line/">Integer Number Line<small>Positive and negative numbers</small></a></li>
+          </ul>
+        </section>
+      </aside>
+    </div>
+  </section>
+
+  </main>
+
+  <!-- ===== Site footer ===== -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="site-footer__grid">
+        <div class="site-footer__about">
+          <a class="brand" href="../../">
+            <img class="brand__mark" src="../../assets/img/logo.svg" alt="" width="32" height="32">
+            <span class="brand__name">Math<span>Visuals</span></span>
+          </a>
+          <p>Free interactive math visuals for projectors and smartboards, designed by a math teacher with a UX/UI background.</p>
+        </div>
+        <nav aria-label="Number Sense & Operations tools">
+          <h2>Number Sense</h2>
+          <ul>
+            <li><a href="../../tools/integer-number-line/">Integer Number Line</a></li>
+            <li><a href="../../tools/fraction-visualizer/">Fraction Visualizer</a></li>
+          </ul>
+        </nav>
+        <nav aria-label="Algebra & Graphing tools">
+          <h2>Algebra & Graphing</h2>
+          <ul>
+            <li><a href="../../tools/graphing-explorer/">Graphing Explorer</a></li>
+            <li><a href="../../tools/real-life-graphs/">Graphs in Real Life</a></li>
+          </ul>
+        </nav>
+        <nav aria-label="Probability & Statistics tools">
+          <h2>Statistics</h2>
+          <ul>
+            <li><a href="../../tools/probability-manipulator/">Probability Manipulator</a></li>
+            <li><a href="../../tools/bell-curve-simulator/">Bell Curve Simulator</a></li>
+          </ul>
+        </nav>
+      </div>
+      <div class="site-footer__bottom">
+        <p>© <span data-year>2026</span> Mordechai Klein. All rights reserved. The tools are free to use for now, but their design and code are my copyright and may not be copied or republished.</p>
+        <p><a href="../../#about">About</a> · <a href="../../#contact">Suggest a tool</a> · <a href="../../privacy.html">Privacy</a> · <a href="../../style-guide.html">Style guide</a></p>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

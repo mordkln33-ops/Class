@@ -1,0 +1,47 @@
+# =====================================================================
+# MathVisuals — Apache settings
+# ---------------------------------------------------------------------
+# Works on XAMPP and most shared hosts. Every block is wrapped in
+# <IfModule> so a missing module never breaks the site.
+# =====================================================================
+
+# No folder listings
+Options -Indexes
+
+# Friendly 404 page. The path is from the DOMAIN ROOT, so it is correct
+# once the site is deployed at https://your-domain/. (While the site
+# sits in a sub-folder on XAMPP, Apache's default 404 is shown instead.)
+ErrorDocument 404 /404.html
+
+# Serve modern file types with the right MIME type
+<IfModule mod_mime.c>
+  AddType image/webp .webp
+  AddType image/svg+xml .svg
+  AddType application/manifest+json .webmanifest
+</IfModule>
+
+# Compress text files (faster pages = better Core Web Vitals)
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css application/javascript text/javascript image/svg+xml application/json application/manifest+json
+</IfModule>
+
+# Browser caching: assets for a month, HTML always re-checked
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresDefault "access plus 1 hour"
+  ExpiresByType text/html "access plus 0 seconds"
+  ExpiresByType text/css "access plus 1 month"
+  ExpiresByType application/javascript "access plus 1 month"
+  ExpiresByType text/javascript "access plus 1 month"
+  ExpiresByType image/webp "access plus 1 month"
+  ExpiresByType image/jpeg "access plus 1 month"
+  ExpiresByType image/png "access plus 1 month"
+  ExpiresByType image/svg+xml "access plus 1 month"
+</IfModule>
+
+# Basic security headers
+<IfModule mod_headers.c>
+  Header set X-Content-Type-Options "nosniff"
+  Header set Referrer-Policy "strict-origin-when-cross-origin"
+  Header set X-Frame-Options "SAMEORIGIN"
+</IfModule>

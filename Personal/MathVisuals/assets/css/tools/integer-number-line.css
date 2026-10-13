@@ -1,0 +1,537 @@
+/* =====================================================================
+   Integer Number Line — tool styles
+   Shared by the vertical page (index.html) and horizontal.html.
+   ---------------------------------------------------------------------
+   Layout is unchanged from the original tool:
+     vertical   : number line | controls | history   (three columns)
+     horizontal : number line across the top third,
+                  controls + history side by side below
+   Colors, type and shapes come from site.css tokens.
+   The .tool-frame wrapper replaces the original <body>, so it carries
+   the layout-vertical / layout-horizontal class.
+   ===================================================================== */
+
+/* ---------- tool-specific tokens ---------- */
+.tool-frame {
+  --nl-positive: var(--color-ink);      /* fill at or above zero */
+  --nl-negative: var(--color-danger);   /* fill below zero       */
+  --nl-add: var(--color-accent);
+  --nl-sub: var(--data-5);
+  --nl-track: var(--color-surface);
+  --nl-grid: color-mix(in srgb, var(--color-ink) 13%, transparent);
+  --nl-zero: var(--color-warning);
+}
+
+/* ============================================================
+   Page skeletons
+   ============================================================ */
+
+.page {
+  height: 100%;
+  display: grid;
+  gap: var(--space-5);
+  padding: var(--space-5);
+}
+
+/* vertical page: number line | controls | history */
+.layout-vertical .page {
+  grid-template-columns: auto minmax(320px, 1fr) minmax(270px, 24%);
+  align-items: center;
+}
+
+/* horizontal page: number line across the top third,
+   controls and history sharing the bottom two thirds */
+.layout-horizontal .page {
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 2fr;
+}
+
+.layout-horizontal .gauge-area {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+}
+
+.panel {
+  min-height: 0;                /* lets inner areas scroll, not the page */
+  max-height: 100%;
+  background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-5) var(--space-5);
+}
+
+.layout-horizontal .panel {
+  height: 100%;
+}
+
+/* ============================================================
+   The number line itself
+   ============================================================ */
+
+/* vertical: a 20% × 80% block, with the scale in a gutter beside it */
+.gauge-vertical {
+  display: grid;
+  grid-template-columns: 3.2rem 20vw;
+  gap: var(--space-2);
+  height: calc((100vh - var(--site-bar-h)) * .86);
+  height: calc((100dvh - var(--site-bar-h)) * .86);
+}
+
+.gauge-horizontal {
+  width: 80vw;
+}
+
+.track {
+  position: relative;
+  overflow: hidden;
+  background:
+    repeating-linear-gradient(var(--grid-dir, to bottom),
+      var(--nl-grid) 0,
+      var(--nl-grid) 1px,
+      transparent 1px,
+      transparent 2.5%),
+    var(--nl-track);
+  border: var(--border-width-thick) solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+}
+
+.track-vertical {
+  --grid-dir: to bottom;
+  width: 100%;
+  height: 100%;
+}
+
+.track-horizontal {
+  --grid-dir: to right;
+  width: 100%;
+  height: 20vh;
+}
+
+/* the fill always starts at the low end of the scale */
+.fill {
+  position: absolute;
+  background: var(--nl-positive);
+  z-index: 2;
+  transition: height .35s ease, width .35s ease, background-color .25s ease;
+}
+
+.fill.is-negative {
+  background: var(--nl-negative);
+}
+
+.fill-vertical {
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 50%;
+}
+
+.fill-horizontal {
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 50%;
+}
+
+/* zero marker, drawn over the fill so it stays visible either way */
+.zero-line {
+  position: absolute;
+  z-index: 3;
+  background: var(--nl-zero);
+}
+
+.zero-line-vertical {
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 3px;
+  transform: translateY(-50%);
+}
+
+.zero-line-horizontal {
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 3px;
+  transform: translateX(-50%);
+}
+
+/* ---------- tick marks and numbers ---------- */
+
+.scale {
+  position: relative;
+}
+
+.scale-vertical {
+  height: 100%;
+}
+
+.scale-horizontal {
+  height: 2rem;
+  margin-top: var(--space-2);
+}
+
+.tick {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: .62rem;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-ink-muted);
+}
+
+.scale-vertical .tick {
+  right: 0;
+  transform: translateY(-50%);
+}
+
+.scale-horizontal .tick {
+  top: 0;
+  flex-direction: column;
+  gap: 4px;
+  transform: translateX(-50%);
+}
+
+.tick-line {
+  background: var(--color-border);
+}
+
+.scale-vertical .tick-line   { width: 7px;  height: 2px; }
+.scale-horizontal .tick-line { width: 2px;  height: 7px; }
+
+.tick.is-major {
+  color: var(--color-ink);
+  font-weight: var(--fw-bold);
+  font-size: var(--fs-xs);
+}
+
+.tick.is-major .tick-line {
+  background: var(--color-ink);
+}
+
+.scale-vertical .tick.is-major .tick-line   { width: 14px; height: 3px; }
+.scale-horizontal .tick.is-major .tick-line { width: 3px;  height: 14px; }
+
+/* ============================================================
+   Controls
+   ============================================================ */
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  overflow-y: auto;
+}
+
+.controls h1 {
+  margin: 0;
+  font-size: var(--fs-2xl);
+  line-height: var(--lh-tight);
+  letter-spacing: -.01em;
+}
+
+.subtitle {
+  margin: var(--space-2) 0 0;
+  color: var(--color-ink-muted);
+  line-height: var(--lh-base);
+  font-size: var(--fs-sm);
+}
+
+.value-card {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: baseline;
+  gap: var(--space-1) var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-surface-2);
+  border: var(--border-width) solid var(--color-border-soft);
+  border-radius: var(--radius-md);
+}
+
+.value-label {
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-ink-muted);
+}
+
+.value-number {
+  font-size: var(--fs-3xl);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  transition: color .25s ease;
+}
+
+.value-number.is-negative {
+  color: var(--nl-negative);
+}
+
+.value-note {
+  grid-column: 1 / -1;
+  font-size: var(--fs-xs);
+  color: var(--color-ink-muted);
+  min-height: 1em;
+}
+
+.op-form label {
+  display: block;
+  margin-bottom: var(--space-2);
+  font-weight: var(--fw-bold);
+  font-size: var(--fs-md);
+}
+
+.op-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--space-2);
+}
+
+.op-row input {
+  width: 100%;
+  min-height: var(--tap-target);
+  padding: .45em .7em;
+  font: inherit;
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-bold);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-ink);
+  background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-sm);
+  outline: none;
+  transition: border-color .15s, box-shadow .15s;
+}
+
+.op-row input::placeholder {
+  color: var(--color-ink-muted);
+  font-weight: var(--fw-regular);
+}
+
+.op-row input:focus {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 var(--focus-width) var(--color-focus);
+}
+
+/* themed buttons (see the button system in site.css) */
+.btn-add { --btn-bg: var(--nl-add); }
+.btn-sub { --btn-bg: var(--nl-sub); }
+
+.footnote {
+  margin: 0;
+  color: var(--color-ink-muted);
+  font-size: var(--fs-sm);
+  line-height: var(--lh-base);
+}
+
+.page-link {
+  margin-top: auto;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-bold);
+  text-decoration: none;
+}
+
+.page-link:hover {
+  text-decoration: underline;
+}
+
+/* ============================================================
+   History — the list scrolls, the page does not
+   ============================================================ */
+
+.history {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.layout-vertical .history {
+  height: 100%;
+}
+
+.history-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding-bottom: var(--space-3);
+  border-bottom: var(--border-width) solid var(--color-border-soft);
+}
+
+.history-head h2 {
+  margin: 0;
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-ink-muted);
+}
+
+.history-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  margin: 0;
+  padding: var(--space-1) var(--space-2) 0 0;
+  list-style: none;
+}
+
+.history-item {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  padding: var(--space-3) 2px;
+  border-bottom: 1px solid var(--color-border-soft);
+  font-size: var(--fs-md);
+  font-variant-numeric: tabular-nums;
+  animation: slide-in .25s ease;
+}
+
+.history-op {
+  flex: 0 0 auto;
+  width: 1.3em;
+  height: 1.3em;
+  display: grid;
+  place-items: center;
+  border-radius: 6px;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-bold);
+  color: var(--color-on-accent);
+  background: var(--nl-add);
+}
+
+.history-item.is-sub .history-op {
+  background: var(--nl-sub);
+}
+
+html[data-theme="dark"] .history-item.is-sub .history-op {
+  color: var(--color-ink-inverse);
+}
+
+.history-result {
+  font-weight: var(--fw-bold);
+}
+
+.history-result.is-negative {
+  color: var(--nl-negative);
+}
+
+.history-flag {
+  display: block;
+  margin-top: 3px;
+  font-size: var(--fs-xs);
+  color: var(--color-ink-muted);
+}
+
+.history-empty {
+  padding: var(--space-3) 2px;
+  color: var(--color-ink-muted);
+  font-size: var(--fs-sm);
+}
+
+@keyframes slide-in {
+  from { opacity: 0; transform: translateY(-5px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* Horizontal page: the controls share the bottom two thirds with the
+   history, so they are set one step tighter to fit a laptop screen. */
+.layout-horizontal .controls {
+  gap: var(--space-3);
+  padding-block: var(--space-4);
+}
+
+.layout-horizontal .controls h1 {
+  font-size: var(--fs-xl);
+}
+
+.layout-horizontal .value-card {
+  padding-block: var(--space-2);
+}
+
+.layout-horizontal .value-number {
+  font-size: var(--fs-2xl);
+}
+
+/* ============================================================
+   Tablets in portrait and phones: stack and let the page scroll
+   (same 950px breakpoint as the original tool)
+   ============================================================ */
+
+@media (max-width: 950px) {
+  .tool-frame {
+    height: auto;
+    overflow: visible;
+  }
+
+  .page,
+  .layout-vertical .page,
+  .layout-horizontal .page {
+    height: auto;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+    padding: var(--space-4);
+    gap: var(--space-4);
+  }
+
+  .layout-horizontal .gauge-area {
+    grid-column: 1;
+  }
+
+  .layout-vertical .gauge-area {
+    display: flex;
+    justify-content: center;
+  }
+
+  .gauge-vertical {
+    width: min(100%, 22rem);
+    height: 62vh;
+    grid-template-columns: 3.2rem minmax(0, 1fr);
+  }
+
+  .gauge-horizontal {
+    width: 100%;
+  }
+
+  .track-horizontal {
+    height: 110px;
+  }
+
+  .panel,
+  .layout-horizontal .panel,
+  .layout-vertical .history {
+    height: auto;
+    max-height: none;
+  }
+
+  .history {
+    max-height: 55vh;
+  }
+
+  .controls {
+    overflow: visible;
+  }
+}
+
+/* Phones: the horizontal scale has 41 labels — show the majors only */
+@media (max-width: 560px) {
+  .scale-horizontal .tick:not(.is-major) .tick-num {
+    visibility: hidden;
+  }
+
+  .panel {
+    padding: var(--space-4);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fill { transition: none; }
+  .history-item { animation: none; }
+}

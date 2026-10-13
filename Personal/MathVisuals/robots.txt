@@ -1,0 +1,6 @@
+# MathVisuals — all public pages may be crawled.
+User-agent: *
+Disallow: /data/
+Disallow: /contact.php
+
+Sitemap: https://mathvisuals.online/sitemap.xml

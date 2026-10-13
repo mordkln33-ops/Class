@@ -1,0 +1,733 @@
+/* =====================================================================
+   MathVisuals — home page styles  (home.css)
+   ---------------------------------------------------------------------
+   Layout for the home page only: hero, tool catalogue, features,
+   about, FAQ and the contact form. Every color, size and shape comes
+   from the tokens in site.css.
+
+   CONTENTS
+     1. Sections (shared rhythm)
+     2. Hero
+     3. Tool catalogue (categories + cards)
+     4. Features
+     5. About
+     6. FAQ
+     7. Contact form
+     8. Message pages (thank-you, 404)
+   ===================================================================== */
+
+
+/* =====================================================================
+   1. SECTIONS
+   ===================================================================== */
+
+.section {
+  padding-block: var(--space-9);
+  scroll-margin-top: var(--site-bar-h);
+}
+
+.section--tint {
+  background: var(--color-surface);
+  border-block: var(--border-width) solid var(--color-border-soft);
+}
+
+.section__head {
+  max-width: 46rem;
+  margin-bottom: var(--space-7);
+}
+
+.section__head h2 {
+  margin: 0 0 var(--space-3);
+  font-size: var(--fs-3xl);
+  line-height: var(--lh-tight);
+  letter-spacing: -.015em;
+}
+
+.section__head p:not(.overline) {
+  margin: 0;
+  font-size: var(--fs-lg);
+  line-height: var(--lh-base);
+  color: var(--color-ink-soft);
+}
+
+@media (max-width: 700px) {
+  .section {
+    padding-block: var(--space-8);
+  }
+
+  .section__head h2 {
+    font-size: var(--fs-2xl);
+  }
+}
+
+
+/* =====================================================================
+   2. HERO
+   ===================================================================== */
+
+.hero {
+  padding-block: var(--space-8) var(--space-9);
+  background:
+    radial-gradient(60rem 30rem at 85% 0%, var(--color-accent-soft), transparent 70%),
+    var(--color-bg);
+  overflow: hidden;
+}
+
+.hero__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+  gap: var(--space-7);
+  align-items: center;
+}
+
+.hero h1 {
+  margin: 0 0 var(--space-4);
+  font-size: var(--fs-4xl);
+  line-height: 1.05;
+  letter-spacing: -.025em;
+}
+
+.hero__lead {
+  margin: 0 0 var(--space-6);
+  max-width: 34em;
+  font-size: var(--fs-lg);
+  line-height: var(--lh-base);
+  color: var(--color-ink-soft);
+}
+
+.hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.hero__points {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-5);
+  margin: var(--space-6) 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-bold);
+  color: var(--color-ink-soft);
+}
+
+.hero__points li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+/* green check mark before each point */
+.hero__points li::before {
+  content: "";
+  width: 1.1em;
+  height: 1.1em;
+  flex: none;
+  border-radius: 50%;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 12.5l4 4L18 8.5' fill='none' stroke='white' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 80% no-repeat,
+    var(--color-success);
+}
+
+/* The screenshot sits in a "classroom screen" frame */
+.hero__visual {
+  margin: 0;
+}
+
+.screen {
+  padding: var(--space-2);
+  background: var(--color-ink);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  transform: perspective(1600px) rotateY(-6deg) rotateX(2deg);
+  transform-origin: left center;
+}
+
+html[data-theme="dark"] .screen {
+  background: #000000;
+  box-shadow: 0 0 0 2px var(--color-border-soft), var(--shadow-lg);
+}
+
+.screen img {
+  display: block;
+  width: 100%;
+  border-radius: calc(var(--radius-lg) - 6px);
+}
+
+.hero__visual figcaption {
+  margin-top: var(--space-4);
+  font-size: var(--fs-sm);
+  color: var(--color-ink-muted);
+  text-align: center;
+}
+
+@media (max-width: 960px) {
+  .hero__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .screen {
+    transform: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero {
+    padding-block: var(--space-6) var(--space-7);
+  }
+
+  .hero__actions .btn {
+    flex: 1 1 100%;
+  }
+}
+
+
+/* =====================================================================
+   3. TOOL CATALOGUE
+   ===================================================================== */
+
+.category {
+  scroll-margin-top: calc(var(--site-bar-h) + var(--space-4));
+}
+
+.category + .category {
+  margin-top: var(--space-8);
+}
+
+.category__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2) var(--space-5);
+  margin-bottom: var(--space-5);
+  padding-bottom: var(--space-3);
+  border-bottom: var(--border-width) solid var(--color-border-soft);
+}
+
+.category__head h3 {
+  margin: 0;
+  font-size: var(--fs-xl);
+}
+
+.category__head p {
+  margin: 0;
+  color: var(--color-ink-muted);
+}
+
+.tool-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr));
+  gap: var(--space-5);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* The whole card is clickable: the title link stretches over it
+   (::after), and any secondary link sits above that layer. */
+.tool-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border-soft);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  transition: border-color var(--dur-base), box-shadow var(--dur-base), transform var(--dur-base) var(--ease-out);
+}
+
+.tool-card:hover {
+  border-color: var(--color-accent);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-3px);
+}
+
+.tool-card:focus-within {
+  border-color: var(--color-accent);
+}
+
+.tool-card__img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  object-position: top left;
+  border-bottom: var(--border-width) solid var(--color-border-soft);
+  background: var(--color-surface-2);
+}
+
+.tool-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  flex: 1;
+  padding: var(--space-5);
+}
+
+.tool-card__title {
+  margin: 0;
+  font-size: var(--fs-xl);
+  line-height: var(--lh-tight);
+}
+
+.tool-card__link {
+  color: var(--color-ink);
+  text-decoration: none;
+}
+
+.tool-card__link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.tool-card__link:focus-visible {
+  outline: none;
+}
+
+.tool-card__link:focus-visible::after {
+  outline: var(--focus-width) solid var(--color-focus);
+  outline-offset: -4px;
+  border-radius: var(--radius-lg);
+}
+
+/* "Open tool →" cue under the title */
+.tool-card__title::after {
+  content: " →";
+  color: var(--color-accent);
+  transition: margin var(--dur-base);
+}
+
+.tool-card:hover .tool-card__title::after {
+  margin-left: .2em;
+}
+
+.tool-card__body p {
+  margin: 0;
+  line-height: var(--lh-base);
+  color: var(--color-ink-soft);
+}
+
+.tool-card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: auto 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tool-card__alt {
+  position: relative;
+  z-index: 2;               /* above the stretched title link */
+  align-self: flex-start;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-bold);
+}
+
+
+/* =====================================================================
+   4. FEATURES
+   ===================================================================== */
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+  gap: var(--space-5);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.feature {
+  padding: var(--space-5);
+  background: var(--color-bg);
+  border: var(--border-width) solid var(--color-border-soft);
+  border-radius: var(--radius-lg);
+}
+
+.feature__icon {
+  width: 2.6rem;
+  height: 2.6rem;
+  padding: .55rem;
+  color: var(--color-accent);
+  background: var(--color-accent-soft);
+  border-radius: var(--radius-md);
+}
+
+.feature h3 {
+  margin: var(--space-4) 0 var(--space-2);
+  font-size: var(--fs-lg);
+}
+
+.feature p {
+  margin: 0;
+  line-height: var(--lh-base);
+  color: var(--color-ink-soft);
+}
+
+
+/* =====================================================================
+   5. ABOUT
+   ===================================================================== */
+
+.about {
+  display: grid;
+  grid-template-columns: 14rem minmax(0, 1fr);
+  gap: var(--space-7);
+  align-items: start;
+}
+
+/* Monogram badge (decorative) — swap for a photo by replacing the
+   <div class="about__badge"> with an <img> of the same class. */
+.about__badge {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  aspect-ratio: 1;
+  font-size: 4.5rem;
+  font-weight: var(--fw-bold);
+  letter-spacing: -.04em;
+  color: var(--color-on-accent);
+  background:
+    linear-gradient(var(--color-accent), var(--color-accent-strong));
+  border-radius: 50%;
+  box-shadow: 0 0 0 8px var(--color-accent-soft);
+  object-fit: cover;
+}
+
+.about__copy {
+  max-width: 44rem;
+  line-height: var(--lh-base);
+  color: var(--color-ink-soft);
+}
+
+.about__copy h2 {
+  margin: 0 0 var(--space-4);
+  font-size: var(--fs-3xl);
+  line-height: var(--lh-tight);
+  letter-spacing: -.015em;
+  color: var(--color-ink);
+}
+
+.about__lead {
+  font-size: var(--fs-lg);
+  color: var(--color-ink);
+}
+
+.about__principles {
+  display: grid;
+  gap: var(--space-3);
+  margin: var(--space-5) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.about__principles li {
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-surface);
+  border-left: var(--border-width-accent) solid var(--color-accent);
+  border-radius: var(--radius-sm);
+}
+
+.about__principles strong {
+  color: var(--color-ink);
+}
+
+@media (max-width: 760px) {
+  .about {
+    grid-template-columns: 1fr;
+    gap: var(--space-5);
+  }
+
+  .about__badge {
+    width: 8rem;
+    font-size: 2.8rem;
+  }
+
+  .about__copy h2 {
+    font-size: var(--fs-2xl);
+  }
+}
+
+
+/* =====================================================================
+   6. FAQ  (the accordion itself is styled in site.css → .faq)
+   ===================================================================== */
+
+.faq-wrap {
+  max-width: 50rem;
+}
+
+.faq-wrap .section__head {
+  margin-bottom: var(--space-5);
+}
+
+.faq-wrap .faq details > div {
+  line-height: var(--lh-base);
+  color: var(--color-ink-soft);
+}
+
+.faq-wrap .faq p {
+  margin: 0;
+}
+
+
+/* =====================================================================
+   7. CONTACT FORM
+   ===================================================================== */
+
+.contact {
+  display: grid;
+  grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr);
+  gap: var(--space-7);
+  align-items: start;
+}
+
+.contact__intro h2 {
+  margin: 0 0 var(--space-4);
+  font-size: var(--fs-3xl);
+  line-height: var(--lh-tight);
+  letter-spacing: -.015em;
+}
+
+.contact__intro p:not(.overline) {
+  margin: 0;
+  font-size: var(--fs-lg);
+  line-height: var(--lh-base);
+  color: var(--color-ink-soft);
+}
+
+.contact__steps {
+  display: grid;
+  gap: var(--space-3);
+  margin: var(--space-6) 0 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: step;
+  line-height: var(--lh-base);
+  color: var(--color-ink-soft);
+}
+
+.contact__steps li {
+  display: grid;
+  grid-template-columns: 2rem 1fr;
+  gap: var(--space-3);
+  align-items: start;
+  counter-increment: step;
+}
+
+.contact__steps li::before {
+  content: counter(step);
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  font-weight: var(--fw-bold);
+  color: var(--color-on-accent);
+  background: var(--color-accent);
+  border-radius: 50%;
+}
+
+.contact__steps strong {
+  color: var(--color-ink);
+}
+
+.contact-form {
+  display: grid;
+  gap: var(--space-5);
+  padding: var(--space-6);
+  background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border-soft);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-5);
+}
+
+.form-field {
+  display: grid;
+  gap: var(--space-2);
+  align-content: start;
+}
+
+.form-field label {
+  font-weight: var(--fw-bold);
+  color: var(--color-ink);
+}
+
+.optional {
+  font-weight: var(--fw-regular);
+  color: var(--color-ink-muted);
+}
+
+.form-hint {
+  margin: 0;
+  font-size: var(--fs-sm);
+  color: var(--color-ink-muted);
+}
+
+.form-error {
+  margin: 0;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-bold);
+  color: var(--color-danger);
+}
+
+.form-error::before {
+  content: "⚠ ";
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-start;
+}
+
+/* Result message after sending */
+.form-status {
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  font-weight: var(--fw-bold);
+  border-radius: var(--radius-md);
+  border-left: var(--border-width-accent) solid currentColor;
+}
+
+.form-status:focus {
+  outline: none;
+}
+
+.form-status--success {
+  color: var(--color-success);
+  background: var(--color-success-soft);
+}
+
+.form-status--error {
+  color: var(--color-danger);
+  background: var(--color-danger-soft);
+}
+
+/* Honeypot: off-screen for people, still in the form for bots */
+.hp {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+@media (max-width: 900px) {
+  .contact {
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+  }
+
+  .contact__intro h2 {
+    font-size: var(--fs-2xl);
+  }
+}
+
+@media (max-width: 560px) {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .contact-form {
+    padding: var(--space-5) var(--space-4);
+  }
+
+  .form-actions .btn {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tool-card:hover {
+    transform: none;
+  }
+}
+
+
+/* =====================================================================
+   8. MESSAGE PAGES  (thank-you.html, 404.html)
+   ===================================================================== */
+
+.message-page {
+  min-height: calc(70vh - var(--site-bar-h));
+  display: grid;
+  align-items: center;
+  text-align: center;
+}
+
+.message-page__inner {
+  max-width: 40rem;
+}
+
+.message-page h1 {
+  margin: 0 0 var(--space-4);
+  font-size: var(--fs-3xl);
+  line-height: var(--lh-tight);
+}
+
+.message-page p:not(.overline) {
+  margin: 0 0 var(--space-6);
+  font-size: var(--fs-lg);
+  line-height: var(--lh-base);
+  color: var(--color-ink-soft);
+}
+
+.message-page .hero__actions {
+  justify-content: center;
+}
+
+
+/* =====================================================================
+   9. LEGAL PAGE  (privacy.html)
+   ===================================================================== */
+
+.legal-page__inner {
+  max-width: 44rem;
+}
+
+.legal-page h1 {
+  margin: 0 0 var(--space-4);
+  font-size: var(--fs-3xl);
+  line-height: var(--lh-tight);
+}
+
+.legal-page h2 {
+  margin: var(--space-7) 0 var(--space-3);
+  font-size: var(--fs-xl);
+  line-height: var(--lh-tight);
+}
+
+.legal-page p,
+.legal-page ul {
+  margin: 0 0 var(--space-4);
+  line-height: var(--lh-base);
+  color: var(--color-ink-soft);
+}
+
+.legal-page ul {
+  padding-left: var(--space-5);
+}
+
+.legal-page li + li {
+  margin-top: var(--space-2);
+}
+
+.legal-page .legal-page__lead {
+  font-size: var(--fs-lg);
+}
+
+.legal-page .legal-page__updated {
+  font-size: var(--fs-sm);
+  color: var(--color-ink-muted);
+}

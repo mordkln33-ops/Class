@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!--
+    KLEIN SITE — LEARNING TOOLS & WEBSITES FOR TUTORS, TUTORING CENTERS & SMALL SCHOOLS
+    ==================================================================================
+    Files:
+        index.html            ← this page (home)
+        css/styles.css        ← all styles (mobile first)
+        js/main.js            ← menu, image placeholders, demo quiz, contact form
+        tools/*/              ← live copies of your learning tools (from Personal/School)
+        work/*.html           ← sample website case-study pages
+        images/IMAGES.md      ← list of every image the site expects
+        robots.txt, sitemap.xml
+
+    PAGE ORDER (tools lead, websites follow):
+        Hero (with live demo) → Learning tools → Who it's for → About → Websites →
+        Sample website projects → Process → Pricing → FAQ → Contact
+
+    BEFORE LAUNCH — search this file for "TODO" and replace:
+        1. https://www.yourdomain.com  → your real domain (also in work/*.html, robots.txt, sitemap.xml)
+        2. hello@yourdomain.com        → your real email
+        3. YOUR_FORM_ID                → your Formspree form ID (see contact form below)
+
+    IMAGES: every image sits inside a ".img-slot". Until the file exists, the slot shows
+    repeating "Image goes here" text. Drop a file with the matching name into /images
+    and the placeholder disappears automatically.
+-->
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- =========================
+         SEO BASICS
+         Title: under 60 characters, main keywords first.
+         Description: about 150 characters, written for people (it shows in Google results).
+    ========================== -->
+    <title>Learning Tools &amp; Websites for Tutors and Schools | Klein Site</title>
+    <meta name="description"
+        content="Custom interactive learning tools and clear, fast websites for tutors, tutoring centers and schools, built by a former high school teacher.">
+    <meta name="author" content="Mordechai Klein">
+    <meta name="robots" content="index, follow">
+
+    <!-- TODO: replace with your real domain -->
+    <link rel="canonical" href="https://www.yourdomain.com/">
+
+    <!-- Browser UI color on mobile -->
+    <meta name="theme-color" content="#1f4d3f">
+
+    <!-- Favicon: a tiny inline SVG so no extra file is needed -->
+    <link rel="icon"
+        href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231f4d3f'/%3E%3Ctext x='32' y='44' font-family='Georgia,serif' font-size='36' font-weight='700' text-anchor='middle' fill='%23f5c451'%3EK%3C/text%3E%3C/svg%3E">
+
+    <!-- =========================
+         SOCIAL SHARING (Open Graph / Twitter)
+         Controls the preview card when the link is shared by text, email or social media.
+    ========================== -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Klein Site">
+    <meta property="og:title" content="Learning Tools & Websites for Tutors and Schools">
+    <meta property="og:description"
+        content="Custom interactive learning tools and clear, fast websites, built by a former high school teacher.">
+    <meta property="og:url" content="https://www.yourdomain.com/">
+    <meta property="og:image" content="https://www.yourdomain.com/images/og-image.jpg">
+    <meta property="og:image:alt" content="Klein Site: learning tools and websites for tutors and schools">
+    <meta property="og:locale" content="en_US">
+    <meta name="twitter:card" content="summary_large_image">
+
+    <!-- =========================
+         FONTS
+         Fraunces (headings): warm, bookish serif.
+         Lexend (body): designed to improve reading ease — fitting for education.
+         "preconnect" + "display=swap" keep the page fast and text visible while fonts load.
+    ========================== -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap"
+        rel="stylesheet">
+
+    <!-- Adds class="js" to <html> before the page paints, so JS-only styles (collapsed
+         mobile menu, scroll reveal) apply immediately with no flicker. Kept inline on purpose. -->
+    <script>document.documentElement.classList.add("js");</script>
+
+    <link rel="stylesheet" href="css/styles.css">
+
+    <!-- "defer" downloads the script in parallel but runs it after the HTML is parsed -->
+    <script src="js/main.js" defer></script>
+
+    <!-- =========================
+         STRUCTURED DATA (JSON-LD)
+         Tells search engines, in a machine-readable way, who you are, what you offer
+         and what it costs. Keep prices here in sync with the Pricing section below.
+    ========================== -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@graph": [
+            {
+                "@type": "WebSite",
+                "@id": "https://www.yourdomain.com/#website",
+                "url": "https://www.yourdomain.com/",
+                "name": "Klein Site",
+                "inLanguage": "en-US"
+            },
+            {
+                "@type": "ProfessionalService",
+                "@id": "https://www.yourdomain.com/#business",
+                "name": "Klein Site",
+                "description": "Custom interactive learning tools and website design for tutors, tutoring centers and small schools.",
+                "url": "https://www.yourdomain.com/",
+                "image": "https://www.yourdomain.com/images/og-image.jpg",
+                "email": "hello@yourdomain.com",
+                "priceRange": "$250 - $1,800+",
+                "areaServed": "United States",
+                "knowsAbout": [
+                    "Interactive learning tools",
+                    "Virtual math manipulatives",
+                    "Website design for tutors",
+                    "Tutoring center websites",
+                    "UX/UI design"
+                ],
+                "founder": {
+                    "@type": "Person",
+                    "name": "Mordechai Klein",
+                    "jobTitle": "Learning Tool Developer & Web Designer, Former High School Teacher"
+                },
+                "hasOfferCatalog": {
+                    "@type": "OfferCatalog",
+                    "name": "Learning tools and websites",
+                    "itemListElement": [
+                        { "@type": "Offer", "name": "Learning tool from the library", "price": "250", "priceCurrency": "USD",
+                          "description": "An existing tool, such as the Fraction Visualizer, set up with your colors, logo and a link to your site." },
+                        { "@type": "Offer", "name": "Quick Check tool", "price": "350", "priceCurrency": "USD",
+                          "description": "A custom short quiz or placement check on one topic, with instant feedback." },
+                        { "@type": "Offer", "name": "Visual learning tool", "price": "850", "priceCurrency": "USD",
+                          "description": "One concept turned into a custom interactive visual model." },
+                        { "@type": "Offer", "name": "Explorer learning tool", "priceCurrency": "USD",
+                          "priceSpecification": { "@type": "PriceSpecification", "minPrice": "1800", "priceCurrency": "USD" },
+                          "description": "A multi-part interactive tool with connected views and a built-in guide." },
+                        { "@type": "Offer", "name": "Tutor website", "price": "850", "priceCurrency": "USD",
+                          "description": "Up to 3 pages for independent tutors, with a parent inquiry form and search-friendly setup." },
+                        { "@type": "Offer", "name": "Tutoring center website", "price": "1650", "priceCurrency": "USD",
+                          "description": "Up to 6 pages with tutor profiles, programs, an intake form, a Quick Check tool and a first semester refresh." }
+                    ]
+                }
+            },
+            {
+                "@type": "FAQPage",
+                "mainEntity": [
+                    {
+                        "@type": "Question",
+                        "name": "Why not just use a free tool like Desmos or GeoGebra?",
+                        "acceptedAnswer": { "@type": "Answer",
+                            "text": "They're excellent, and I recommend them. A custom tool is different: it teaches a topic the way you teach it, in your order and your words, and it carries your name on your own site, where families find you." }
+                    },
+                    {
+                        "@type": "Question",
+                        "name": "Can I get a learning tool without a website?",
+                        "acceptedAnswer": { "@type": "Answer",
+                            "text": "Yes. Tools work on their own. You get a link you can share with students, post in Google Classroom or add to an existing website." }
+                    },
+                    {
+                        "@type": "Question",
+                        "name": "Do I have to pay a monthly fee?",
+                        "acceptedAnswer": { "@type": "Answer",
+                            "text": "No. You pay once. Standard hosting is free for most sites, and your domain (about $12–20 a year) is registered in your name. Ongoing support is optional." }
+                    },
+                    {
+                        "@type": "Question",
+                        "name": "How long does it take?",
+                        "acceptedAnswer": { "@type": "Answer",
+                            "text": "Library tools take a few days. Custom tools take 1–3 weeks. Tutor websites take 1–2 weeks, and tutoring center sites 2–4 weeks." }
+                    },
+                    {
+                        "@type": "Question",
+                        "name": "Who owns what you build?",
+                        "acceptedAnswer": { "@type": "Answer",
+                            "text": "Custom tools and websites are yours: the code, domain and hosting are all in your name. Library tools are licensed to you for use on your site and with your students." }
+                    },
+                    {
+                        "@type": "Question",
+                        "name": "How do I make changes after launch?",
+                        "acceptedAnswer": { "@type": "Answer",
+                            "text": "Send changes to me and I'll make them, usually within two business days. The Semester refresh keeps schedules, staff and prices current before each term, and Center sites include the first one." }
+                    },
+                    {
+                        "@type": "Question",
+                        "name": "Do you write the content?",
+                        "acceptedAnswer": { "@type": "Answer",
+                            "text": "I send a short questionnaire and edit what you write so it reads clearly. If you'd rather not write at all, I can write it from a 30-minute interview." }
+                    }
+                ]
+            }
+        ]
+    }
+    </script>
+</head>
+
+
+<body>
+
+    <!-- Lets keyboard and screen-reader users jump past the navigation -->
+    <a class="skip-link" href="#main">Skip to main content</a>
+
+
+    <!-- =========================
+         HEADER / NAVIGATION
+    ========================== -->
+    <header class="site-header">
+        <nav class="navbar container" aria-label="Main">
+
+            <a href="index.html" class="logo" aria-label="Klein Site home">
+                Klein Site<span class="logo-mark" aria-hidden="true">.</span>
+            </a>
+
+            <!-- Mobile menu button. JS toggles aria-expanded and the "is-open" class. -->
+            <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-menu">
+                <span class="nav-toggle-bar" aria-hidden="true"></span>
+                <span class="visually-hidden">Menu</span>
+            </button>
+
+            <ul class="nav-menu" id="nav-menu">
+                <li><a href="#tools">Learning tools</a></li>
+                <li><a href="#websites">Websites</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#pricing">Pricing</a></li>
+                <li><a href="#faq">FAQ</a></li>
+                <li><a href="#contact" class="btn btn-primary btn-small">Get in touch</a></li>
+            </ul>
+
+        </nav>
+    </header>
+
+
+
+    <main id="main">
+
+        <!-- =========================
+             HERO
+             The only <h1> on the page — it holds the main search phrase.
+             The right side is a working tool instead of a photo: the first thing
+             visitors see is the product itself.
+        ========================== -->
+        <section class="hero graph-paper" aria-labelledby="hero-title">
+            <div class="container hero-grid">
+
+                <div class="hero-content">
+                    <p class="eyebrow">For tutors, tutoring centers &amp; schools</p>
+
+                    <h1 id="hero-title">
+                        Learning tools and websites,
+                        <span class="highlight">built by a teacher.</span>
+                    </h1>
+
+                    <p class="lead">
+                        I spent five years teaching high school. Now I build interactive tools that help
+                        ideas click, and websites that put them in front of the families you serve.
+                    </p>
+
+                    <div class="button-row">
+                        <a href="#tools" class="btn btn-primary">See the tools</a>
+                        <a href="#pricing" class="btn btn-secondary">See pricing</a>
+                    </div>
+
+                    <ul class="hero-points" aria-label="At a glance">
+                        <li>Works on phones, Chromebooks and smartboards</li>
+                        <li>You own what I build</li>
+                        <li>No required monthly fee</li>
+                    </ul>
+                </div>
+
+                <!-- LIVE DEMO — the quiz logic is "FRACTION DEMO" in js/main.js.
+                     Without JavaScript, the noscript message shows instead. -->
+                <div class="hero-demo">
+                    <div class="demo-card" id="fraction-demo" role="group" aria-labelledby="demo-title">
+                        <p class="demo-label">Try it</p>
+                        <div class="demo-top">
+                            <h2 class="demo-title" id="demo-title">Which fraction is larger?</h2>
+                            <p class="demo-progress" data-demo-progress>Question 1 of 3</p>
+                        </div>
+
+                        <div class="demo-choices" data-demo-choices>
+                            <!-- Buttons are created by JavaScript -->
+                            <noscript>
+                                <p>This sample needs JavaScript turned on.</p>
+                            </noscript>
+                        </div>
+
+                        <!-- Visual bars that fill to show each fraction's size after answering -->
+                        <div class="demo-bars" data-demo-bars hidden></div>
+
+                        <!-- aria-live announces the feedback to screen readers -->
+                        <p class="demo-feedback" data-demo-feedback aria-live="polite"></p>
+
+                        <button class="btn btn-pencil btn-small" type="button" data-demo-next hidden>Next question</button>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+
+
+        <!-- =========================
+             LEARNING TOOLS (the main offer)
+             These four are REAL, working tools (copied into /tools from Personal/School).
+             Screenshot slots use the "Screenshot goes here" placeholder style.
+        ========================== -->
+        <section class="section section--board" id="tools" aria-labelledby="tools-title">
+            <div class="container">
+
+                <header class="section-header">
+                    <p class="eyebrow eyebrow--light">Learning tools</p>
+                    <h2 id="tools-title">See it. Move it. Understand it.</h2>
+                    <p class="muted-light">
+                        Each tool turns an idea that's hard to explain at a whiteboard into something
+                        students can move and see. They run in any browser, with nothing to install.
+                    </p>
+                </header>
+
+                <div class="tool-grid">
+
+                    <article class="tool-card reveal">
+                        <div class="img-slot img-slot--16x10 img-slot--work">
+                            <img src="images/tool-graphing.jpg"
+                                alt="Graphing Explorer showing two lines on a coordinate plane with a table of values beside them"
+                                width="1200" height="750" loading="lazy">
+                        </div>
+                        <div class="tool-body">
+                            <p class="tag tag--light">Live tool · Algebra 1</p>
+                            <h3>Graphing Explorer</h3>
+                            <p>Plot points, graph lines from y = mx + b, and watch the table of values build itself.</p>
+                            <a href="tools/graphing/index.html" class="text-link" target="_blank" rel="noopener">
+                                Open the tool <span aria-hidden="true">↗</span><span class="visually-hidden">(opens in a new tab)</span>
+                            </a>
+                        </div>
+                    </article>
+
+                    <article class="tool-card reveal">
+                        <div class="img-slot img-slot--16x10 img-slot--work">
+                            <img src="images/tool-fractions.jpg"
+                                alt="Fraction Visualizer showing three quarters as filled bars beside the decimal 0.75"
+                                width="1200" height="750" loading="lazy">
+                        </div>
+                        <div class="tool-body">
+                            <p class="tag tag--light">Live tool · Fractions</p>
+                            <h3>Fraction Visualizer</h3>
+                            <p>Type a fraction and watch it fill. Add, subtract, multiply or divide two and see how the answer is built.</p>
+                            <a href="tools/fractions/index.html" class="text-link" target="_blank" rel="noopener">
+                                Open the tool <span aria-hidden="true">↗</span><span class="visually-hidden">(opens in a new tab)</span>
+                            </a>
+                        </div>
+                    </article>
+
+                    <article class="tool-card reveal">
+                        <div class="img-slot img-slot--16x10 img-slot--work">
+                            <img src="images/tool-probability.jpg"
+                                alt="Probability Manipulator with two colored probability grids combined into a blended result"
+                                width="1200" height="750" loading="lazy">
+                        </div>
+                        <div class="tool-body">
+                            <p class="tag tag--light">Live tool · Probability</p>
+                            <h3>Probability Manipulator</h3>
+                            <p>Build two probability spaces, then add or multiply them and watch the colors blend.</p>
+                            <a href="tools/probability/index.html" class="text-link" target="_blank" rel="noopener">
+                                Open the tool <span aria-hidden="true">↗</span><span class="visually-hidden">(opens in a new tab)</span>
+                            </a>
+                        </div>
+                    </article>
+
+                    <article class="tool-card reveal">
+                        <div class="img-slot img-slot--16x10 img-slot--work">
+                            <img src="images/tool-number-line.jpg"
+                                alt="Vertical number line from negative 20 to 20, filled up to the current value, beside a history of operations"
+                                width="1200" height="750" loading="lazy">
+                        </div>
+                        <div class="tool-body">
+                            <p class="tag tag--light">Live tool · Integers</p>
+                            <h3>Number Line</h3>
+                            <p>Add and subtract positive and negative numbers, and watch the value climb or drop below zero.</p>
+                            <a href="tools/number-line/index.html" class="text-link" target="_blank" rel="noopener">
+                                Open the tool <span aria-hidden="true">↗</span><span class="visually-hidden">(opens in a new tab)</span>
+                            </a>
+                        </div>
+                    </article>
+
+                </div>
+
+
+                <!-- What can be built — three kinds, kept short -->
+                <div class="build-block reveal">
+                    <h3>What I can build for you</h3>
+                    <!-- Same names and order as the tool pricing cards -->
+                    <ul class="build-list">
+                        <li>
+                            <h4>Quick Check</h4>
+                            <p>A short quiz or placement check with instant feedback, like the demo at the top of this page.</p>
+                        </li>
+                        <li>
+                            <h4>Visual Tool</h4>
+                            <p>One concept students can see and move, built around how you teach it.</p>
+                        </li>
+                        <li>
+                            <h4>Explorer</h4>
+                            <p>A multi-part tool for a whole unit, with views that stay in sync.</p>
+                        </li>
+                    </ul>
+                    <a href="#tool-pricing" class="btn btn-pencil">See tool pricing</a>
+                </div>
+
+            </div>
+        </section>
+
+
+
+        <!-- =========================
+             WHO IT'S FOR
+        ========================== -->
+        <section class="section" id="who" aria-labelledby="who-title">
+            <div class="container">
+
+                <header class="section-header">
+                    <p class="eyebrow">Who I work with</p>
+                    <h2 id="who-title">For the people who teach</h2>
+                </header>
+
+                <div class="card-grid card-grid--3">
+
+                    <article class="card reveal">
+                        <div class="img-slot img-slot--3x2">
+                            <img src="images/who-tutor.jpg"
+                                alt="A tutor sitting beside a high school student, pointing to a worked math problem in a notebook"
+                                width="900" height="600" loading="lazy">
+                        </div>
+                        <div class="card-body">
+                            <h3>Independent tutors</h3>
+                            <p>
+                                A tool that shows families how you teach, and a professional home
+                                for your subjects, rates and availability.
+                            </p>
+                        </div>
+                    </article>
+
+                    <article class="card reveal">
+                        <div class="img-slot img-slot--3x2">
+                            <img src="images/who-center.jpg"
+                                alt="A bright tutoring center with small groups of students working at round tables"
+                                width="900" height="600" loading="lazy">
+                        </div>
+                        <div class="card-body">
+                            <h3>Tutoring centers</h3>
+                            <p>
+                                Placement checks and practice tools with your name on them, plus programs,
+                                tutors and schedules in one place.
+                            </p>
+                        </div>
+                    </article>
+
+                    <article class="card reveal">
+                        <div class="img-slot img-slot--3x2">
+                            <img src="images/who-school.jpg"
+                                alt="A teacher at a classroom smartboard showing an interactive graph to a group of high school students"
+                                width="900" height="600" loading="lazy">
+                        </div>
+                        <div class="card-body">
+                            <h3>Small schools</h3>
+                            <p>
+                                Tools teachers can use in class tomorrow, shared as a link or posted
+                                in Google Classroom.
+                            </p>
+                        </div>
+                    </article>
+
+                </div>
+            </div>
+        </section>
+
+
+
+        <!-- =========================
+             ABOUT
+        ========================== -->
+        <section class="section section--tinted" id="about" aria-labelledby="about-title">
+            <div class="container about-grid">
+
+                <div class="about-media reveal">
+                    <div class="img-slot img-slot--4x5 img-slot--framed">
+                        <img src="images/portrait.jpg"
+                            alt="Portrait of Mordechai Klein, learning tool developer and former high school teacher, smiling in a classroom"
+                            width="800" height="1000" loading="lazy">
+                    </div>
+                </div>
+
+                <div class="about-content">
+                    <p class="eyebrow">About</p>
+                    <h2 id="about-title">A teacher first</h2>
+
+                    <p>
+                        I'm Mordechai Klein. I spent five years teaching high school boys,
+                        which teaches you quickly what holds attention and what doesn't.
+                    </p>
+                    <p>
+                        My tools come from that classroom thinking: find the moment an idea
+                        stops making sense, then let students see and move it until it clicks.
+                    </p>
+                    <p>
+                        I also work in UX/UI design, so every tool and page starts with one question:
+                        what does this student, parent or teacher need right now? Then I make it easy.
+                    </p>
+
+                    <ul class="fact-list">
+                        <li><strong>5 years</strong> teaching high school</li>
+                        <li><strong>UX/UI</strong> design background</li>
+                        <li><strong>Custom</strong> interactive learning tools</li>
+                        <li><strong>Hand-coded</strong>, fast-loading sites</li>
+                    </ul>
+                </div>
+
+            </div>
+        </section>
+
+
+
+        <!-- =========================
+             WEBSITES — "What you get"
+             Sits after About and before the sample projects: visitors meet the tools,
+             then you, then the websites and examples of them.
+             Six benefits in two groups by who benefits, so it scans in two quick columns.
+        ========================== -->
+        <section class="section" id="websites" aria-labelledby="websites-title">
+            <div class="container">
+
+                <header class="section-header">
+                    <p class="eyebrow">Websites</p>
+                    <h2 id="websites-title">And the website around them</h2>
+                    <p class="section-intro">
+                        A great tool works best on a site that answers families' questions.
+                        Every website I build includes:
+                    </p>
+                </header>
+
+                <div class="benefit-groups">
+
+                    <div class="benefit-group reveal">
+                        <h3 class="benefit-heading">For the families you serve</h3>
+                        <ul class="benefit-list">
+                            <li>
+                                <h4>Answers before they ask</h4>
+                                <p>Pages follow the questions parents actually ask, in the order they ask them.</p>
+                            </li>
+                            <li>
+                                <h4>Quick on any phone</h4>
+                                <p>Designed for phones first, with lightweight code that loads fast.</p>
+                            </li>
+                            <li>
+                                <h4>Easy for everyone to read</h4>
+                                <p>Accessible colors, clear type and plain language.</p>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="benefit-group reveal">
+                        <h3 class="benefit-heading">For you</h3>
+                        <ul class="benefit-list">
+                            <li>
+                                <h4>Found by local families</h4>
+                                <p>Search-friendly setup with clear titles, descriptions and local keywords.</p>
+                            </li>
+                            <li>
+                                <h4>Inquiries with the details you need</h4>
+                                <p>Forms that ask the right questions up front, so you can reply with a time.</p>
+                            </li>
+                            <li>
+                                <h4>Yours, every semester</h4>
+                                <p>Your domain, hosting and code, with optional updates at the start of each term.</p>
+                            </li>
+                        </ul>
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+
+
+
+        <!-- =========================
+             SAMPLE WEBSITE PROJECTS
+             Each card links to a full sample case study in /work.
+             When you have real projects, replace these cards and pages (see notes in each work page).
+        ========================== -->
+        <section class="section section--tinted" id="work" aria-labelledby="work-title">
+            <div class="container">
+
+                <header class="section-header">
+                    <p class="eyebrow">Website work</p>
+                    <h2 id="work-title">Sample website projects</h2>
+                    <p class="section-intro">
+                        Sample briefs that show how I'd approach each kind of client,
+                        from the first question to the finished pages and the tool that fits them.
+                    </p>
+                </header>
+
+                <div class="card-grid card-grid--2">
+
+                    <article class="card work-card reveal">
+                        <a href="work/tutor-sample.html" class="work-link">
+                            <div class="img-slot img-slot--16x10 img-slot--work">
+                                <img src="images/work-tutor.jpg"
+                                    alt="Homepage design for a sample independent math tutor, shown on a laptop and a phone"
+                                    width="1200" height="750" loading="lazy">
+                            </div>
+                            <div class="card-body">
+                                <p class="tag">Sample · Independent tutor</p>
+                                <h3>Ruler &amp; Compass Math</h3>
+                                <p>A three-page site and a "Which course fits?" check that answers parents before they text.</p>
+                                <span class="text-link">Read the sample brief <span aria-hidden="true">→</span></span>
+                            </div>
+                        </a>
+                    </article>
+
+                    <article class="card work-card reveal">
+                        <a href="work/center-sample.html" class="work-link">
+                            <div class="img-slot img-slot--16x10 img-slot--work">
+                                <img src="images/work-center.jpg"
+                                    alt="Homepage design for a sample tutoring center, featuring programs grouped by student need and tutor profiles"
+                                    width="1200" height="750" loading="lazy">
+                            </div>
+                            <div class="card-body">
+                                <p class="tag">Sample · Tutoring center</p>
+                                <h3>Maple Street Learning Center</h3>
+                                <p>An online intake form and a clear schedule page that replace weeks of phone tag.</p>
+                                <span class="text-link">Read the sample brief <span aria-hidden="true">→</span></span>
+                            </div>
+                        </a>
+                    </article>
+
+                </div>
+
+                <!--
+                    TESTIMONIALS — add once you have real ones (never invent them).
+                    Copy this block inside the container above:
+
+                    <figure class="testimonial">
+                        <blockquote><p>"Short quote from the client."</p></blockquote>
+                        <figcaption>Name, Role — Organization</figcaption>
+                    </figure>
+                -->
+
+            </div>
+        </section>
+
+
+
+        <!-- =========================
+             PROCESS
+             An ordered list, because the order matters. Applies to tools and websites.
+        ========================== -->
+        <section class="section" id="process" aria-labelledby="process-title">
+            <div class="container">
+
+                <header class="section-header">
+                    <p class="eyebrow">How it works</p>
+                    <h2 id="process-title">Four steps, no surprises</h2>
+                </header>
+
+                <ol class="steps">
+                    <li class="step reveal">
+                        <h3>A short conversation</h3>
+                        <p>Twenty minutes, free. We talk about your students, what they struggle with and what you need.</p>
+                    </li>
+                    <li class="step reveal">
+                        <h3>A clear plan</h3>
+                        <p>You get a sketch of the tool or page outline, and a fixed price, before any work begins.</p>
+                    </li>
+                    <li class="step reveal">
+                        <h3>Design and build</h3>
+                        <p>You try a working draft early, and your feedback shapes the finished version.</p>
+                    </li>
+                    <li class="step reveal">
+                        <h3>Launch and handoff</h3>
+                        <p>It goes live with a link to share, plus a short guide for you and your students.</p>
+                    </li>
+                </ol>
+
+            </div>
+        </section>
+
+
+
+        <!-- =========================
+             PRICING
+             Two groups: learning tools first, then websites.
+             Prices sit toward the lower end of freelance market rates.
+             Keep these in sync with the JSON-LD in the <head>.
+        ========================== -->
+        <section class="section section--tinted" id="pricing" aria-labelledby="pricing-title">
+            <div class="container">
+
+                <header class="section-header">
+                    <p class="eyebrow">Pricing</p>
+                    <h2 id="pricing-title">Fixed prices. Pay once.</h2>
+                    <p class="section-intro">
+                        The price is agreed before work begins. Tools and websites can be bought on their own or together.
+                    </p>
+                </header>
+
+
+                <!-- ---------- LEARNING TOOLS ---------- -->
+                <h3 class="price-group-title" id="tool-pricing">Learning tools</h3>
+
+                <!-- Features every tool includes, listed once so each card shows only what's different -->
+                <div class="includes-strip">
+                    <p class="includes-title">Every tool includes</p>
+                    <ul class="includes-list">
+                        <li>Works on phones, Chromebooks and smartboards</li>
+                        <li>Large, clear display for classroom screens</li>
+                        <li>Your colors and name</li>
+                        <li>A link to share or add to your site</li>
+                    </ul>
+                </div>
+
+                <div class="pricing-grid">
+
+                    <article class="price-card reveal" aria-labelledby="tier-quick">
+                        <p class="price-flag price-flag--quiet">Like the demo at the top</p>
+                        <h4 class="price-title" id="tier-quick">Quick Check</h4>
+                        <p class="price-for">A short quiz or placement check</p>
+                        <p class="price"><span class="price-amount">$350</span> <span class="price-note">one time</span></p>
+                        <ul class="check-list">
+                            <li>One topic, up to 10 questions</li>
+                            <li>Instant feedback for students</li>
+                            <li>Results emailed to you</li>
+                        </ul>
+                        <a href="#contact" class="btn btn-secondary btn-block" data-plan="Quick Check">Start a Quick Check</a>
+                    </article>
+
+                    <article class="price-card price-card--featured reveal" aria-labelledby="tier-visual">
+                        <p class="price-flag">Like the Fraction Visualizer</p>
+                        <h4 class="price-title" id="tier-visual">Visual Tool</h4>
+                        <p class="price-for">One concept students can see and move</p>
+                        <p class="price"><span class="price-amount">$850</span> <span class="price-note">one time</span></p>
+                        <ul class="check-list">
+                            <li>An interactive model of one concept</li>
+                            <li>Built around how you teach it</li>
+                            <li>Built-in "How it works" guide</li>
+                        </ul>
+                        <a href="#contact" class="btn btn-primary btn-block" data-plan="Visual Tool">Start a Visual Tool</a>
+                    </article>
+
+                    <article class="price-card reveal" aria-labelledby="tier-explorer">
+                        <p class="price-flag price-flag--quiet">Like the Graphing Explorer</p>
+                        <h4 class="price-title" id="tier-explorer">Explorer</h4>
+                        <p class="price-for">A multi-part tool for a whole unit</p>
+                        <p class="price"><span class="price-from">from</span> <span class="price-amount">$1,800</span> <span class="price-note">one time</span></p>
+                        <ul class="check-list">
+                            <li>Several connected views (graph, table, equation)</li>
+                            <li>Students can type, click or drag</li>
+                            <li>Built-in "How it works" guide</li>
+                            <li>Teacher notes for using it in class</li>
+                        </ul>
+                        <a href="#contact" class="btn btn-secondary btn-block" data-plan="Explorer">Start an Explorer</a>
+                    </article>
+
+                </div>
+
+                <!-- Ready-made option: reuses existing tools, the lowest-cost way in -->
+                <div class="library-strip reveal">
+                    <div>
+                        <h4>From the library</h4>
+                        <p>Any tool shown above, set up with your colors, logo and a link back to your site. Ready in a few days.</p>
+                    </div>
+                    <p class="library-price"><span class="price-amount">$250</span></p>
+                </div>
+
+
+                <!-- ---------- WEBSITES ---------- -->
+                <h3 class="price-group-title" id="website-pricing">Websites</h3>
+
+                <div class="pricing-grid pricing-grid--2">
+
+                    <article class="price-card reveal" aria-labelledby="tier-tutor">
+                        <h4 class="price-title" id="tier-tutor">Tutor</h4>
+                        <p class="price-for">For independent tutors</p>
+                        <p class="price"><span class="price-amount">$850</span> <span class="price-note">one time</span></p>
+                        <ul class="check-list">
+                            <li>Up to 3 pages</li>
+                            <li>Subjects, rates and availability</li>
+                            <li>Parent inquiry form</li>
+                            <li>Mobile-first, accessible design</li>
+                            <li>Search-friendly setup and launch</li>
+                            <li>30 days of support</li>
+                        </ul>
+                        <a href="#contact" class="btn btn-secondary btn-block" data-plan="Tutor">Start with Tutor</a>
+                    </article>
+
+                    <article class="price-card price-card--featured reveal" aria-labelledby="tier-center">
+                        <p class="price-flag">Includes a Quick Check</p>
+                        <h4 class="price-title" id="tier-center">Center</h4>
+                        <p class="price-for">For tutoring and learning centers</p>
+                        <p class="price"><span class="price-amount">$1,650</span> <span class="price-note">one time</span></p>
+                        <ul class="check-list">
+                            <li>Up to 6 pages</li>
+                            <li>Tutor profiles, programs and schedules</li>
+                            <li>New-student intake form</li>
+                            <li>1 Quick Check tool</li>
+                            <li>First semester refresh included</li>
+                            <li>Search-friendly setup and launch</li>
+                            <li>45 days of support</li>
+                        </ul>
+                        <a href="#contact" class="btn btn-primary btn-block" data-plan="Center">Start with Center</a>
+                    </article>
+
+                </div>
+
+
+                <!-- AFTER LAUNCH (optional support) -->
+                <div class="support-block reveal">
+                    <h3>After launch <span class="support-sub">(optional)</span></h3>
+
+                    <div class="support-grid">
+                        <div class="support-item">
+                            <p class="support-price">$50<span>/hour</span></p>
+                            <h4>As needed</h4>
+                            <p>Send a change when you need one. Billed in half-hour steps.</p>
+                        </div>
+                        <div class="support-item">
+                            <p class="support-price">$150<span>/term</span></p>
+                            <h4>Semester refresh</h4>
+                            <p>Schedules, staff, calendar, prices and tool content updated before each term.</p>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- ADD-ONS -->
+                <div class="addons reveal">
+                    <h3>Add-ons</h3>
+                    <ul class="addon-list">
+                        <li><span>Additional page</span> <strong>$125</strong></li>
+                        <li><span>Content written for you, from a 30-minute interview</span> <strong>$200</strong></li>
+                        <li><span>Extra question set for a Quick Check</span> <strong>$100</strong></li>
+                    </ul>
+                    <p class="fine-print">
+                        Your domain (about $12–20 a year) is registered in your name.
+                        Standard hosting is free for most sites and tools.
+                    </p>
+                </div>
+
+            </div>
+        </section>
+
+
+
+        <!-- =========================
+             FAQ
+             Native <details>/<summary>: opens and closes without JavaScript,
+             is keyboard accessible, and the text is fully crawlable.
+             Keep answers in sync with the FAQPage JSON-LD in the <head>.
+        ========================== -->
+        <section class="section" id="faq" aria-labelledby="faq-title">
+            <div class="container container--narrow">
+
+                <header class="section-header">
+                    <p class="eyebrow">Questions</p>
+                    <h2 id="faq-title">Frequently asked questions</h2>
+                </header>
+
+                <div class="faq-list">
+                    <details class="faq">
+                        <summary>Why not just use a free tool like Desmos or GeoGebra?</summary>
+                        <p>
+                            They're excellent, and I recommend them. A custom tool is different: it teaches a topic
+                            the way you teach it, in your order and your words, and it carries your name on your
+                            own site, where families find you.
+                        </p>
+                    </details>
+
+                    <details class="faq">
+                        <summary>Can I get a learning tool without a website?</summary>
+                        <p>
+                            Yes. Tools work on their own. You get a link you can share with students,
+                            post in Google Classroom or add to an existing website.
+                        </p>
+                    </details>
+
+                    <details class="faq">
+                        <summary>Do I have to pay a monthly fee?</summary>
+                        <p>
+                            No. You pay once. Standard hosting is free for most sites, and your domain
+                            (about $12–20 a year) is registered in your name. Ongoing support is optional.
+                        </p>
+                    </details>
+
+                    <details class="faq">
+                        <summary>How long does it take?</summary>
+                        <p>
+                            Library tools take a few days. Custom tools take 1–3 weeks. Tutor websites take
+                            1–2 weeks, and tutoring center sites 2–4 weeks.
+                        </p>
+                    </details>
+
+                    <details class="faq">
+                        <summary>Who owns what you build?</summary>
+                        <p>
+                            Custom tools and websites are yours: the code, domain and hosting are all in your name.
+                            Library tools are licensed to you for use on your site and with your students.
+                        </p>
+                    </details>
+
+                    <details class="faq">
+                        <summary>How do I make changes after launch?</summary>
+                        <p>
+                            Send changes to me and I'll make them, usually within two business days. The Semester
+                            refresh keeps schedules, staff and prices current before each term, and Center sites
+                            include the first one.
+                        </p>
+                    </details>
+
+                    <details class="faq">
+                        <summary>Do you write the content?</summary>
+                        <p>
+                            I send a short questionnaire and edit what you write so it reads clearly.
+                            If you'd rather not write at all, I can write it from a 30-minute interview.
+                        </p>
+                    </details>
+                </div>
+
+            </div>
+        </section>
+
+
+
+        <!-- =========================
+             CONTACT
+             TODO: create a free form at formspree.io and replace YOUR_FORM_ID.
+             Until then, JS shows a message pointing visitors to your email instead
+             (it never pretends a message was sent).
+        ========================== -->
+        <section class="section section--tinted" id="contact" aria-labelledby="contact-title">
+            <div class="container contact-grid">
+
+                <div class="contact-intro">
+                    <p class="eyebrow">Contact</p>
+                    <h2 id="contact-title">Let's talk about what you teach</h2>
+                    <p>
+                        Tell me about your students and the topic that's hardest to get across.
+                        I'll suggest what makes sense, even if that's the smallest option.
+                    </p>
+                    <p class="contact-direct">
+                        Prefer email? <a href="mailto:hello@yourdomain.com">hello@yourdomain.com</a>
+                    </p>
+                </div>
+
+                <form class="contact-form" id="contact-form"
+                    action="https://formspree.io/f/YOUR_FORM_ID" method="POST" novalidate>
+
+                    <div class="form-row">
+                        <label for="name">Your name</label>
+                        <input id="name" name="name" type="text" autocomplete="name" required>
+                    </div>
+
+                    <div class="form-row">
+                        <label for="email">Email</label>
+                        <input id="email" name="email" type="email" autocomplete="email" required>
+                    </div>
+
+                    <div class="form-row">
+                        <label for="org-type">I'm a…</label>
+                        <select id="org-type" name="organization_type">
+                            <option value="Independent tutor">Tutor (just me)</option>
+                            <option value="Tutoring center">Tutoring or learning center</option>
+                            <option value="School">School or teacher</option>
+                            <option value="Other">Something else</option>
+                        </select>
+                    </div>
+
+                    <div class="form-row">
+                        <label for="plan">I'm interested in</label>
+                        <select id="plan" name="plan">
+                            <option value="Not sure">Not sure yet</option>
+                            <optgroup label="Learning tools">
+                                <option value="Library tool">Library tool — $250</option>
+                                <option value="Quick Check">Quick Check — $350</option>
+                                <option value="Visual Tool">Visual Tool — $850</option>
+                                <option value="Explorer">Explorer — from $1,800</option>
+                            </optgroup>
+                            <optgroup label="Websites">
+                                <option value="Tutor">Tutor website — $850</option>
+                                <option value="Center">Center website — $1,650</option>
+                            </optgroup>
+                        </select>
+                    </div>
+
+                    <div class="form-row form-row--full">
+                        <label for="message">What would you like to build?</label>
+                        <textarea id="message" name="message" rows="5" required
+                            placeholder="For example: my students always get stuck on slope, or parents keep asking which program fits their child."></textarea>
+                    </div>
+
+                    <!-- Honeypot: hidden from people, catches spam bots that fill every field -->
+                    <div class="visually-hidden" aria-hidden="true">
+                        <label for="website-field">Leave this empty</label>
+                        <input id="website-field" name="_gotcha" type="text" tabindex="-1" autocomplete="off">
+                    </div>
+
+                    <div class="form-row form-row--full">
+                        <button type="submit" class="btn btn-primary">Send message</button>
+                        <p class="form-status" role="status" aria-live="polite"></p>
+                    </div>
+
+                </form>
+
+            </div>
+        </section>
+
+    </main>
+
+
+
+    <!-- =========================
+         FOOTER
+    ========================== -->
+    <footer class="site-footer">
+        <div class="container footer-grid">
+
+            <div>
+                <p class="logo logo--footer">Klein Site<span class="logo-mark" aria-hidden="true">.</span></p>
+                <p class="footer-tagline">Learning tools and websites for tutors, tutoring centers and small schools.</p>
+            </div>
+
+            <nav aria-label="Footer">
+                <ul class="footer-links">
+                    <li><a href="#tools">Learning tools</a></li>
+                    <li><a href="#websites">Websites</a></li>
+                    <li><a href="#work">Sample projects</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#pricing">Pricing</a></li>
+                    <li><a href="#faq">FAQ</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </nav>
+
+        </div>
+
+        <div class="container">
+            <!-- The year is updated by JS; the hard-coded year is the no-JS fallback -->
+            <p class="copyright">© <span data-year>2026</span> Klein Site · Mordechai Klein</p>
+        </div>
+    </footer>
+
+</body>
+
+</html>

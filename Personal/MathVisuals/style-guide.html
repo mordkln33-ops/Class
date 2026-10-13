@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+  <!-- ===== SEO: title + description are unique to this page ===== -->
+  <title>Style Guide | MathVisuals</title>
+  <meta name="description" content="The MathVisuals design system: color tokens for light and dark mode, typography, spacing, borders, buttons and form controls.">
+  <meta name="robots" content="noindex, follow">
+  <link rel="canonical" href="https://mathvisuals.online/style-guide.html">
+  <meta name="author" content="Mordechai Klein">
+
+  <!-- ===== Social sharing (Open Graph + X/Twitter) ===== -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="MathVisuals">
+  <meta property="og:title" content="Style Guide | MathVisuals">
+  <meta property="og:description" content="The MathVisuals design system: color tokens for light and dark mode, typography, spacing, borders, buttons and form controls.">
+  <meta property="og:url" content="https://mathvisuals.online/style-guide.html">
+  <meta property="og:image" content="https://mathvisuals.online/assets/img/og/home.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="MathVisuals style guide">
+  <meta property="og:locale" content="en_US">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- ===== Theme + icons ===== -->
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#111a2e" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="assets/img/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+  <link rel="manifest" href="site.webmanifest">
+
+  <!-- Applies saved light/dark mode before the page paints (must not be deferred) -->
+  <script src="assets/js/theme-init.js"></script>
+
+  <!-- ===== Styles: font → global style guide → this page ===== -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&amp;display=swap">
+  <link rel="stylesheet" href="assets/css/site.css">
+  <link rel="stylesheet" href="assets/css/style-guide.css">
+
+  <!-- ===== Scripts (deferred: run after the HTML is parsed) ===== -->
+  <script src="assets/js/style-guide.js" defer></script>
+  <script src="assets/js/site.js" defer></script>
+
+  <!-- ===== Structured data (schema.org JSON-LD) for search engines ===== -->
+
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!-- ===== Site header: brand, breadcrumb, navigation, dark-mode toggle ===== -->
+  <header class="site-header">
+    <div class="site-header__inner container">
+      <a class="brand" href="./" aria-label="MathVisuals home">
+        <img class="brand__mark" src="assets/img/logo.svg" alt="" width="32" height="32">
+        <span class="brand__name">Math<span>Visuals</span></span>
+      </a>
+
+      <div class="site-nav">
+        <nav aria-label="Main">
+          <ul class="site-nav__list" id="site-nav-list">
+            <li><a class="site-nav__link" href="./#tools">Tools</a></li>
+            <li><a class="site-nav__link" href="#color">Color</a></li>
+            <li><a class="site-nav__link" href="#type">Type</a></li>
+            <li><a class="site-nav__link" href="#components">Components</a></li>
+          </ul>
+        </nav>
+
+        <!-- Dark-mode switch (wired up in site.js) -->
+        <button class="theme-toggle" type="button" aria-pressed="false" aria-label="Switch to dark mode">
+          <span class="theme-toggle__thumb">
+            <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></svg>
+            <svg class="icon-moon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M20.5 14.6A8.6 8.6 0 0 1 9.4 3.5a8.6 8.6 0 1 0 11.1 11.1z"/></svg>
+          </span>
+        </button>
+
+        <!-- Menu button: only visible on narrow screens -->
+        <button class="nav-toggle btn btn-ghost btn-icon" type="button" aria-expanded="false" aria-controls="site-nav-list" aria-label="Open menu">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main" class="sg">
+
+    <!-- =============================================================
+         STYLE GUIDE — a living reference. Every sample on this page is
+         drawn with the real tokens and components from site.css, so it
+         can never drift from the code. Toggle dark mode in the header
+         to see the dark palette. (noindex: not meant for search.)
+         ============================================================= -->
+
+    <header class="sg-intro">
+      <div class="container">
+        <p class="overline">Design system</p>
+        <h1>MathVisuals style guide</h1>
+        <p class="sg-lead">One set of colors, type and components shared by the home page and every tool.
+          The tokens live at the top of <code>assets/css/site.css</code>; tool stylesheets only reference them.</p>
+        <ul class="sg-principles">
+          <li><strong>Projector first.</strong> Body text ≥ 7:1 contrast (WCAG AAA), UI boundaries ≥ 3:1, no separating line thinner than 2px.</li>
+          <li><strong>One typeface.</strong> Atkinson Hyperlegible, built so look-alike characters (I l 1, 0 O) stay distinct at a distance.</li>
+          <li><strong>Fluid size.</strong> Tool pages use a projector root size that grows from 16px to 28px with the screen.</li>
+          <li><strong>Two full palettes.</strong> Light and dark mode are designed separately, not inverted.</li>
+        </ul>
+      </div>
+    </header>
+
+    <!-- ============================ COLOR ============================ -->
+    <section class="sg-section" id="color" aria-labelledby="sg-color">
+      <div class="container">
+        <h2 id="sg-color">Color</h2>
+        <p class="sg-note">Values and contrast ratios below are read live from the current theme. Switch themes in
+          the header to compare. Ratios are measured against <code>--color-surface</code>.</p>
+
+        <h3>Surfaces</h3>
+        <ul class="swatches">
+          <li class="swatch" data-token="--color-bg"><span class="swatch__chip"></span><code>--color-bg</code><span class="swatch__value"></span><span class="swatch__use">Page background</span></li>
+          <li class="swatch" data-token="--color-surface"><span class="swatch__chip"></span><code>--color-surface</code><span class="swatch__value"></span><span class="swatch__use">Panels, cards, inputs</span></li>
+          <li class="swatch" data-token="--color-surface-2"><span class="swatch__chip"></span><code>--color-surface-2</code><span class="swatch__value"></span><span class="swatch__use">Panel heads, zebra rows</span></li>
+          <li class="swatch" data-token="--color-surface-3"><span class="swatch__chip"></span><code>--color-surface-3</code><span class="swatch__value"></span><span class="swatch__use">Pressed / inactive wells</span></li>
+        </ul>
+
+        <h3>Ink (text)</h3>
+        <ul class="swatches">
+          <li class="swatch" data-token="--color-ink" data-contrast><span class="swatch__chip"></span><code>--color-ink</code><span class="swatch__value"></span><span class="swatch__use">Headings, body text</span></li>
+          <li class="swatch" data-token="--color-ink-soft" data-contrast><span class="swatch__chip"></span><code>--color-ink-soft</code><span class="swatch__value"></span><span class="swatch__use">Secondary text</span></li>
+          <li class="swatch" data-token="--color-ink-muted" data-contrast><span class="swatch__chip"></span><code>--color-ink-muted</code><span class="swatch__value"></span><span class="swatch__use">Hints, captions, labels</span></li>
+        </ul>
+
+        <h3>Borders</h3>
+        <ul class="swatches">
+          <li class="swatch" data-token="--color-border-soft" data-contrast><span class="swatch__chip"></span><code>--color-border-soft</code><span class="swatch__value"></span><span class="swatch__use">Dividers inside a panel (decorative)</span></li>
+          <li class="swatch" data-token="--color-border" data-contrast><span class="swatch__chip"></span><code>--color-border</code><span class="swatch__value"></span><span class="swatch__use">Inputs and panel outlines</span></li>
+          <li class="swatch" data-token="--color-border-strong" data-contrast><span class="swatch__chip"></span><code>--color-border-strong</code><span class="swatch__value"></span><span class="swatch__use">Emphasis, ghost buttons</span></li>
+        </ul>
+
+        <h3>Accent and status</h3>
+        <ul class="swatches">
+          <li class="swatch" data-token="--color-accent" data-contrast><span class="swatch__chip"></span><code>--color-accent</code><span class="swatch__value"></span><span class="swatch__use">Primary buttons, links, focus</span></li>
+          <li class="swatch" data-token="--color-accent-soft"><span class="swatch__chip"></span><code>--color-accent-soft</code><span class="swatch__value"></span><span class="swatch__use">Selected backgrounds, callouts</span></li>
+          <li class="swatch" data-token="--color-danger" data-contrast><span class="swatch__chip"></span><code>--color-danger</code><span class="swatch__value"></span><span class="swatch__use">Errors, destructive actions, negatives</span></li>
+          <li class="swatch" data-token="--color-success" data-contrast><span class="swatch__chip"></span><code>--color-success</code><span class="swatch__value"></span><span class="swatch__use">Confirmations, correct answers</span></li>
+          <li class="swatch" data-token="--color-warning" data-contrast><span class="swatch__chip"></span><code>--color-warning</code><span class="swatch__value"></span><span class="swatch__use">Highlights, zero line</span></li>
+          <li class="swatch" data-token="--color-focus" data-contrast><span class="swatch__chip"></span><code>--color-focus</code><span class="swatch__value"></span><span class="swatch__use">Keyboard focus ring</span></li>
+        </ul>
+
+        <h3>Data palette</h3>
+        <p class="sg-note">For lines, series and categories inside tools, in this order. Each is at least 4.5:1 against
+          the surface in both themes, and neighbours differ strongly in hue.</p>
+        <ul class="swatches swatches--data">
+          <li class="swatch" data-token="--data-1" data-contrast><span class="swatch__chip"></span><code>--data-1</code><span class="swatch__value"></span><span class="swatch__use">Blue</span></li>
+          <li class="swatch" data-token="--data-2" data-contrast><span class="swatch__chip"></span><code>--data-2</code><span class="swatch__value"></span><span class="swatch__use">Rose</span></li>
+          <li class="swatch" data-token="--data-3" data-contrast><span class="swatch__chip"></span><code>--data-3</code><span class="swatch__value"></span><span class="swatch__use">Orange</span></li>
+          <li class="swatch" data-token="--data-4" data-contrast><span class="swatch__chip"></span><code>--data-4</code><span class="swatch__value"></span><span class="swatch__use">Teal</span></li>
+          <li class="swatch" data-token="--data-5" data-contrast><span class="swatch__chip"></span><code>--data-5</code><span class="swatch__value"></span><span class="swatch__use">Violet</span></li>
+          <li class="swatch" data-token="--data-6" data-contrast><span class="swatch__chip"></span><code>--data-6</code><span class="swatch__value"></span><span class="swatch__use">Green</span></li>
+          <li class="swatch" data-token="--data-7" data-contrast><span class="swatch__chip"></span><code>--data-7</code><span class="swatch__value"></span><span class="swatch__use">Magenta</span></li>
+          <li class="swatch" data-token="--data-8" data-contrast><span class="swatch__chip"></span><code>--data-8</code><span class="swatch__value"></span><span class="swatch__use">Cyan</span></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============================ TYPE ============================ -->
+    <section class="sg-section" id="type" aria-labelledby="sg-type">
+      <div class="container">
+        <h2 id="sg-type">Typography</h2>
+        <div class="sg-specimen">
+          <p class="sg-specimen__big">Aa Bb 0O Il1 −3 ½</p>
+          <p><strong>Atkinson Hyperlegible</strong>, Regular 400 and Bold 700, with system sans-serif as a fallback.
+            Numbers and equations use the same face with <code>font-variant-numeric: tabular-nums</code> so columns
+            line up. Code-like input (ordered pairs, equations in the Graphing Explorer) uses the system monospace stack
+            <code>--font-mono</code>.</p>
+        </div>
+
+        <h3>Type scale</h3>
+        <p class="sg-note">Sizes are in rem, so they follow the root size: about 18px on a laptop for reading pages,
+          and the fluid projector size (16–28px) on tool pages.</p>
+        <div class="type-scale">
+          <div class="type-row"><code>--fs-4xl</code><span class="sg-fs-4xl">Hero heading</span><span class="type-use">Home hero only (fluid)</span></div>
+          <div class="type-row"><code>--fs-3xl</code><span class="sg-fs-3xl">Section heading</span><span class="type-use">2.3rem · h2 on reading pages</span></div>
+          <div class="type-row"><code>--fs-2xl</code><span class="sg-fs-2xl">Tool title</span><span class="type-use">1.8rem · tool h1, big values</span></div>
+          <div class="type-row"><code>--fs-xl</code><span class="sg-fs-xl">Card heading</span><span class="type-use">1.45rem · h3, equations</span></div>
+          <div class="type-row"><code>--fs-lg</code><span class="sg-fs-lg">Lead paragraph</span><span class="type-use">1.2rem · leads, big buttons</span></div>
+          <div class="type-row"><code>--fs-md</code><span class="sg-fs-md">Body text and buttons</span><span class="type-use">1rem · default</span></div>
+          <div class="type-row"><code>--fs-sm</code><span class="sg-fs-sm">Secondary text and hints</span><span class="type-use">0.9rem</span></div>
+          <div class="type-row"><code>--fs-xs</code><span class="sg-fs-xs">OVERLINE LABEL</span><span class="type-use">0.8rem · smallest allowed</span></div>
+        </div>
+        <p class="sg-note">Line height: <code>--lh-tight</code> 1.15 for headings and big numbers, <code>--lh-snug</code> 1.3 for
+          tool panels, <code>--lh-base</code> 1.6 for paragraphs. Uppercase labels use <code>--tracking-label</code> (0.08em).</p>
+      </div>
+    </section>
+
+    <!-- ======================= SPACE & SHAPE ======================= -->
+    <section class="sg-section" id="shape" aria-labelledby="sg-shape">
+      <div class="container">
+        <h2 id="sg-shape">Spacing, borders and corners</h2>
+
+        <h3>Spacing</h3>
+        <ul class="space-scale">
+          <li><span class="space-bar sg-space-1"></span><code>--space-1</code> 0.25rem</li>
+          <li><span class="space-bar sg-space-2"></span><code>--space-2</code> 0.5rem</li>
+          <li><span class="space-bar sg-space-3"></span><code>--space-3</code> 0.75rem</li>
+          <li><span class="space-bar sg-space-4"></span><code>--space-4</code> 1rem</li>
+          <li><span class="space-bar sg-space-5"></span><code>--space-5</code> 1.5rem</li>
+          <li><span class="space-bar sg-space-6"></span><code>--space-6</code> 2rem</li>
+          <li><span class="space-bar sg-space-7"></span><code>--space-7</code> 3rem</li>
+          <li><span class="space-bar sg-space-8"></span><code>--space-8</code> 4.5rem</li>
+        </ul>
+
+        <h3>Borders and corners</h3>
+        <ul class="shape-grid">
+          <li class="shape sg-radius-sm"><code>--radius-sm</code> 8px<small>Inputs, chips</small></li>
+          <li class="shape sg-radius-md"><code>--radius-md</code> 12px<small>Buttons, inner cards</small></li>
+          <li class="shape sg-radius-lg"><code>--radius-lg</code> 18px<small>Panels, cards, modals</small></li>
+          <li class="shape sg-radius-pill"><code>--radius-pill</code><small>Tags, toggles</small></li>
+          <li class="shape shape--thick"><code>--border-width-thick</code> 3px<small>Selected, active</small></li>
+          <li class="shape shape--band"><code>--border-width-accent</code> 6px<small>Color bands, callouts</small></li>
+        </ul>
+        <p class="sg-note">Every visible boundary is <code>--border-width</code> (2px). Shadows are subtle
+          (<code>--shadow-sm/md/lg</code>). On a projector, borders carry the structure, not shadows.</p>
+      </div>
+    </section>
+
+    <!-- ========================= COMPONENTS ========================= -->
+    <section class="sg-section" id="components" aria-labelledby="sg-components">
+      <div class="container">
+        <h2 id="sg-components">Components</h2>
+
+        <h3>Buttons</h3>
+        <div class="sg-demo">
+          <button class="btn btn-primary" type="button">Primary</button>
+          <button class="btn btn-ghost" type="button">Ghost</button>
+          <button class="btn btn-danger" type="button">Danger</button>
+          <button class="btn btn-solid-danger" type="button">Confirm delete</button>
+          <button class="btn btn-primary" type="button" disabled>Disabled</button>
+        </div>
+        <div class="sg-demo">
+          <button class="btn btn-primary btn-sm" type="button">Small</button>
+          <button class="btn btn-primary" type="button">Default</button>
+          <button class="btn btn-primary btn-lg" type="button">Large</button>
+          <button class="btn btn-primary sg-btn-custom" type="button">Custom color</button>
+        </div>
+        <pre class="sg-code"><code>&lt;button class="btn btn-primary"&gt;Primary&lt;/button&gt;
+&lt;button class="btn btn-ghost btn-sm"&gt;Small ghost&lt;/button&gt;
+
+/* a tool-specific color: set one custom property */
+.btn-plot { --btn-bg: var(--data-5); }</code></pre>
+        <p class="sg-note">Use one primary button per area. An outlined <em>danger</em> button starts a destructive
+          action; a solid one confirms it. Every button is at least 44px tall for touch.</p>
+
+        <h3>Form controls</h3>
+        <div class="sg-form">
+          <div class="form-field">
+            <label for="sg-input">Text input</label>
+            <input class="form-control" id="sg-input" type="text" placeholder="Placeholder text">
+          </div>
+          <div class="form-field">
+            <label for="sg-select">Select</label>
+            <select class="form-control" id="sg-select"><option>Option one</option><option>Option two</option></select>
+          </div>
+          <div class="form-field">
+            <label for="sg-invalid">Invalid input</label>
+            <input class="form-control" id="sg-invalid" type="text" value="Not quite" aria-invalid="true">
+          </div>
+        </div>
+
+        <h3>Tags, callouts and FAQ</h3>
+        <div class="sg-demo">
+          <span class="tag">Grades 6–8</span>
+          <span class="tag tag--free">Free</span>
+        </div>
+        <div class="prose">
+          <div class="callout">
+            <p><strong>Callout:</strong> used for projector and teaching tips in the teacher notes.</p>
+          </div>
+          <div class="faq">
+            <details>
+              <summary>FAQ item (native details/summary, no script)</summary>
+              <div><p>The answer text goes here.</p></div>
+            </details>
+          </div>
+        </div>
+
+        <h3>Panel</h3>
+        <div class="sg-panel">
+          <p class="sg-panel__label">Panel label</p>
+          <p>Tool panels are <code>--color-surface</code> with a 2px <code>--color-border</code> outline and
+            <code>--radius-lg</code> corners. Panel labels are small uppercase overlines in <code>--color-ink-muted</code>.</p>
+        </div>
+
+        <h3>Dark-mode toggle</h3>
+        <p class="sg-note">Lives in the header of every page. It stores the choice in <code>localStorage</code>
+          (<code>mv-theme</code>); until then it follows the operating system. <code>theme-init.js</code> applies the
+          theme before the first paint, and <code>site.js</code> fires a <code>themechange</code> event so tools that
+          draw in JavaScript can redraw.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===== Site footer ===== -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="site-footer__grid">
+        <div class="site-footer__about">
+          <a class="brand" href="./">
+            <img class="brand__mark" src="assets/img/logo.svg" alt="" width="32" height="32">
+            <span class="brand__name">Math<span>Visuals</span></span>
+          </a>
+          <p>Free interactive math visuals for projectors and smartboards, designed by a math teacher with a UX/UI background.</p>
+        </div>
+        <nav aria-label="Number Sense & Operations tools">
+          <h2>Number Sense</h2>
+          <ul>
+            <li><a href="tools/integer-number-line/">Integer Number Line</a></li>
+            <li><a href="tools/fraction-visualizer/">Fraction Visualizer</a></li>
+          </ul>
+        </nav>
+        <nav aria-label="Algebra & Graphing tools">
+          <h2>Algebra & Graphing</h2>
+          <ul>
+            <li><a href="tools/graphing-explorer/">Graphing Explorer</a></li>
+            <li><a href="tools/real-life-graphs/">Graphs in Real Life</a></li>
+          </ul>
+        </nav>
+        <nav aria-label="Probability & Statistics tools">
+          <h2>Statistics</h2>
+          <ul>
+            <li><a href="tools/probability-manipulator/">Probability Manipulator</a></li>
+            <li><a href="tools/bell-curve-simulator/">Bell Curve Simulator</a></li>
+          </ul>
+        </nav>
+      </div>
+      <div class="site-footer__bottom">
+        <p>© <span data-year>2026</span> Mordechai Klein. All rights reserved. The tools are free to use for now, but their design and code are my copyright and may not be copied or republished.</p>
+        <p><a href="./#about">About</a> · <a href="./#contact">Suggest a tool</a> · <a href="./privacy.html">Privacy</a> · <a href="style-guide.html">Style guide</a></p>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

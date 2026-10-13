@@ -1,0 +1,627 @@
+/* =====================================================================
+   Fraction Visualizer — tool styles
+   ---------------------------------------------------------------------
+   Layout unchanged from the original tool:
+     left half  : controls (single fraction + two-fraction calculator)
+     right half : the visual "stage", filled edge to edge with cells
+   The stage has its own palette (--fv-*) so it can be tuned for each
+   theme: a light canvas with saturated fills in light mode, and the
+   original glowing aquamarine-on-navy look in dark mode.
+   ===================================================================== */
+
+/* ---------- stage palette: LIGHT theme ---------- */
+.tool-frame {
+  --fv-stage-bg:   #c9d4e2;
+  --fv-empty-1:    #f4f7fb;   /* empty cell, top    */
+  --fv-empty-2:    #e3e9f1;   /* empty cell, bottom */
+  --fv-cell-edge:  rgba(15, 23, 42, .28);
+
+  /* A — the original amount (teal) */
+  --fv-a-1: #5eead4;
+  --fv-a-2: #14b8a6;
+  --fv-a-3: #0f766e;
+  --fv-a-glow: rgba(20, 184, 166, .30);
+  --fv-a-wash: rgba(13, 148, 136, .42);
+
+  /* B — the part added on / the second fraction (blue) */
+  --fv-b-1: #93c5fd;
+  --fv-b-2: #3b82f6;
+  --fv-b-3: #1d4ed8;
+  --fv-b-glow: rgba(59, 130, 246, .30);
+  --fv-b-wash: rgba(37, 99, 235, .40);
+
+  /* R — the part taken away (red) */
+  --fv-r-1: #fca5a5;
+  --fv-r-2: #ef4444;
+  --fv-r-3: #b91c1c;
+  --fv-r-glow: rgba(239, 68, 68, .30);
+  --fv-r-hatch: rgba(220, 38, 38, .55);
+  --fv-r-hatch-2: rgba(220, 38, 38, .12);
+
+  --fv-outline: #0b1220;           /* the answer box + "one whole" outline */
+  --fv-outline-ring: rgba(255, 255, 255, .85);
+
+  --fv-overlay-bg: rgba(255, 255, 255, .92);
+  --fv-overlay-ink: var(--color-ink);
+  --fv-overlay-muted: var(--color-ink-muted);
+  --fv-overlay-line: var(--color-border-soft);
+  --fv-overlay-num: #0f766e;
+}
+
+/* ---------- stage palette: DARK theme (the original look) ---------- */
+html[data-theme="dark"] .tool-frame {
+  --fv-stage-bg:   #16242f;
+  --fv-empty-1:    #2c3f4f;
+  --fv-empty-2:    #223543;
+  --fv-cell-edge:  rgba(0, 0, 0, .38);
+
+  --fv-a-1: #b6ffe8;
+  --fv-a-2: #7fffd4;
+  --fv-a-3: #3fd8b0;
+  --fv-a-glow: rgba(127, 255, 212, .28);
+  --fv-a-wash: rgba(127, 255, 212, .40);
+
+  --fv-b-1: #cfe4ff;
+  --fv-b-2: #7fb8ff;
+  --fv-b-3: #3f7fd8;
+  --fv-b-glow: rgba(127, 184, 255, .28);
+  --fv-b-wash: rgba(127, 184, 255, .45);
+
+  --fv-r-1: #ffc9c4;
+  --fv-r-2: #ff7a6b;
+  --fv-r-3: #d83f30;
+  --fv-r-glow: rgba(255, 122, 107, .30);
+  --fv-r-hatch: rgba(255, 122, 107, .55);
+  --fv-r-hatch-2: rgba(255, 122, 107, .12);
+
+  --fv-outline: #ffffff;
+  --fv-outline-ring: rgba(8, 20, 28, .55);
+
+  --fv-overlay-bg: rgba(10, 22, 30, .78);
+  --fv-overlay-ink: #eaf6ff;
+  --fv-overlay-muted: #a9c0cf;
+  --fv-overlay-line: rgba(255, 255, 255, .18);
+  --fv-overlay-num: #7fffd4;
+}
+
+/* ---------- overall 50 / 50 split ---------- */
+
+.app {
+  display: grid;
+  grid-template-columns: 50% 50%;
+  height: 100%;
+}
+
+/* ============================================================
+   LEFT PANEL
+   ============================================================ */
+
+.panel {
+  padding: var(--space-6) var(--space-6);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.panel-header h1 {
+  margin: 0 0 var(--space-2);
+  font-size: var(--fs-2xl);
+  line-height: var(--lh-tight);
+  letter-spacing: -.01em;
+}
+
+.subtitle {
+  margin: 0;
+  max-width: 46ch;
+  color: var(--color-ink-muted);
+  font-size: var(--fs-sm);
+  line-height: var(--lh-base);
+}
+
+.card {
+  background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-5);
+}
+
+.card-title {
+  margin: 0 0 var(--space-4);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-ink-muted);
+}
+
+/* ---------- the fraction template (input over bar over input) ---------- */
+
+.frac {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.frac-input {
+  width: 4.2em;
+  padding: .3em .2em;
+  font: inherit;
+  font-size: var(--fs-xl);
+  font-weight: var(--fw-bold);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  color: var(--color-ink);
+  background: var(--color-surface-2);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-sm);
+  transition: border-color .15s, box-shadow .15s;
+}
+
+.frac-input:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 var(--focus-width) var(--color-focus);
+}
+
+.frac-input.invalid {
+  border-color: var(--color-danger);
+  box-shadow: 0 0 0 var(--focus-width) var(--color-danger-soft);
+}
+
+/* hide spinners so the fraction reads cleanly */
+.frac-input::-webkit-outer-spin-button,
+.frac-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.frac-input { -moz-appearance: textfield; appearance: textfield; }
+
+.frac-bar {
+  width: 100%;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--color-ink);
+}
+
+.frac-sm .frac-input {
+  width: 3.4em;
+  padding: .25em .15em;
+  font-size: var(--fs-lg);
+}
+
+/* ---------- single fraction form ---------- */
+
+.fraction-form {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+  flex-wrap: wrap;
+}
+
+/* ---------- readout ---------- */
+
+.readout {
+  display: flex;
+  gap: var(--space-3);
+  margin: var(--space-5) 0 0;
+  padding-top: var(--space-4);
+  border-top: var(--border-width) dashed var(--color-border-soft);
+  flex-wrap: wrap;
+}
+
+.readout-item {
+  flex: 1 1 6.5em;
+  background: var(--color-surface-2);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-3);
+}
+
+.readout-item dt {
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-ink-muted);
+}
+
+.readout-item dd {
+  margin: var(--space-1) 0 0;
+  font-size: var(--fs-lg);
+  white-space: nowrap;
+  font-weight: var(--fw-bold);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- calculator row ---------- */
+
+.calc-form {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.op-select {
+  min-height: var(--tap-target);
+  font: inherit;
+  font-size: var(--fs-md);
+  font-weight: var(--fw-bold);
+  padding: .4em .6em;
+  color: var(--color-ink);
+  background: var(--color-surface-2);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.op-select:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 var(--focus-width) var(--color-focus);
+}
+
+.equals {
+  font-size: var(--fs-xl);
+  font-weight: var(--fw-bold);
+  color: var(--color-ink-muted);
+}
+
+.calc-result {
+  min-width: 3.6em;
+  padding: .3em .6em;
+  font-size: var(--fs-xl);
+  font-weight: var(--fw-bold);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  color: var(--color-success);
+  background: var(--color-success-soft);
+  border: var(--border-width) solid var(--color-success);
+  border-radius: var(--radius-sm);
+}
+
+.hint {
+  margin: var(--space-4) 0 0;
+  font-size: var(--fs-sm);
+  line-height: var(--lh-base);
+  color: var(--color-ink-muted);
+}
+
+.message {
+  margin: 0;
+  min-height: 1.2em;
+  font-size: var(--fs-md);
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-base);
+  color: var(--color-danger);
+}
+
+/* the same line doubles as plain narration of what just happened */
+.message.info {
+  font-weight: var(--fw-regular);
+  color: var(--color-ink-soft);
+}
+
+/* ============================================================
+   RIGHT STAGE — the whole half is the container
+   ============================================================ */
+
+.stage {
+  position: relative;
+  background: var(--fv-stage-bg);
+  overflow: hidden;
+}
+
+/* the drawing fills the stage edge to edge: no empty space, ever */
+.strips {
+  position: relative;
+  display: grid;
+  width: 100%;
+  height: 100%;
+}
+
+/* a single equal portion of the whole */
+.cell {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  background: linear-gradient(180deg, var(--fv-empty-1), var(--fv-empty-2));
+  transition: background .35s ease, box-shadow .35s ease;
+  /* stagger the fill so it reads left to right */
+  transition-delay: calc(var(--i, 0) * 14ms);
+}
+
+/* ---------- bar mode: one whole cut into equal parts ---------- */
+
+/* bevel: light on the left edge, shadow on the right */
+.mode-bar .cell {
+  box-shadow:
+    inset  3px 0 0 rgba(255, 255, 255, .10),
+    inset -3px 0 0 var(--fv-cell-edge),
+    inset  0 -6px 10px rgba(0, 0, 0, .08);
+}
+
+html[data-theme="dark"] .mode-bar .cell {
+  box-shadow:
+    inset  3px 0 0 rgba(255, 255, 255, .10),
+    inset -3px 0 0 rgba(0, 0, 0, .38),
+    inset  0 3px 0 rgba(255, 255, 255, .06),
+    inset  0 -6px 10px rgba(0, 0, 0, .30);
+}
+
+.mode-bar .cell.fill-a {
+  background: linear-gradient(180deg, var(--fv-a-1) 0%, var(--fv-a-2) 45%, var(--fv-a-3) 100%);
+  box-shadow:
+    inset  4px 0 0 rgba(255, 255, 255, .6),
+    inset -4px 0 0 rgba(0, 0, 0, .28),
+    inset  0 5px 0 rgba(255, 255, 255, .45),
+    inset  0 -10px 14px rgba(0, 0, 0, .22),
+    0 0 22px var(--fv-a-glow);
+  z-index: 1;
+}
+
+/* the part that was added on */
+.mode-bar .cell.fill-b {
+  background: linear-gradient(180deg, var(--fv-b-1) 0%, var(--fv-b-2) 45%, var(--fv-b-3) 100%);
+  box-shadow:
+    inset  4px 0 0 rgba(255, 255, 255, .6),
+    inset -4px 0 0 rgba(0, 0, 0, .28),
+    inset  0 5px 0 rgba(255, 255, 255, .45),
+    inset  0 -10px 14px rgba(0, 0, 0, .22),
+    0 0 22px var(--fv-b-glow);
+  z-index: 1;
+}
+
+/* the part that was taken away */
+.mode-bar .cell.fill-remove {
+  background: linear-gradient(180deg, var(--fv-r-1) 0%, var(--fv-r-2) 45%, var(--fv-r-3) 100%);
+  box-shadow:
+    inset  4px 0 0 rgba(255, 255, 255, .6),
+    inset -4px 0 0 rgba(0, 0, 0, .28),
+    inset  0 5px 0 rgba(255, 255, 255, .45),
+    inset  0 -10px 14px rgba(0, 0, 0, .24),
+    0 0 22px var(--fv-r-glow);
+  z-index: 1;
+}
+
+/* taken away past zero — red, but hollow, since it was never there */
+.mode-bar .cell.fill-short {
+  background:
+    repeating-linear-gradient(135deg, var(--fv-r-hatch) 0 10px, var(--fv-r-hatch-2) 10px 20px),
+    linear-gradient(180deg, var(--fv-empty-1), var(--fv-empty-2));
+  box-shadow: inset 0 0 0 2px var(--fv-r-hatch);
+  z-index: 1;
+}
+
+/* ---------- grid mode: columns × rows for multiplying ---------- */
+
+.mode-grid .cell {
+  box-shadow:
+    inset -1px 0 0 var(--fv-cell-edge),
+    inset  0 -1px 0 var(--fv-cell-edge);
+}
+
+/* first fraction — vertical boxes, shaded down whole columns */
+.mode-grid .cell.col {
+  background-image:
+    linear-gradient(var(--fv-a-wash), var(--fv-a-wash)),
+    linear-gradient(180deg, var(--fv-empty-1), var(--fv-empty-2));
+  box-shadow:
+    inset  3px 0 0 var(--fv-a-2),
+    inset -3px 0 0 var(--fv-a-2),
+    inset  0 -1px 0 var(--fv-cell-edge);
+}
+
+/* second fraction — horizontal boxes, shaded across whole rows */
+.mode-grid .cell.row {
+  background-image:
+    linear-gradient(var(--fv-b-wash), var(--fv-b-wash)),
+    linear-gradient(180deg, var(--fv-empty-1), var(--fv-empty-2));
+  box-shadow:
+    inset 0  3px 0 var(--fv-b-2),
+    inset 0 -3px 0 var(--fv-b-2),
+    inset -1px 0 0 var(--fv-cell-edge);
+}
+
+/* both shadings land here, so both washes are painted and blend */
+.mode-grid .cell.col.row {
+  background-image:
+    linear-gradient(var(--fv-a-wash), var(--fv-a-wash)),
+    linear-gradient(var(--fv-b-wash), var(--fv-b-wash)),
+    linear-gradient(180deg, var(--fv-empty-1), var(--fv-empty-2));
+  box-shadow:
+    inset  3px 0 0 var(--fv-a-2),
+    inset -3px 0 0 var(--fv-a-2),
+    inset 0  3px 0 var(--fv-b-2),
+    inset 0 -3px 0 var(--fv-b-2);
+  z-index: 1;
+}
+
+/* when an improper fraction pushes the grid past one whole */
+.whole-box {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  border: 3px dashed var(--fv-outline);
+  opacity: .7;
+  pointer-events: none;
+}
+
+/* the border drawn round the shared space — that rectangle is the answer */
+.share-box {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 3;
+  border: 4px solid var(--fv-outline);
+  border-radius: 3px;
+  pointer-events: none;
+  box-shadow: 0 0 0 2px var(--fv-outline-ring);
+}
+
+.share-tag {
+  position: absolute;
+  right: 4px;
+  bottom: 4px;
+  padding: .2em .55em;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-bold);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: var(--color-ink-inverse);
+  background: var(--fv-outline);
+  border-radius: 6px 0 0 0;
+}
+
+html:not([data-theme="dark"]) .share-tag {
+  color: #ffffff;
+}
+
+/* ---------- floating readout on the stage ---------- */
+
+.overlay {
+  position: absolute;
+  top: var(--space-5);
+  left: 50%;
+  z-index: 4;
+  transform: translateX(-50%);
+  max-width: calc(100% - 36px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-5);
+  color: var(--fv-overlay-ink);
+  background: var(--fv-overlay-bg);
+  border: var(--border-width) solid var(--fv-overlay-line);
+  border-radius: var(--radius-lg);
+  backdrop-filter: blur(8px);
+  box-shadow: var(--shadow-lg);
+  pointer-events: none;
+}
+
+.overlay-main {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.overlay-frac {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: var(--fs-xl);
+  font-weight: var(--fw-bold);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.15;
+}
+
+.overlay-bar {
+  width: 100%;
+  min-width: 34px;
+  height: 3px;
+  margin: 3px 0;
+  background: currentColor;
+}
+
+.overlay-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  border-left: var(--border-width) solid var(--fv-overlay-line);
+  padding-left: var(--space-4);
+}
+
+#ovDecimal {
+  font-size: var(--fs-2xl);
+  font-weight: var(--fw-bold);
+  font-variant-numeric: tabular-nums;
+  color: var(--fv-overlay-num);
+}
+
+.overlay-note {
+  font-size: var(--fs-xs);
+  color: var(--fv-overlay-muted);
+  max-width: 40ch;
+  line-height: 1.4;
+}
+
+/* ---------- legend: which color is which piece ---------- */
+
+.overlay-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+  padding-top: var(--space-3);
+  border-top: var(--border-width) solid var(--fv-overlay-line);
+}
+
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-bold);
+  font-variant-numeric: tabular-nums;
+  color: var(--fv-overlay-ink);
+  white-space: nowrap;
+}
+
+.swatch {
+  width: 1em;
+  height: 1em;
+  border-radius: 4px;
+  border: 1px solid var(--fv-overlay-line);
+  flex: none;
+}
+
+.swatch.sw-a      { background: linear-gradient(180deg, var(--fv-a-1), var(--fv-a-3)); }
+.swatch.sw-b      { background: linear-gradient(180deg, var(--fv-b-1), var(--fv-b-3)); }
+.swatch.sw-remove { background: linear-gradient(180deg, var(--fv-r-1), var(--fv-r-3)); }
+.swatch.sw-short  {
+  background: repeating-linear-gradient(135deg, var(--fv-r-hatch) 0 4px, var(--fv-r-hatch-2) 4px 8px);
+}
+.swatch.sw-both   {
+  background:
+    linear-gradient(var(--fv-a-wash), var(--fv-a-wash)),
+    linear-gradient(var(--fv-b-wash), var(--fv-b-wash)),
+    var(--fv-empty-2);
+  border: 2px solid var(--fv-outline);
+}
+
+/* ---------- tablets in portrait and phones: stack, visual on top ---------- */
+
+@media (max-width: 900px) {
+  .tool-frame {
+    height: auto;
+    overflow: visible;
+  }
+
+  .app {
+    grid-template-columns: 1fr;
+    grid-template-rows: 45vh auto;
+    height: auto;
+  }
+
+  .stage { order: -1; }
+
+  .panel {
+    padding: var(--space-5) var(--space-4);
+    overflow: visible;
+  }
+
+  .overlay {
+    top: var(--space-3);
+    padding: var(--space-2) var(--space-4);
+  }
+}
+
+@media (max-width: 480px) {
+  .card {
+    padding: var(--space-4);
+  }
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cell { transition: none; }
+}

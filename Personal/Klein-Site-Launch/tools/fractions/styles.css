@@ -1,0 +1,584 @@
+/* ============================================================
+   Fraction Visualizer
+   Left half: controls.  Right half: the visual container.
+   ============================================================ */
+
+:root {
+    /* surfaces */
+    --bg:            #eef2f6;
+    --card:          #ffffff;
+    --line:          #d8e0e8;
+    --ink:           #1b2b39;
+    --ink-soft:      #5c7288;
+
+    /* accents */
+    --accent:        #1f6feb;
+    --accent-dark:   #1858bd;
+    --danger:        #c0392b;
+
+    /* the visual stage */
+    --stage-bg:      #16242f;
+    --strip-empty-1: #2c3f4f;
+    --strip-empty-2: #223543;
+
+    /* A — the original amount (aquamarine) */
+    --fill-1:        #b6ffe8;   /* aquamarine highlight */
+    --fill-2:        #7fffd4;   /* aquamarine           */
+    --fill-3:        #3fd8b0;   /* aquamarine shade     */
+
+    /* B — the part being added on / the second fraction.
+       Same family, shifted far enough round to read as "not A". */
+    --add-1:         #cfe4ff;
+    --add-2:         #7fb8ff;
+    --add-3:         #3f7fd8;
+
+    /* R — the part being taken away */
+    --rem-1:         #ffc9c4;
+    --rem-2:         #ff7a6b;
+    --rem-3:         #d83f30;
+
+    --radius: 12px;
+    --shadow: 0 1px 2px rgba(21, 43, 62, .08), 0 6px 18px rgba(21, 43, 62, .07);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    font-family: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+    color: var(--ink);
+    background: var(--bg);
+}
+
+/* ---------- overall 50 / 50 split ---------- */
+
+.app {
+    display: grid;
+    grid-template-columns: 50% 50%;
+    height: 100vh;
+}
+
+/* ============================================================
+   LEFT PANEL
+   ============================================================ */
+
+.panel {
+    padding: 34px 40px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+.panel-header h1 {
+    margin: 0 0 6px;
+    font-size: 1.9rem;
+    letter-spacing: -.02em;
+}
+
+.subtitle {
+    margin: 0;
+    max-width: 46ch;
+    color: var(--ink-soft);
+    font-size: .95rem;
+    line-height: 1.5;
+}
+
+.card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 22px 24px 24px;
+}
+
+.card-title {
+    margin: 0 0 18px;
+    font-size: .78rem;
+    font-weight: 700;
+    letter-spacing: .09em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+}
+
+/* ---------- the fraction template (input over bar over input) ---------- */
+
+.frac {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+.frac-input {
+    width: 92px;
+    padding: 10px 6px;
+    font: inherit;
+    font-size: 1.5rem;
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+    color: var(--ink);
+    background: #f7fafc;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    transition: border-color .15s, box-shadow .15s;
+}
+
+.frac-input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(31, 111, 235, .18);
+}
+
+.frac-input.invalid {
+    border-color: var(--danger);
+    box-shadow: 0 0 0 3px rgba(192, 57, 43, .15);
+}
+
+/* hide spinners so the fraction reads cleanly */
+.frac-input::-webkit-outer-spin-button,
+.frac-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.frac-input { -moz-appearance: textfield; appearance: textfield; }
+
+.frac-bar {
+    width: 100%;
+    height: 3px;
+    border-radius: 2px;
+    background: var(--ink);
+}
+
+.frac-sm .frac-input {
+    width: 66px;
+    padding: 7px 4px;
+    font-size: 1.15rem;
+}
+
+/* ---------- single fraction form ---------- */
+
+.fraction-form {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    flex-wrap: wrap;
+}
+
+.btn {
+    font: inherit;
+    font-weight: 600;
+    padding: 11px 22px;
+    border: 0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background .15s, transform .08s, box-shadow .15s;
+}
+
+.btn-primary {
+    color: #fff;
+    background: var(--accent);
+    box-shadow: 0 2px 6px rgba(31, 111, 235, .3);
+}
+
+.btn-primary:hover  { background: var(--accent-dark); }
+.btn-primary:active { transform: translateY(1px); }
+.btn:focus-visible  { outline: 3px solid rgba(31, 111, 235, .4); outline-offset: 2px; }
+
+/* ---------- readout ---------- */
+
+.readout {
+    display: flex;
+    gap: 12px;
+    margin: 22px 0 0;
+    padding-top: 18px;
+    border-top: 1px dashed var(--line);
+    flex-wrap: wrap;
+}
+
+.readout-item {
+    flex: 1 1 110px;
+    background: #f4f8fb;
+    border-radius: 9px;
+    padding: 10px 14px;
+}
+
+.readout-item dt {
+    font-size: .7rem;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+}
+
+.readout-item dd {
+    margin: 4px 0 0;
+    font-size: 1.3rem;
+    font-variant-numeric: tabular-nums;
+}
+
+/* ---------- calculator row ---------- */
+
+.calc-form {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.op-select {
+    font: inherit;
+    font-size: 1rem;
+    padding: 10px 12px;
+    color: var(--ink);
+    background: #f7fafc;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.op-select:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(31, 111, 235, .18);
+}
+
+.equals {
+    font-size: 1.4rem;
+    color: var(--ink-soft);
+}
+
+.calc-result {
+    min-width: 74px;
+    padding: 8px 14px;
+    font-size: 1.3rem;
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+    background: #eaf7f2;
+    border: 1px solid #bfe8da;
+    border-radius: 8px;
+}
+
+.hint {
+    margin: 16px 0 0;
+    font-size: .84rem;
+    line-height: 1.5;
+    color: var(--ink-soft);
+}
+
+.message {
+    margin: 0;
+    min-height: 1.2em;
+    font-size: .92rem;
+    font-weight: 600;
+    line-height: 1.5;
+    color: var(--danger);
+}
+
+/* the same line doubles as plain narration of what just happened */
+.message.info {
+    font-weight: 500;
+    color: var(--ink-soft);
+}
+
+/* ============================================================
+   RIGHT STAGE — the whole half is the container
+   ============================================================ */
+
+.stage {
+    position: relative;
+    background: var(--stage-bg);
+    overflow: hidden;
+}
+
+/* the drawing fills the stage edge to edge: no empty space, ever */
+.strips {
+    position: relative;
+    display: grid;
+    width: 100%;
+    height: 100%;
+}
+
+/* a single equal portion of the whole */
+.cell {
+    position: relative;
+    min-width: 0;
+    min-height: 0;
+    background: linear-gradient(180deg, var(--strip-empty-1), var(--strip-empty-2));
+    transition: background .35s ease, box-shadow .35s ease;
+    /* stagger the fill so it reads left to right */
+    transition-delay: calc(var(--i, 0) * 14ms);
+}
+
+/* ---------- bar mode: one whole cut into equal parts ---------- */
+
+/* 3D bevel: light on the left edge, shadow on the right */
+.mode-bar .cell {
+    box-shadow:
+        inset  3px 0 0 rgba(255, 255, 255, .10),
+        inset -3px 0 0 rgba(0, 0, 0, .38),
+        inset  0 3px 0 rgba(255, 255, 255, .06),
+        inset  0 -6px 10px rgba(0, 0, 0, .30);
+}
+
+.mode-bar .cell.fill-a {
+    background: linear-gradient(180deg,
+                var(--fill-1) 0%, var(--fill-2) 45%, var(--fill-3) 100%);
+    box-shadow:
+        inset  4px 0 0 rgba(255, 255, 255, .75),
+        inset -4px 0 0 rgba(0, 90, 74, .45),
+        inset  0 5px 0 rgba(255, 255, 255, .55),
+        inset  0 -10px 14px rgba(0, 92, 76, .40),
+        0 0 22px rgba(127, 255, 212, .28);
+    z-index: 1;
+}
+
+/* the part that was added on */
+.mode-bar .cell.fill-b {
+    background: linear-gradient(180deg,
+                var(--add-1) 0%, var(--add-2) 45%, var(--add-3) 100%);
+    box-shadow:
+        inset  4px 0 0 rgba(255, 255, 255, .75),
+        inset -4px 0 0 rgba(0, 50, 110, .45),
+        inset  0 5px 0 rgba(255, 255, 255, .55),
+        inset  0 -10px 14px rgba(0, 52, 112, .40),
+        0 0 22px rgba(127, 184, 255, .28);
+    z-index: 1;
+}
+
+/* the part that was taken away */
+.mode-bar .cell.fill-remove {
+    background: linear-gradient(180deg,
+                var(--rem-1) 0%, var(--rem-2) 45%, var(--rem-3) 100%);
+    box-shadow:
+        inset  4px 0 0 rgba(255, 255, 255, .7),
+        inset -4px 0 0 rgba(110, 20, 12, .45),
+        inset  0 5px 0 rgba(255, 255, 255, .5),
+        inset  0 -10px 14px rgba(112, 22, 14, .42),
+        0 0 22px rgba(255, 122, 107, .3);
+    z-index: 1;
+}
+
+/* taken away past zero — red, but hollow, since it was never there */
+.mode-bar .cell.fill-short {
+    background:
+        repeating-linear-gradient(135deg,
+            rgba(255, 122, 107, .55) 0 10px,
+            rgba(255, 122, 107, .12) 10px 20px),
+        linear-gradient(180deg, var(--strip-empty-1), var(--strip-empty-2));
+    box-shadow:
+        inset 0 0 0 2px rgba(255, 122, 107, .65),
+        inset 0 -6px 10px rgba(0, 0, 0, .3);
+    z-index: 1;
+}
+
+/* ---------- grid mode: columns × rows for multiplying ---------- */
+
+.mode-grid .cell {
+    box-shadow:
+        inset -1px 0 0 rgba(255, 255, 255, .10),
+        inset  0 -1px 0 rgba(255, 255, 255, .10);
+}
+
+/* first fraction — vertical boxes, shaded down whole columns */
+.mode-grid .cell.col {
+    background-image:
+        linear-gradient(rgba(127, 255, 212, .40), rgba(127, 255, 212, .40)),
+        linear-gradient(180deg, var(--strip-empty-1), var(--strip-empty-2));
+    box-shadow:
+        inset  3px 0 0 rgba(127, 255, 212, .75),
+        inset -3px 0 0 rgba(127, 255, 212, .75),
+        inset  0 -1px 0 rgba(255, 255, 255, .10);
+}
+
+/* second fraction — horizontal boxes, shaded across whole rows */
+.mode-grid .cell.row {
+    background-image:
+        linear-gradient(rgba(127, 184, 255, .40), rgba(127, 184, 255, .40)),
+        linear-gradient(180deg, var(--strip-empty-1), var(--strip-empty-2));
+    box-shadow:
+        inset 0  3px 0 rgba(127, 184, 255, .75),
+        inset 0 -3px 0 rgba(127, 184, 255, .75),
+        inset -1px 0 0 rgba(255, 255, 255, .10);
+}
+
+/* both shadings land here, so both washes are painted and blend */
+.mode-grid .cell.col.row {
+    background-image:
+        linear-gradient(rgba(127, 255, 212, .42), rgba(127, 255, 212, .42)),
+        linear-gradient(rgba(127, 184, 255, .55), rgba(127, 184, 255, .55)),
+        linear-gradient(180deg, var(--strip-empty-1), var(--strip-empty-2));
+    box-shadow:
+        inset  3px 0 0 rgba(127, 255, 212, .6),
+        inset -3px 0 0 rgba(127, 255, 212, .6),
+        inset 0  3px 0 rgba(127, 184, 255, .6),
+        inset 0 -3px 0 rgba(127, 184, 255, .6);
+    z-index: 1;
+}
+
+/* when an improper fraction pushes the grid past one whole */
+.whole-box {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    border: 2px dashed rgba(255, 255, 255, .5);
+    pointer-events: none;
+}
+
+/* the border drawn round the shared space — that rectangle is the answer */
+.share-box {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 3;
+    border: 3px solid #ffffff;
+    border-radius: 3px;
+    pointer-events: none;
+    box-shadow:
+        0 0 0 2px rgba(8, 20, 28, .55),
+        0 0 26px rgba(255, 255, 255, .35);
+}
+
+.share-tag {
+    position: absolute;
+    right: 5px;
+    bottom: 5px;
+    padding: 4px 9px;
+    font-size: .8rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    color: #0d1c26;
+    background: #ffffff;
+    border-radius: 0 0 6px 0;
+}
+
+/* ---------- floating readout on the stage ---------- */
+
+.overlay {
+    position: absolute;
+    top: 22px;
+    left: 50%;
+    z-index: 4;
+    transform: translateX(-50%);
+    max-width: calc(100% - 36px);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 14px 26px;
+    color: #eaf6ff;
+    background: rgba(10, 22, 30, .68);
+    border: 1px solid rgba(255, 255, 255, .14);
+    border-radius: 14px;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, .35);
+    pointer-events: none;
+}
+
+.overlay-main {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.overlay-frac {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 1.5rem;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.15;
+}
+
+.overlay-bar {
+    width: 100%;
+    min-width: 34px;
+    height: 2px;
+    margin: 3px 0;
+    background: currentColor;
+}
+
+.overlay-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    border-left: 1px solid rgba(255, 255, 255, .2);
+    padding-left: 20px;
+}
+
+#ovDecimal {
+    font-size: 1.9rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--fill-2);
+}
+
+.overlay-note {
+    font-size: .78rem;
+    letter-spacing: .04em;
+    color: #9db6c6;
+    max-width: 40ch;
+    line-height: 1.4;
+}
+
+/* ---------- legend: which colour is which piece ---------- */
+
+.overlay-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 18px;
+    padding-top: 11px;
+    border-top: 1px solid rgba(255, 255, 255, .18);
+}
+
+.legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: .8rem;
+    font-variant-numeric: tabular-nums;
+    color: #d6e6f2;
+    white-space: nowrap;
+}
+
+.swatch {
+    width: 15px;
+    height: 15px;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, .35);
+    flex: none;
+}
+
+.swatch.sw-a      { background: linear-gradient(180deg, var(--fill-1), var(--fill-3)); }
+.swatch.sw-b      { background: linear-gradient(180deg, var(--add-1),  var(--add-3)); }
+.swatch.sw-remove { background: linear-gradient(180deg, var(--rem-1),  var(--rem-3)); }
+.swatch.sw-short  {
+    background: repeating-linear-gradient(135deg,
+        rgba(255, 122, 107, .8) 0 4px, rgba(255, 122, 107, .15) 4px 8px);
+}
+.swatch.sw-both   {
+    background:
+        linear-gradient(rgba(127, 255, 212, .55), rgba(127, 255, 212, .55)),
+        linear-gradient(rgba(127, 184, 255, .8),  rgba(127, 184, 255, .8)),
+        #22394a;
+    border-color: #ffffff;
+}
+
+/* ---------- narrow screens: stack, visual on top ---------- */
+
+@media (max-width: 900px) {
+    .app {
+        grid-template-columns: 1fr;
+        grid-template-rows: 40vh 1fr;
+        height: auto;
+        min-height: 100vh;
+    }
+    .stage { order: -1; }
+    .panel { padding: 24px 20px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .cell { transition: none; }
+}

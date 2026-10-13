@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en" class="is-tool">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+  <!-- ===== SEO: title + description are unique to this page ===== -->
+  <title>Fraction Visualizer: Bars &amp; Area Models | MathVisuals</title>
+  <meta name="description" content="Show any fraction as a fraction bar, then add, subtract, multiply or divide two fractions and see the answer built with common denominators and area models.">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <link rel="canonical" href="https://mathvisuals.online/tools/fraction-visualizer/">
+  <meta name="author" content="Mordechai Klein">
+
+  <!-- ===== Social sharing (Open Graph + X/Twitter) ===== -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="MathVisuals">
+  <meta property="og:title" content="Fraction Visualizer: Bars &amp; Area Models | MathVisuals">
+  <meta property="og:description" content="Show any fraction as a fraction bar, then add, subtract, multiply or divide two fractions and see the answer built with common denominators and area models.">
+  <meta property="og:url" content="https://mathvisuals.online/tools/fraction-visualizer/">
+  <meta property="og:image" content="https://mathvisuals.online/assets/img/og/fraction-visualizer.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Fraction Visualizer showing 1/2 × 2/3 as an area model grid, with the overlapping region outlined as the answer">
+  <meta property="og:locale" content="en_US">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- ===== Theme + icons ===== -->
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#111a2e" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="../../assets/img/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" href="../../assets/img/apple-touch-icon.png">
+  <link rel="manifest" href="../../site.webmanifest">
+
+  <!-- Applies saved light/dark mode before the page paints (must not be deferred) -->
+  <script src="../../assets/js/theme-init.js"></script>
+
+  <!-- ===== Styles: font → global style guide → this page ===== -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&amp;display=swap">
+  <link rel="stylesheet" href="../../assets/css/site.css">
+  <link rel="stylesheet" href="../../assets/css/tools/fraction-visualizer.css">
+
+  <!-- ===== Scripts (deferred: run after the HTML is parsed) ===== -->
+  <script src="../../assets/js/tools/fraction-visualizer.js" defer></script>
+  <script src="../../assets/js/site.js" defer></script>
+
+  <!-- ===== Structured data (schema.org JSON-LD) for search engines ===== -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": [
+      "WebApplication",
+      "LearningResource"
+    ],
+    "name": "Fraction Visualizer",
+    "url": "https://mathvisuals.online/tools/fraction-visualizer/",
+    "description": "Show any fraction as a fraction bar, then add, subtract, multiply or divide two fractions and see the answer built with common denominators and area models.",
+    "image": "https://mathvisuals.online/assets/img/og/fraction-visualizer.jpg",
+    "applicationCategory": "EducationalApplication",
+    "operatingSystem": "Any (runs in a web browser)",
+    "browserRequirements": "Requires JavaScript",
+    "inLanguage": "en",
+    "isAccessibleForFree": true,
+    "copyrightYear": 2026,
+    "copyrightHolder": { "@id": "https://mathvisuals.online/#person" },
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "learningResourceType": "Interactive simulation",
+    "educationalUse": [
+      "Classroom demonstration",
+      "Whole-class instruction"
+    ],
+    "educationalLevel": "Grades 3–6",
+    "teaches": [
+      "Equivalent fractions",
+      "Adding and subtracting fractions with unlike denominators",
+      "Multiplying fractions with an area model",
+      "Dividing fractions",
+      "Fractions, decimals and percents"
+    ],
+    "audience": {
+      "@type": "EducationalAudience",
+      "educationalRole": "teacher"
+    },
+    "author": {
+      "@id": "https://mathvisuals.online/#person"
+    },
+    "publisher": {
+      "@id": "https://mathvisuals.online/#person"
+    }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://mathvisuals.online/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Number Sense & Operations",
+        "item": "https://mathvisuals.online/#number-sense"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": "Fraction Visualizer",
+        "item": "https://mathvisuals.online/tools/fraction-visualizer/"
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#tool">Skip to the tool</a>
+
+  <!-- ===== Site header: brand, breadcrumb, navigation, dark-mode toggle ===== -->
+  <header class="site-header">
+    <div class="site-header__inner container">
+      <a class="brand" href="../../" aria-label="MathVisuals home">
+        <img class="brand__mark" src="../../assets/img/logo.svg" alt="" width="32" height="32">
+        <span class="brand__name">Math<span>Visuals</span></span>
+      </a>
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ol>
+          <li><a href="../../">Home</a></li>
+          <li><a href="../../#number-sense">Number Sense</a></li>
+          <li><span aria-current="page">Fraction Visualizer</span></li>
+        </ol>
+      </nav>
+
+      <div class="site-nav">
+        <nav aria-label="Main">
+          <ul class="site-nav__list" id="site-nav-list">
+            <li><a class="site-nav__link" href="#about-tool">Teacher notes</a></li>
+            <li><a class="site-nav__link" href="../../#tools">All tools</a></li>
+            <li><a class="site-nav__link" href="../../#contact">Suggest a tool</a></li>
+          </ul>
+        </nav>
+
+        <!-- Dark-mode switch (wired up in site.js) -->
+        <button class="theme-toggle" type="button" aria-pressed="false" aria-label="Switch to dark mode">
+          <span class="theme-toggle__thumb">
+            <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></svg>
+            <svg class="icon-moon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M20.5 14.6A8.6 8.6 0 0 1 9.4 3.5a8.6 8.6 0 1 0 11.1 11.1z"/></svg>
+          </span>
+        </button>
+
+        <!-- Menu button: only visible on narrow screens -->
+        <button class="nav-toggle btn btn-ghost btn-icon" type="button" aria-expanded="false" aria-controls="site-nav-list" aria-label="Open menu">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+  <!-- =============================================================
+       TOOL: Fraction Visualizer
+       Original markup; <main class="app"> became <div class="app">
+       (a page may only have one <main>), buttons use site classes.
+       ============================================================= -->
+  <div class="tool-frame" id="tool">
+    <div class="app">
+
+      <!-- ============ LEFT: controls ============ -->
+      <section class="panel" aria-labelledby="fv-title">
+        <header class="panel-header">
+          <h1 id="fv-title">Fraction Visualizer</h1>
+          <p class="subtitle">Type a fraction, watch it fill. Then add, subtract,
+            multiply or divide two fractions and see how the answer is built.</p>
+        </header>
+
+        <!-- Single fraction -->
+        <div class="card">
+          <h2 class="card-title">Show a fraction</h2>
+
+          <form id="fractionForm" class="fraction-form" novalidate>
+            <div class="frac">
+              <input id="numerator" class="frac-input" type="number"
+                     value="3" step="1" aria-label="Numerator">
+              <span class="frac-bar"></span>
+              <input id="denominator" class="frac-input" type="number"
+                     value="4" step="1" min="1" aria-label="Denominator">
+            </div>
+            <button class="btn btn-primary btn-lg" type="submit">Submit</button>
+          </form>
+
+          <dl class="readout">
+            <div class="readout-item">
+              <dt>Decimal</dt>
+              <dd id="decimalOut">0.75</dd>
+            </div>
+            <div class="readout-item">
+              <dt>Percent</dt>
+              <dd id="percentOut">75%</dd>
+            </div>
+            <div class="readout-item">
+              <dt>Simplified</dt>
+              <dd id="simpleOut">3/4</dd>
+            </div>
+          </dl>
+
+          <p class="hint">Submit simplifies whatever is in this fraction, redraws
+            the picture in one colour, and copies the answer down into the first
+            fraction of the equation below.</p>
+        </div>
+
+        <!-- Two-fraction calculator -->
+        <div class="card">
+          <h2 class="card-title">Operate on two fractions</h2>
+
+          <form id="calcForm" class="calc-form" novalidate>
+            <div class="frac frac-sm">
+              <input id="aNum" class="frac-input" type="number" value="1"
+                     step="1" aria-label="First fraction numerator">
+              <span class="frac-bar"></span>
+              <input id="aDen" class="frac-input" type="number" value="2"
+                     step="1" aria-label="First fraction denominator">
+            </div>
+
+            <select id="operation" class="op-select" aria-label="Operation">
+              <option value="add">+ &nbsp;add</option>
+              <option value="sub">− &nbsp;subtract</option>
+              <option value="mul">× &nbsp;multiply</option>
+              <option value="div">÷ &nbsp;divide</option>
+            </select>
+
+            <div class="frac frac-sm">
+              <input id="bNum" class="frac-input" type="number" value="1"
+                     step="1" aria-label="Second fraction numerator">
+              <span class="frac-bar"></span>
+              <input id="bDen" class="frac-input" type="number" value="3"
+                     step="1" aria-label="Second fraction denominator">
+            </div>
+
+            <span class="equals">=</span>
+
+            <output id="calcResult" class="calc-result">?</output>
+
+            <button class="btn btn-primary" type="submit">Calculate</button>
+          </form>
+
+          <p class="hint">Calculate leaves this first fraction alone and draws the
+            working out on the right — unsimplified, in two colours — while the
+            fraction above becomes the answer.</p>
+        </div>
+
+        <p id="message" class="message" role="status" aria-live="polite"></p>
+      </section>
+
+      <!-- ============ RIGHT: visual ============ -->
+      <section class="stage" aria-label="Fraction visual">
+        <div id="strips" class="strips"></div>
+
+        <div class="overlay">
+          <div class="overlay-main">
+            <div class="overlay-frac">
+              <span id="ovNum">3</span>
+              <span class="overlay-bar"></span>
+              <span id="ovDen">4</span>
+            </div>
+            <div class="overlay-meta">
+              <span id="ovDecimal">0.75</span>
+              <span id="ovNote" class="overlay-note"></span>
+            </div>
+          </div>
+          <div id="ovLegend" class="overlay-legend" hidden></div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <!-- =============================================================
+       TEACHER NOTES (below the tool)
+       ============================================================= -->
+  <section class="tool-info" id="about-tool" aria-labelledby="about-tool-title">
+    <div class="container tool-info__grid">
+      <article class="prose">
+        <p class="overline">Teacher notes</p>
+        <h2 id="about-tool-title">Fraction bars and area models students can see</h2>
+        <p class="lead">The Fraction Visualizer turns any fraction into a picture that fills half the screen.
+          It shows equivalent fractions, adding and subtracting with a common denominator, and multiplying
+          and dividing fractions with an area model, step by step and unsimplified, so students see where
+          the answer comes from.</p>
+
+        <h3>Show a single fraction</h3>
+        <p>Type a numerator and denominator and press <strong>Submit</strong>. The whole is cut into equal
+          parts and the fraction is shaded. The panel also shows the decimal, the percent and the simplified
+          form. Fractions greater than one wrap onto a second whole, so improper fractions like 5/4 still read
+          honestly.</p>
+
+        <h3>Add and subtract fractions</h3>
+        <p>Choose <em>add</em> or <em>subtract</em> and press <strong>Calculate</strong>. Both fractions are
+          rewritten over a common denominator (the product of the two denominators), and the picture is drawn
+          in two colors: the amount you started with, and the part added on or taken away. When a subtraction
+          goes below zero, the missing part is drawn as a striped “past zero” section.</p>
+
+        <h3>Multiply fractions with an area model</h3>
+        <p>Multiplying draws a grid: the first fraction shades columns, the second shades rows, and the
+          outlined overlap is the product. For 1/2 × 2/3, half the columns and two thirds of the rows overlap
+          in 2 of the 6 boxes, which is 2/6, or 1/3 once simplified.</p>
+
+        <h3>Divide fractions by multiplying by the reciprocal</h3>
+        <p>When you choose <em>divide</em>, the second fraction flips and the operation changes to multiply
+          right in the inputs, so the equation on the board always matches the picture. It's a natural way
+          to show why “keep, change, flip” works.</p>
+
+        <div class="callout">
+          <p><strong>Teaching tip:</strong> the calculator leaves its answer unsimplified on purpose. Ask the
+            class to simplify it, then press <strong>Submit</strong> next to the big fraction to check: it
+            simplifies, redraws in one color, and feeds the answer back into the next problem.</p>
+        </div>
+
+        <h2>Frequently asked questions</h2>
+        <div class="faq">
+          <details>
+            <summary>How large a denominator can I use?</summary>
+            <div><p>Denominators up to 100 work, and a picture can have up to 900 parts. That keeps every part big enough to see on a projector. Larger problems still get a numerical answer.</p></div>
+          </details>
+          <details>
+            <summary>Does it handle negative and improper fractions?</summary>
+            <div><p>Yes. Improper fractions wrap onto extra wholes (marked with a dashed “one whole” outline in the area model), and for negative fractions the picture shows the size, with a note that the value is negative.</p></div>
+          </details>
+          <details>
+            <summary>Is the Fraction Visualizer free?</summary>
+            <div><p>Yes. Every tool on MathVisuals is currently free, needs no sign-up, and runs in the browser on smartboards, Chromebooks, tablets and phones. The tool itself is copyright Mordechai Klein, so please share a link to it rather than copying it.</p></div>
+          </details>
+        </div>
+      </article>
+
+      <aside aria-label="About this tool">
+        <section class="aside-card">
+          <h2>At a glance</h2>
+          <dl class="facts">
+            <div><dt>Grade level</dt><dd>Grades 3–6, review in middle school</dd></div>
+            <div><dt>Topics</dt><dd>Equivalent fractions, adding, subtracting, multiplying and dividing fractions, decimals and percents</dd></div>
+            <div><dt>Common Core</dt><dd>3.NF.A.1, 4.NF.B.3, 5.NF.A.1, 5.NF.B.4, 6.NS.A.1</dd></div>
+            <div><dt>Works on</dt><dd>Projectors, smartboards, laptops, tablets, phones</dd></div>
+            <div><dt>Cost</dt><dd><span class="tag tag--free">Free</span></dd></div>
+          </dl>
+        </section>
+        <section class="aside-card">
+          <h2>Related tools</h2>
+          <ul class="link-list">
+            <li><a href="../integer-number-line/">Integer Number Line<small>Add and subtract integers</small></a></li>
+            <li><a href="../probability-manipulator/">Probability Manipulator<small>Multiply probabilities with an area model</small></a></li>
+          </ul>
+        </section>
+      </aside>
+    </div>
+  </section>
+
+  </main>
+
+  <!-- ===== Site footer ===== -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="site-footer__grid">
+        <div class="site-footer__about">
+          <a class="brand" href="../../">
+            <img class="brand__mark" src="../../assets/img/logo.svg" alt="" width="32" height="32">
+            <span class="brand__name">Math<span>Visuals</span></span>
+          </a>
+          <p>Free interactive math visuals for projectors and smartboards, designed by a math teacher with a UX/UI background.</p>
+        </div>
+        <nav aria-label="Number Sense & Operations tools">
+          <h2>Number Sense</h2>
+          <ul>
+            <li><a href="../../tools/integer-number-line/">Integer Number Line</a></li>
+            <li><a href="../../tools/fraction-visualizer/">Fraction Visualizer</a></li>
+          </ul>
+        </nav>
+        <nav aria-label="Algebra & Graphing tools">
+          <h2>Algebra & Graphing</h2>
+          <ul>
+            <li><a href="../../tools/graphing-explorer/">Graphing Explorer</a></li>
+            <li><a href="../../tools/real-life-graphs/">Graphs in Real Life</a></li>
+          </ul>
+        </nav>
+        <nav aria-label="Probability & Statistics tools">
+          <h2>Statistics</h2>
+          <ul>
+            <li><a href="../../tools/probability-manipulator/">Probability Manipulator</a></li>
+            <li><a href="../../tools/bell-curve-simulator/">Bell Curve Simulator</a></li>
+          </ul>
+        </nav>
+      </div>
+      <div class="site-footer__bottom">
+        <p>© <span data-year>2026</span> Mordechai Klein. All rights reserved. The tools are free to use for now, but their design and code are my copyright and may not be copied or republished.</p>
+        <p><a href="../../#about">About</a> · <a href="../../#contact">Suggest a tool</a> · <a href="../../privacy.html">Privacy</a> · <a href="../../style-guide.html">Style guide</a></p>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en" class="is-tool">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+  <!-- ===== SEO: title + description are unique to this page ===== -->
+  <title>Shape Transformations: Translate, Reflect, Rotate &amp; Dilate | MathVisuals</title>
+  <meta name="description" content="Draw a circle, triangle or polygon on a four-quadrant grid, see its coordinates, side lengths and area, then translate, reflect, rotate and dilate it. Free and projector-ready.">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <link rel="canonical" href="https://mathvisuals.online/tools/shape-transformations/">
+  <meta name="author" content="Mordechai Klein">
+
+  <!-- ===== Social sharing (Open Graph + X/Twitter) ===== -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="MathVisuals">
+  <meta property="og:title" content="Shape Transformations: Translate, Reflect, Rotate &amp; Dilate | MathVisuals">
+  <meta property="og:description" content="Draw a circle, triangle or polygon on a four-quadrant grid, see its coordinates, side lengths and area, then translate, reflect, rotate and dilate it. Free and projector-ready.">
+  <meta property="og:url" content="https://mathvisuals.online/tools/shape-transformations/">
+  <meta property="og:image" content="https://mathvisuals.online/assets/img/og/shape-transformations.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="A triangle on a coordinate plane with its reflection, their coordinates, side lengths and area">
+  <meta property="og:locale" content="en_US">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- ===== Theme + icons ===== -->
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#111a2e" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="../../assets/img/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" href="../../assets/img/apple-touch-icon.png">
+  <link rel="manifest" href="../../site.webmanifest">
+
+  <!-- Applies saved light/dark mode before the page paints (must not be deferred) -->
+  <script src="../../assets/js/theme-init.js"></script>
+
+  <!-- ===== Styles: font → global style guide → this page ===== -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&amp;display=swap">
+  <link rel="stylesheet" href="../../assets/css/site.css">
+  <link rel="stylesheet" href="../../assets/css/tools/shape-transformations.css">
+
+  <!-- ===== Scripts (deferred: run after the HTML is parsed) ===== -->
+  <script src="../../assets/js/tools/shape-transformations.js" defer></script>
+  <script src="../../assets/js/site.js" defer></script>
+
+  <!-- ===== Structured data (schema.org JSON-LD) for search engines ===== -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": [
+      "WebApplication",
+      "LearningResource"
+    ],
+    "name": "Shape Transformations",
+    "url": "https://mathvisuals.online/tools/shape-transformations/",
+    "description": "Draw a circle, triangle or polygon on a four-quadrant grid, see its coordinates, side lengths and area, then translate, reflect, rotate and dilate it. Free and projector-ready.",
+    "image": "https://mathvisuals.online/assets/img/og/shape-transformations.jpg",
+    "applicationCategory": "EducationalApplication",
+    "operatingSystem": "Any (runs in a web browser)",
+    "browserRequirements": "Requires JavaScript",
+    "inLanguage": "en",
+    "isAccessibleForFree": true,
+    "copyrightYear": 2026,
+    "copyrightHolder": { "@id": "https://mathvisuals.online/#person" },
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "learningResourceType": "Interactive simulation",
+    "educationalUse": [
+      "Classroom demonstration",
+      "Whole-class instruction"
+    ],
+    "educationalLevel": "Grades 6–10 (Geometry)",
+    "teaches": [
+      "Polygons on the coordinate plane",
+      "Distance between two points",
+      "Area of triangles, quadrilaterals and circles",
+      "Translations, reflections and rotations",
+      "Dilations and scale factor"
+    ],
+    "audience": {
+      "@type": "EducationalAudience",
+      "educationalRole": "teacher"
+    },
+    "author": {
+      "@id": "https://mathvisuals.online/#person"
+    },
+    "publisher": {
+      "@id": "https://mathvisuals.online/#person"
+    }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://mathvisuals.online/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Geometry",
+        "item": "https://mathvisuals.online/#geometry"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": "Shape Transformations",
+        "item": "https://mathvisuals.online/tools/shape-transformations/"
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#tool">Skip to the tool</a>
+
+  <!-- ===== Site header: brand, breadcrumb, navigation, dark-mode toggle ===== -->
+  <header class="site-header">
+    <div class="site-header__inner container">
+      <a class="brand" href="../../" aria-label="MathVisuals home">
+        <img class="brand__mark" src="../../assets/img/logo.svg" alt="" width="32" height="32">
+        <span class="brand__name">Math<span>Visuals</span></span>
+      </a>
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ol>
+          <li><a href="../../">Home</a></li>
+          <li><a href="../../#geometry">Geometry</a></li>
+          <li><span aria-current="page">Shape Transformations</span></li>
+        </ol>
+      </nav>
+
+      <div class="site-nav">
+        <nav aria-label="Main">
+          <ul class="site-nav__list" id="site-nav-list">
+            <li><a class="site-nav__link" href="#about-tool">Teacher notes</a></li>
+            <li><a class="site-nav__link" href="../../#tools">All tools</a></li>
+            <li><a class="site-nav__link" href="../../#contact">Suggest a tool</a></li>
+          </ul>
+        </nav>
+
+        <!-- Dark-mode switch (wired up in site.js) -->
+        <button class="theme-toggle" type="button" aria-pressed="false" aria-label="Switch to dark mode">
+          <span class="theme-toggle__thumb">
+            <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></svg>
+            <svg class="icon-moon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M20.5 14.6A8.6 8.6 0 0 1 9.4 3.5a8.6 8.6 0 1 0 11.1 11.1z"/></svg>
+          </span>
+        </button>
+
+        <!-- Menu button: only visible on narrow screens -->
+        <button class="nav-toggle btn btn-ghost btn-icon" type="button" aria-expanded="false" aria-controls="site-nav-list" aria-label="Open menu">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+  <!-- =============================================================
+       TOOL: Shape Transformations
+       Three panels: the four transformations (left), the coordinate
+       plane with the shape picker and quadrant zoom (middle), and the
+       coordinates / lengths / area read-out (right, or under the graph
+       on narrower screens).
+       ============================================================= -->
+  <div class="tool-frame" id="tool">
+    <header class="app-header">
+      <div class="brand-tool">
+        <span class="brand-logo" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3v18" stroke-dasharray="2.4 2.4"/><path d="M9.5 6.5L3 18h6.5z"/><path d="M14.5 6.5L21 18h-6.5z"/>
+          </svg>
+        </span>
+        <div class="brand-text">
+          <h1>Shape Transformations</h1>
+          <p>Draw a shape &middot; measure it &middot; transform it</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button id="helpBtn" class="btn btn-ghost" type="button">
+          <span aria-hidden="true">?</span> How it works
+        </button>
+        <button id="clearBtn" class="btn btn-danger" type="button">Clear all</button>
+      </div>
+    </header>
+
+    <div class="layout">
+
+      <!-- ===== LEFT: the four transformations ===== -->
+      <section class="panel panel-moves" aria-labelledby="movesHeading">
+        <div class="panel-head">
+          <h2 id="movesHeading">Transform</h2>
+        </div>
+        <div class="panel-body moves-body">
+          <div class="moves-list">
+            <button class="move-btn" type="button" data-move="translate" disabled>
+              <span class="move-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 20l4-7 4 7z"/><path d="M13.5 20l4-7 4 7z" stroke-dasharray="2.2 2.2"/><path d="M6 7.5h11.5M14.5 4.5l3 3-3 3"/></svg>
+              </span>
+              <span class="move-text"><span class="move-name">Translate</span><span class="move-sub">slide</span></span>
+            </button>
+            <button class="move-btn" type="button" data-move="reflect" disabled>
+              <span class="move-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5v19" stroke-dasharray="2.4 2.4"/><path d="M9.5 6.5L3 18h6.5z"/><path d="M14.5 6.5L21 18h-6.5z"/></svg>
+              </span>
+              <span class="move-text"><span class="move-name">Reflect</span><span class="move-sub">flip</span></span>
+            </button>
+            <button class="move-btn" type="button" data-move="rotate" disabled>
+              <span class="move-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3"/><path d="M18.5 2.8v4.4h-4.4"/><circle cx="12" cy="12" r="1.4" fill="currentColor"/></svg>
+              </span>
+              <span class="move-text"><span class="move-name">Rotate</span><span class="move-sub">turn</span></span>
+            </button>
+            <button class="move-btn" type="button" data-move="dilate" disabled>
+              <span class="move-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="13" width="8" height="8" rx="1"/><rect x="3" y="3" width="18" height="18" rx="1" stroke-dasharray="2.4 2.4"/><path d="M11 13l6.5-6.5M13 6.5h4.5V11"/></svg>
+              </span>
+              <span class="move-text"><span class="move-name">Dilate</span><span class="move-sub">grow or shrink</span></span>
+            </button>
+          </div>
+          <p id="movesNote" class="moves-note">Finish a shape first.</p>
+          <button id="undoBtn" class="btn btn-ghost btn-sm undo-btn" type="button" disabled>Undo</button>
+        </div>
+      </section>
+
+      <!-- ===== MIDDLE: shape picker, quadrant zoom and the plane ===== -->
+      <section class="panel panel-graph" aria-labelledby="graphHeading">
+        <!-- Beside the plane on wide screens, above it on narrow ones -->
+        <div class="graph-side">
+          <h2 id="graphHeading" class="sr-only">Coordinate Plane</h2>
+          <div class="picker-row">
+            <fieldset class="shape-picker">
+              <legend class="sr-only">Shape to draw</legend>
+              <label class="seg">
+                <input type="radio" name="shapeType" value="circle">
+                <span><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/></svg>Circle</span>
+              </label>
+              <label class="seg">
+                <input type="radio" name="shapeType" value="triangle" checked>
+                <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5L21 20H3z"/></svg>Triangle</span>
+              </label>
+              <label class="seg">
+                <input type="radio" name="shapeType" value="quad">
+                <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4.5h14l-2 15H3.5z"/></svg>Quadrilateral</span>
+              </label>
+              <label class="seg">
+                <input type="radio" name="shapeType" value="custom">
+                <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8.5 6.2-3.3 10.3H6.8L3.5 9.2z"/></svg>Custom</span>
+              </label>
+            </fieldset>
+            <div id="sidesBox" class="sides-box" hidden>
+              <button id="sidesDown" class="step-btn" type="button" aria-label="Fewer points">&minus;</button>
+              <span class="sides-out"><b id="sidesOut">5</b> points</span>
+              <button id="sidesUp" class="step-btn" type="button" aria-label="More points">+</button>
+            </div>
+          </div>
+          <!-- The four quadrant buttons are laid out like the plane itself -->
+          <div class="zoom-picker" role="group" aria-label="Zoom to a quadrant">
+            <button class="zoom-all" type="button" data-view="all" aria-pressed="true">All</button>
+            <div class="zoom-quads">
+              <button type="button" data-view="q2" aria-pressed="false" aria-label="Zoom to quadrant two">II</button>
+              <button type="button" data-view="q1" aria-pressed="false" aria-label="Zoom to quadrant one">I</button>
+              <button type="button" data-view="q3" aria-pressed="false" aria-label="Zoom to quadrant three">III</button>
+              <button type="button" data-view="q4" aria-pressed="false" aria-label="Zoom to quadrant four">IV</button>
+            </div>
+          </div>
+        </div>
+        <div class="panel-body graph-body">
+          <div class="graph-stage" id="stage">
+            <button id="shapeAction" class="shape-action" type="button" hidden></button>
+            <svg id="plane" role="application" aria-label="Coordinate plane from negative 10 to 10 on both axes. Click grid points to place the corners of a shape."></svg>
+            <div id="graphTip" class="graph-tip" hidden></div>
+          </div>
+        </div>
+        <p id="graphStatus" class="graph-status" aria-live="polite"></p>
+      </section>
+
+      <!-- ===== RIGHT (or under the graph): what the shapes measure ===== -->
+      <section class="panel panel-info" aria-labelledby="infoHeading">
+        <div class="panel-head">
+          <h2 id="infoHeading">Measurements</h2>
+          <div class="head-right">
+            <span class="panel-hint">hover a point or side to find it</span>
+            <button id="popBtn" class="zoom-btn" type="button" aria-pressed="false" title="Pop out at double size" aria-label="Pop out the measurements at double size">
+              <svg class="icon-in" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M20 20l-4.9-4.9"/><path d="M10.5 7.6v5.8M7.6 10.5h5.8"/></svg>
+              <svg class="icon-out" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M20 20l-4.9-4.9"/><path d="M7.6 10.5h5.8"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="panel-body info-body" id="infoBody">
+          <section class="field" aria-labelledby="coordsHeading">
+            <h3 id="coordsHeading" class="field-title">Coordinates</h3>
+            <div id="coordsList" class="field-list"></div>
+          </section>
+          <section class="field" aria-labelledby="lengthsHeading">
+            <h3 id="lengthsHeading" class="field-title">Lengths
+              <span class="field-key"><span class="key-solid" aria-hidden="true"></span>side <span class="key-dashed" aria-hidden="true"></span>helper line</span>
+            </h3>
+            <div id="lengthsList" class="field-list"></div>
+          </section>
+          <section class="field" aria-labelledby="areaHeading">
+            <h3 id="areaHeading" class="field-title">Area</h3>
+            <div id="areaList" class="field-list"></div>
+          </section>
+        </div>
+      </section>
+
+    </div><!-- /.layout -->
+
+    <div id="modalRoot" class="modal-root" aria-hidden="true"></div>
+  </div>
+
+  <!-- =============================================================
+       TEACHER NOTES (below the tool)
+       ============================================================= -->
+  <section class="tool-info" id="about-tool" aria-labelledby="about-tool-title">
+    <div class="container tool-info__grid">
+      <article class="prose">
+        <p class="overline">Teacher notes</p>
+        <h2 id="about-tool-title">Shapes, measurements and transformations on the coordinate plane</h2>
+        <p class="lead">Shape Transformations puts a shape on a four-quadrant grid and shows everything about it at
+          once: the coordinates of every corner, the length of every side and the area, with the formula
+          worked out step by step. Transform it, and the new shape arrives with the same information.</p>
+
+        <h3>Draw a shape</h3>
+        <p>Choose <em>Circle</em>, <em>Triangle</em>, <em>Quadrilateral</em> or <em>Custom</em> beside the graph,
+          then click grid points. A circle takes two clicks (the center, then a point on the circle), a triangle
+          three, a quadrilateral four, and a custom polygon as many as you set. Until the last point is placed,
+          drag any point to move it. Every point always sits on whole-number coordinates.</p>
+
+        <h3>Move, turn and resize it</h3>
+        <p>Once the shape is finished, drag inside it to slide it, drag a side to turn it in quarter turns,
+          or drag a corner to grow or shrink it from its center. Click a shape (without dragging) to delete it;
+          deleting an image also removes the images made from it. For a circle, drag inside to move it and drag the
+          point on the circle to change the radius. Everything snaps to whole coordinates, so the numbers stay
+          friendly.</p>
+
+        <h3>Read the measurements</h3>
+        <p>Side lengths come from the distance formula, shown as <em>√(3² + 4²) = 5</em>. When an area formula
+          needs a length that isn't a side, such as the height of a triangle, the diagonals of a rhombus or the
+          radius of a circle, the tool draws it as a dashed helper line and lists it with a dashed marker. The
+          area panel names the formula it used (<em>½ × b × h</em>, <em>l × w</em>, <em>πr²</em> and so on) and
+          substitutes the actual numbers. Hover over any point or side to light up its row, or hover a row to find
+          it on the graph.</p>
+
+        <h3>Transform it</h3>
+        <p>The four buttons on the left translate, reflect, rotate or dilate the newest shape. Each opens a short
+          form with a live preview and the coordinate rule, for example <em>(x, y) → (−y, x)</em>. Press it again
+          to transform the new shape, building a chain such as ABC → A′B′C′ → A″B″C″. Drag the original and every
+          image follows, which makes it easy to see that the rule works for any starting position. Hover over
+          any point, such as A′, and an arrow joins it to its pair in the shape before and after it (A and A″),
+          with both sets of coordinates lit up.</p>
+
+        <div class="callout">
+          <p><strong>Projector tip:</strong> use the quadrant buttons beside the graph to zoom into one quadrant.
+            The grid squares double in size, which helps students count units from the back of the room. The
+            magnifier on the Measurements panel pops it out at double size as a window you can drag anywhere, and
+            the graph grows to fill the space it leaves.</p>
+        </div>
+
+        <h2>Frequently asked questions</h2>
+        <div class="faq">
+          <details>
+            <summary>Why do some scale factors not work?</summary>
+            <div><p>Every point has to land on whole-number coordinates. A scale factor of ½ centered at the origin
+              only works when every coordinate is even, for example. The dilation form lists the scale factors that
+              work for the current shape and center.</p></div>
+          </details>
+          <details>
+            <summary>Why can I only reflect over lines with a slope of 1, −1 or 0?</summary>
+            <div><p>Reflecting over any other sloped line, such as <em>y = 2x</em>, sends grid points to places
+              between grid points. Lines like <em>y = x + 2</em>, <em>y = −x − 1</em> and <em>y = 3</em>, plus any
+              vertical line <em>x = a</em>, keep every point on whole-number coordinates.</p></div>
+          </details>
+          <details>
+            <summary>Why does the rotation only go in quarter turns?</summary>
+            <div><p>Turning a shape by 90°, 180° or 270° about a grid point keeps every corner on the grid, which
+              is what most middle-school and Geometry standards ask students to do on the coordinate plane.</p></div>
+          </details>
+          <details>
+            <summary>How is the area of an irregular shape found?</summary>
+            <div><p>Squares, rectangles, parallelograms, trapezoids, rhombuses, kites, triangles and circles use
+              their own formulas. Any other polygon uses the shoelace formula, which finds the area from the
+              coordinates alone. Every step is shown.</p></div>
+          </details>
+          <details>
+            <summary>Does it work on a touchscreen or interactive whiteboard?</summary>
+            <div><p>Yes. Points, sides and shapes can be dragged with a finger or stylus, and every button is sized for touch.</p></div>
+          </details>
+        </div>
+      </article>
+
+      <aside aria-label="About this tool">
+        <section class="aside-card">
+          <h2>At a glance</h2>
+          <dl class="facts">
+            <div><dt>Grade level</dt><dd>Grades 6–10, Geometry</dd></div>
+            <div><dt>Topics</dt><dd>Polygons on the coordinate plane, distance, area, translations, reflections, rotations, dilations</dd></div>
+            <div><dt>Common Core</dt><dd>6.G.A.1, 6.G.A.3, 7.G.B.4, 8.G.A.1, 8.G.A.3, 8.G.B.8, HSG-CO.A.2, HSG-CO.A.5, HSG-SRT.A.1</dd></div>
+            <div><dt>Works on</dt><dd>Projectors, smartboards, laptops, tablets</dd></div>
+            <div><dt>Cost</dt><dd><span class="tag tag--free">Free</span></dd></div>
+          </dl>
+        </section>
+        <section class="aside-card">
+          <h2>Related tools</h2>
+          <ul class="link-list">
+            <li><a href="../graphing-explorer/">Graphing Explorer<small>Points, lines and y = mx + b</small></a></li>
+            <li><a href="../fraction-visualizer/">Fraction Visualizer<small>Area models for fractions</small></a></li>
+          </ul>
+        </section>
+      </aside>
+    </div>
+  </section>
+
+  </main>
+
+  <!-- ===== Site footer ===== -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="site-footer__grid">
+        <div class="site-footer__about">
+          <a class="brand" href="../../">
+            <img class="brand__mark" src="../../assets/img/logo.svg" alt="" width="32" height="32">
+            <span class="brand__name">Math<span>Visuals</span></span>
+          </a>
+          <p>Free interactive math visuals for projectors and smartboards, designed by a math teacher with a UX/UI background.</p>
+        </div>
+        <nav aria-label="Number Sense & Operations tools">
+          <h2>Number Sense</h2>
+          <ul>
+            <li><a href="../../tools/integer-number-line/">Integer Number Line</a></li>
+            <li><a href="../../tools/fraction-visualizer/">Fraction Visualizer</a></li>
+          </ul>
+        </nav>
+        <nav aria-label="Algebra & Graphing tools">
+          <h2>Algebra & Graphing</h2>
+          <ul>
+            <li><a href="../../tools/graphing-explorer/">Graphing Explorer</a></li>
+            <li><a href="../../tools/real-life-graphs/">Graphs in Real Life</a></li>
+          </ul>
+        </nav>
+        <nav aria-label="Probability & Statistics tools">
+          <h2>Statistics</h2>
+          <ul>
+            <li><a href="../../tools/probability-manipulator/">Probability Manipulator</a></li>
+            <li><a href="../../tools/bell-curve-simulator/">Bell Curve Simulator</a></li>
+          </ul>
+        </nav>
+        <nav aria-label="Geometry tools">
+          <h2>Geometry</h2>
+          <ul>
+            <li><a href="../../tools/shape-transformations/">Shape Transformations</a></li>
+          </ul>
+        </nav>
+      </div>
+      <div class="site-footer__bottom">
+        <p>© <span data-year>2026</span> Mordechai Klein. All rights reserved. The tools are free to use for now, but their design and code are my copyright and may not be copied or republished.</p>
+        <p><a href="../../#about">About</a> · <a href="../../#contact">Suggest a tool</a> · <a href="../../privacy.html">Privacy</a></p>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

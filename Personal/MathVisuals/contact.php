@@ -22,7 +22,7 @@
 declare(strict_types=1);
 
 /* ---------- Settings ---------- */
-const CONTACT_TO      = 'mordklnk33@gmail.com';   // leave empty to only save to CSV
+const CONTACT_TO      = 'mordkln33@gmail.com';   // leave empty to only save to CSV
 const CONTACT_SUBJECT = 'New MathVisuals tool idea';
 const MIN_SECONDS     = 4;                  // humans take longer than this to fill the form
 const RATE_LIMIT_SECS = 30;                 // one submission per visitor every 30 seconds

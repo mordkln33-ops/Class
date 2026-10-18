@@ -1,0 +1,30 @@
+h1 {
+    text-align: center;
+}
+
+h2 {
+    text-align: center;
+}
+
+select {
+    margin: auto;
+    align-self: center;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: auto;
+}
+.recipeDiv{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: auto;
+}
+.recipeDiv img {
+    width: 600px;
+    height: 400px;
+    object-fit: contain;
+}

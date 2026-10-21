@@ -2,11 +2,11 @@
    Shape Transformations — Geometry
    Draw a circle, triangle, quadrilateral or polygon on a
    four-quadrant plane; read its coordinates, side lengths and
-   area; then translate, reflect, rotate and dilate it.
+   area; then translate, reflect, rotate, dilate and stretch it.
 
    One rule holds everywhere: every point of every shape sits on
    whole-number coordinates. Dragging, turning, resizing and the
-   four transformations only ever offer results that keep it.
+   five transformations only ever offer results that keep it.
    ============================================================ */
 'use strict';
 
@@ -42,7 +42,7 @@ const VULGAR = {
   '1/2': '½', '1/3': '⅓', '2/3': '⅔', '1/4': '¼', '3/4': '¾', '1/5': '⅕', '2/5': '⅖', '3/5': '⅗', '4/5': '⅘',
   '1/6': '⅙', '5/6': '⅚', '1/8': '⅛', '3/8': '⅜', '5/8': '⅝', '7/8': '⅞'
 };
-const MOVE_WORDS = { translate: 'translation', reflect: 'reflection', rotate: 'rotation', dilate: 'dilation' };
+const MOVE_WORDS = { translate: 'translation', reflect: 'reflection', rotate: 'rotation', dilate: 'dilation', stretch: 'stretch' };
 
 /* ------------------------------------------------------------
    2. State
@@ -323,10 +323,21 @@ function makeT(type, p) {
     const k = p.k.n / p.k.d;
     a = k; d = k; e = p.cx * (1 - k); f = p.cy * (1 - k);
     title = `Dilation by a scale factor of ${fmtFrac(p.k)}, centered at ${centerText(p.cx, p.cy)}`;
+  } else if (type === 'stretch') {
+    // Horizontal: x' = a + k(x − a), so the line x = a stays put. Vertical: the same in y about y = a.
+    const k = p.k.n / p.k.d;
+    if (p.dir === 'h') { a = k; e = p.a * (1 - k); } else { d = k; f = p.a * (1 - k); }
+    title = `${p.dir === 'h' ? 'Horizontal' : 'Vertical'} ${k > 1 ? 'stretch' : 'compression'} by a factor of ${fmtFrac(p.k)} from ${stretchLineText(p)}`;
   }
   const T = { type, p, a, b, c, d, e, f, title };
   T.rule = ruleText(T);
   return T;
+}
+
+/** The line a stretch leaves in place: "the y-axis", "the line x = 2". */
+function stretchLineText(p) {
+  if (p.a === 0) return p.dir === 'h' ? 'the y-axis' : 'the x-axis';
+  return `the line ${p.dir === 'h' ? 'x' : 'y'} = ${fmtInt(p.a)}`;
 }
 
 /** "y = x + 2", "y = −x − 1", "y = 3" */
@@ -644,6 +655,10 @@ function relate(sh, prev) {
     const k = fmtFrac(T.p.k);
     sh.lenNote = `Every length is ${k} times the length in ${prev.name}.`;
     sh.areaNote = `Check: k² × area of ${prev.name} = (${k})² × ${prev.areaStr} = ${sh.areaStr}`;
+  } else if (T.type === 'stretch') {
+    const k = fmtFrac(T.p.k), [along, across] = T.p.dir === 'h' ? ['Horizontal', 'vertical'] : ['Vertical', 'horizontal'];
+    sh.lenNote = `${along} lengths are ${k} times those in ${prev.name}; ${across} lengths stay the same. Slanted sides change by other amounts.`;
+    sh.areaNote = `Check: k × area of ${prev.name} = ${k} × ${prev.areaStr} = ${sh.areaStr}`;
   } else {
     const word = MOVE_WORDS[T.type];
     sh.lenNote = `Same lengths as ${prev.name}: a ${word} doesn't change size.`;
@@ -844,6 +859,7 @@ function arrowLine(g, from, to, c, cls) {
  *   reflection   the mirror line, plus a connector that meets it at a right angle
  *   rotation     the center, the two arms and the arc of the turn
  *   dilation     the center and the ray through each point and its image
+ *   stretch      the line that stays put, plus an arrow from each point straight away from it
  * After a transformation this is drawn for one hovered point at a time; a
  * pop-up's preview draws it for the whole shape.
  */
@@ -906,6 +922,16 @@ function drawGuide(g, T, from, to, c) {
     centerMarker(g, C);
     const p = toPx(C);
     el('text', { class: 'guide-label', c, x: p.x - geo.dot * 1.8, y: p.y - geo.dot * 1.9, 'text-anchor': 'end', text: '× ' + fmtFrac(T.p.k) }, g);
+  } else if (T.type === 'stretch') {
+    const h = T.p.dir === 'h';
+    const A = h ? { x: T.p.a, y: 0 } : { x: 0, y: T.p.a }, D = h ? { x: 0, y: 1 } : { x: 1, y: 0 };
+    el('line', { class: 'guide-mirror', c, x1: X(A.x - 40 * D.x), y1: Y(A.y - 40 * D.y), x2: X(A.x + 40 * D.x), y2: Y(A.y + 40 * D.y) }, g);
+    from.forEach((P, i) => arrowLine(g, P, to[i], c, 'guide-arrow'));
+    const spot = labelSpot(A, D);
+    if (spot) {
+      const name = `${h ? 'x' : 'y'} = ${fmtInt(T.p.a)} · ${h ? '↔' : '↕'} × ${fmtFrac(T.p.k)}`;
+      el('text', { class: 'guide-label', c, x: X(spot.x) + geo.fs * .35, y: Y(spot.y) - geo.fs * .55, text: name }, g);
+    }
   }
 }
 
@@ -1153,7 +1179,13 @@ infoBody.addEventListener('mouseleave', () => setHL(null, false));
 
 function renderControls() {
   const base = shapes[0], last = shapes[shapes.length - 1];
-  moveBtns.forEach(b => { b.disabled = !state.complete; });
+  // A stretched circle is an ellipse, which this tool can't measure.
+  const noStretch = state.mode === 'circle';
+  moveBtns.forEach(b => {
+    const off = b.dataset.move === 'stretch' && noStretch;
+    b.disabled = !state.complete || off;
+    b.title = off ? 'A stretched circle is no longer a circle, so circles can’t be stretched' : '';
+  });
   if (!state.complete) {
     movesNote.innerHTML = 'Finish a shape first.';
   } else {
@@ -1691,7 +1723,7 @@ document.getElementById('helpBtn').addEventListener('click', () => {
       <li><strong>Pick a shape</strong> beside the graph, then click grid points: 2 for a circle (center, then a point on it), 3 for a triangle, 4 for a quadrilateral, or set your own number with <strong>Custom</strong>.</li>
       <li>Until the last point is in, <strong>drag any point</strong> to move it. Points always snap to whole coordinates.</li>
       <li>When the shape is done: <strong>drag inside</strong> to move it, <strong>drag a side</strong> to rotate it in quarter turns, and <strong>drag a corner</strong> to grow or shrink it. For a circle, drag point A to change the radius.</li>
-      <li>Use <strong>Translate, Reflect, Rotate or Dilate</strong> on the left to make an image of the newest shape. Press one again to transform that image.</li>
+      <li>Use <strong>Translate, Reflect, Rotate, Dilate or Stretch</strong> on the left to make an image of the newest shape. Press one again to transform that image.</li>
       <li><strong>Hover</strong> a point, side or dashed helper line to light up its row in Measurements, and the other way round.</li>
       <li><strong>Click a shape</strong> without dragging it to delete it. Deleting an image also deletes the images made from it.</li>
       <li>Use <strong>All · I · II · III · IV</strong> to zoom into one quadrant, and the magnifier on Measurements to pop it out at double size.</li>
@@ -1812,6 +1844,21 @@ function readCenter(box, name) {
   return { cx, cy };
 }
 
+/** Buttons for the scale factors that keep every corner on a grid point. */
+function fillKChips(box, chips, inputId, mk, pts, none) {
+  const opts = [[1, 4], [1, 3], [1, 2], [2, 3], [3, 4], [3, 2], [2, 1], [5, 2], [3, 1], [4, 1]].filter(([n, d]) =>
+    snapPts(applyT(mk(frac(n, d)), pts)));
+  opts.forEach(([n, d]) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'chip';
+    b.textContent = fmtFrac(frac(n, d));
+    b.addEventListener('click', () => { box.querySelector('#' + inputId).value = b.textContent; box.dispatchEvent(new Event('input')); });
+    chips.appendChild(b);
+  });
+  if (!opts.length) chips.innerHTML = `<span class="field-hint">${none}</span>`;
+}
+
 /** A scale factor typed as 2, 1/2, 0.5 or 1.5. */
 function readK(raw) {
   const s = (raw || '').trim().replace(/[−–]/g, '-').replace(/\s+/g, '');
@@ -1909,17 +1956,8 @@ const FORMS = {
         chips.dataset.key = key;
         chips.innerHTML = '';
         if (!c.error) {
-          const opts = [[1, 4], [1, 3], [1, 2], [2, 3], [3, 4], [3, 2], [2, 1], [5, 2], [3, 1], [4, 1]].filter(([n, d]) =>
-            snapPts(applyT(makeT('dilate', { k: frac(n, d), cx: c.cx, cy: c.cy }), src.pts)));
-          opts.forEach(([n, d]) => {
-            const b = document.createElement('button');
-            b.type = 'button';
-            b.className = 'chip';
-            b.textContent = fmtFrac(frac(n, d));
-            b.addEventListener('click', () => { box.querySelector('#kIn').value = b.textContent; box.dispatchEvent(new Event('input')); });
-            chips.appendChild(b);
-          });
-          if (!opts.length) chips.innerHTML = '<span class="field-hint">No simple scale factor keeps every point on the grid from this center. Try another center.</span>';
+          fillKChips(box, chips, 'kIn', k => makeT('dilate', { k, cx: c.cx, cy: c.cy }), src.pts,
+            'No simple scale factor keeps every point on the grid from this center. Try another center.');
         }
       }
       if (c.error) return c;
@@ -1927,11 +1965,53 @@ const FORMS = {
       if (!k.k) return k;
       return { T: makeT('dilate', { k: k.k, cx: c.cx, cy: c.cy }) };
     }
+  },
+  stretch: {
+    title: 'Stretch',
+    submit: 'Stretch',
+    html: () => `<fieldset class="form-block"><legend>Direction</legend><div class="choice-grid">
+        <label class="choice"><input type="radio" name="sdir" value="h" checked> ↔ Horizontal</label>
+        <label class="choice"><input type="radio" name="sdir" value="v"> ↕ Vertical</label>
+      </div></fieldset>
+      <label class="form-label" for="skIn">Scale factor <span class="math">k</span></label>
+      <input class="num-input" id="skIn" type="text" inputmode="decimal" value="2" autocomplete="off" aria-describedby="skHint">
+      <p class="field-hint" id="skHint">k &gt; 1 stretches · 0 &lt; k &lt; 1 compresses</p>
+      <div class="chips" id="skChips" aria-label="Scale factors that keep every point on the grid"></div>
+      <fieldset class="form-block"><legend>Stretch from</legend><div class="choice-grid">
+        <label class="choice is-wide"><input type="radio" name="sline" value="axis" checked> <span id="slAxis">the y-axis</span></label>
+        <label class="choice is-wide"><input type="radio" name="sline" value="line"> the line <span class="math" id="slVar">x =</span> <input class="num-input is-small" id="slK" type="text" inputmode="numeric" value="1" aria-label="Value of the line that stays in place"></label>
+      </div></fieldset>`,
+    read(box, src) {
+      const dir = box.querySelector('input[name="sdir"]:checked').value;
+      box.querySelector('#slAxis').textContent = dir === 'h' ? 'the y-axis' : 'the x-axis';
+      box.querySelector('#slVar').textContent = dir === 'h' ? 'x =' : 'y =';
+      let a = 0, err = null;
+      if (box.querySelector('input[name="sline"]:checked').value === 'line') {
+        a = readInt(box, 'slK');
+        if (a === null) err = { error: 'Type a whole number for the line.' };
+        else if (Math.abs(a) > LIM) err = { error: `Keep the line between ${MINUS}10 and 10.` };
+      }
+      // Offer only the scale factors that keep every corner on a grid point.
+      const chips = box.querySelector('#skChips');
+      const key = err ? '' : dir + ',' + a;
+      if (chips.dataset.key !== key) {
+        chips.dataset.key = key;
+        chips.innerHTML = '';
+        if (!err) {
+          fillKChips(box, chips, 'skIn', k => makeT('stretch', { dir, k, a }), src.pts,
+            'No simple scale factor keeps every point on the grid from this line. Try another line.');
+        }
+      }
+      if (err) return err;
+      const k = readK(box.querySelector('#skIn').value);
+      if (!k.k) return k.hint ? { hint: 'A scale factor of 1 leaves the shape unchanged.' } : k;
+      return { T: makeT('stretch', { dir, k: k.k, a }) };
+    }
   }
 };
 
 function openTransform(type) {
-  if (!state.complete) return;
+  if (!state.complete || (type === 'stretch' && state.mode === 'circle')) return;
   if (selected >= 0) select(-1);
   const form = FORMS[type];
   const src = shapes[shapes.length - 1];

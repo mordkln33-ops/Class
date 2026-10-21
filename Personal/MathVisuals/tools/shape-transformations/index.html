@@ -82,7 +82,8 @@
       "Distance between two points",
       "Area of triangles, quadrilaterals and circles",
       "Translations, reflections and rotations",
-      "Dilations and scale factor"
+      "Dilations and scale factor",
+      "Horizontal and vertical stretches"
     ],
     "audience": {
       "@type": "EducationalAudience",
@@ -228,6 +229,12 @@
               </span>
               <span class="move-text"><span class="move-name">Dilate</span><span class="move-sub">grow or shrink</span></span>
             </button>
+            <button class="move-btn" type="button" data-move="stretch" disabled>
+              <span class="move-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="10" width="8" height="11" rx="1"/><rect x="2.5" y="10" width="19" height="11" rx="1" stroke-dasharray="2.4 2.4"/><path d="M3 5h18M6 2.5L3 5l3 2.5M18 2.5L21 5l-3 2.5"/></svg>
+              </span>
+              <span class="move-text"><span class="move-name">Stretch</span><span class="move-sub">widen or heighten</span></span>
+            </button>
           </div>
           <p id="movesNote" class="moves-note">Finish a shape first.</p>
           <button id="undoBtn" class="btn btn-ghost btn-sm undo-btn" type="button" disabled>Undo</button>
@@ -355,7 +362,7 @@
           it on the graph.</p>
 
         <h3>Transform it</h3>
-        <p>The four buttons on the left translate, reflect, rotate or dilate the newest shape. Each opens a short
+        <p>The five buttons on the left translate, reflect, rotate, dilate or stretch the newest shape. Each opens a short
           form with a live preview and the coordinate rule, for example <em>(x, y) → (−y, x)</em>. Press it again
           to transform the new shape, building a chain such as ABC → A′B′C′ → A″B″C″. Drag the original and every
           image follows, which makes it easy to see that the rule works for any starting position. Hover over
@@ -382,6 +389,15 @@
             <div><p>Reflecting over any other sloped line, such as <em>y = 2x</em>, sends grid points to places
               between grid points. Lines like <em>y = x + 2</em>, <em>y = −x − 1</em> and <em>y = 3</em>, plus any
               vertical line <em>x = a</em>, keep every point on whole-number coordinates.</p></div>
+          </details>
+          <details>
+            <summary>How is a stretch different from a dilation?</summary>
+            <div><p>A dilation scales the shape the same amount in every direction, so the image is similar to the
+              original. A horizontal stretch only scales distances from a vertical line (the y-axis or
+              <em>x = a</em>), and a vertical stretch only scales distances from a horizontal line, so the rule is
+              <em>(x, y) → (kx, y)</em> or <em>(x, y) → (x, ky)</em> and the area is multiplied by <em>k</em>, not
+              <em>k²</em>. A scale factor between 0 and 1 compresses the shape. Circles can't be stretched, since
+              the result is an ellipse.</p></div>
           </details>
           <details>
             <summary>Why does the rotation only go in quarter turns?</summary>

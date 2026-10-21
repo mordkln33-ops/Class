@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en" class="is-tool">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+  <!-- ===== SEO: title + description are unique to this page ===== -->
+  <title>Equation Balance: Order of Operations &amp; Solving for x | MathVisuals</title>
+  <meta name="description" content="A balance scale for the whole class: simplify an expression one step at a time with the order of operations, then solve for x by undoing each operation on both sides.">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <link rel="canonical" href="https://mathvisuals.online/tools/equation-balance/">
+  <meta name="author" content="Mordechai Klein">
+
+  <!-- ===== Social sharing (Open Graph + X/Twitter) ===== -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="MathVisuals">
+  <meta property="og:title" content="Equation Balance: Order of Operations &amp; Solving for x | MathVisuals">
+  <meta property="og:description" content="A balance scale for the whole class: simplify an expression one step at a time with the order of operations, then solve for x by undoing each operation on both sides.">
+  <meta property="og:url" content="https://mathvisuals.online/tools/equation-balance/">
+  <meta property="og:image" content="https://mathvisuals.online/assets/img/og/equation-balance.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="A two-sided balance scale holding the equation 3x + 4 on the left pan and 19 on the right pan, perfectly level">
+  <meta property="og:locale" content="en_US">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- ===== Theme + icons ===== -->
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#111a2e" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="../../assets/img/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" href="../../assets/img/apple-touch-icon.png">
+  <link rel="manifest" href="../../site.webmanifest">
+
+  <!-- Applies saved light/dark mode before the page paints (must not be deferred) -->
+  <script src="../../assets/js/theme-init.js"></script>
+
+  <!-- ===== Styles: font → global style guide → this page ===== -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&amp;display=swap">
+  <link rel="stylesheet" href="../../assets/css/site.css">
+  <link rel="stylesheet" href="../../assets/css/tools/equation-balance.css">
+
+  <!-- ===== Scripts (deferred: run after the HTML is parsed) ===== -->
+  <script src="../../assets/js/tools/equation-balance.js" defer></script>
+  <script src="../../assets/js/site.js" defer></script>
+
+  <!-- ===== Structured data (schema.org JSON-LD) for search engines ===== -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": [
+      "WebApplication",
+      "LearningResource"
+    ],
+    "name": "Equation Balance",
+    "url": "https://mathvisuals.online/tools/equation-balance/",
+    "description": "A balance scale for the whole class: simplify an expression one step at a time with the order of operations, then solve for x by undoing each operation on both sides.",
+    "image": "https://mathvisuals.online/assets/img/og/equation-balance.jpg",
+    "applicationCategory": "EducationalApplication",
+    "operatingSystem": "Any (runs in a web browser)",
+    "browserRequirements": "Requires JavaScript",
+    "inLanguage": "en",
+    "isAccessibleForFree": true,
+    "copyrightYear": 2026,
+    "copyrightHolder": { "@id": "https://mathvisuals.online/#person" },
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "learningResourceType": "Interactive simulation",
+    "educationalUse": [
+      "Classroom demonstration",
+      "Whole-class instruction"
+    ],
+    "educationalLevel": "Grades 5–8 (Pre-Algebra and Algebra 1)",
+    "teaches": [
+      "Order of operations",
+      "Evaluating numerical expressions with exponents and parentheses",
+      "Solving one-step equations",
+      "Solving two-step equations",
+      "Inverse operations",
+      "Properties of equality"
+    ],
+    "audience": {
+      "@type": "EducationalAudience",
+      "educationalRole": "teacher"
+    },
+    "author": {
+      "@id": "https://mathvisuals.online/#person"
+    },
+    "publisher": {
+      "@id": "https://mathvisuals.online/#person"
+    }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://mathvisuals.online/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Algebra & Graphing",
+        "item": "https://mathvisuals.online/#algebra"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": "Equation Balance",
+        "item": "https://mathvisuals.online/tools/equation-balance/"
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#tool">Skip to the tool</a>
+
+  <!-- ===== Site header: brand, breadcrumb, navigation, dark-mode toggle ===== -->
+  <header class="site-header">
+    <div class="site-header__inner container">
+      <a class="brand" href="../../" aria-label="MathVisuals home">
+        <img class="brand__mark" src="../../assets/img/logo.svg" alt="" width="32" height="32">
+        <span class="brand__name">Math<span>Visuals</span></span>
+      </a>
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ol>
+          <li><a href="../../">Home</a></li>
+          <li><a href="../../#algebra">Algebra</a></li>
+          <li><span aria-current="page">Equation Balance</span></li>
+        </ol>
+      </nav>
+
+      <div class="site-nav">
+        <nav aria-label="Main">
+          <ul class="site-nav__list" id="site-nav-list">
+            <li><a class="site-nav__link" href="#about-tool">Teacher notes</a></li>
+            <li><a class="site-nav__link" href="../../#tools">All tools</a></li>
+            <li><a class="site-nav__link" href="../../#contact">Suggest a tool</a></li>
+          </ul>
+        </nav>
+
+        <!-- Dark-mode switch (wired up in site.js) -->
+        <button class="theme-toggle" type="button" aria-pressed="false" aria-label="Switch to dark mode">
+          <span class="theme-toggle__thumb">
+            <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></svg>
+            <svg class="icon-moon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M20.5 14.6A8.6 8.6 0 0 1 9.4 3.5a8.6 8.6 0 1 0 11.1 11.1z"/></svg>
+          </span>
+        </button>
+
+        <!-- Menu button: only visible on narrow screens -->
+        <button class="nav-toggle btn btn-ghost btn-icon" type="button" aria-expanded="false" aria-controls="site-nav-list" aria-label="Open menu">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+  <!-- =============================================================
+       TOOL: Equation Balance
+       Left: controls for the two modes. Right: the balance scale.
+       Every input is filtered in equation-balance.js: digits come
+       from the keyboard (or the optional number pad), everything
+       else comes from the buttons.
+       ============================================================= -->
+  <div class="tool-frame" id="tool">
+    <div class="eb-app">
+
+      <!-- ============ LEFT: controls ============ -->
+      <section class="eb-panel" aria-labelledby="eb-title">
+        <header class="panel-header">
+          <h1 id="eb-title">Equation Balance</h1>
+          <p class="subtitle">Whatever sits on the left pan must weigh the same as the right pan.
+            Simplify an expression step by step, or undo an equation to find x.</p>
+        </header>
+
+        <div class="eb-tabs" role="tablist" aria-label="Mode">
+          <button class="eb-tab" type="button" role="tab" id="tab-std" aria-controls="panel-std" aria-selected="true" data-mode="std">Standard math</button>
+          <button class="eb-tab" type="button" role="tab" id="tab-alg" aria-controls="panel-alg" aria-selected="false" tabindex="-1" data-mode="alg">Solve for x</button>
+        </div>
+
+        <p id="ebMessage" class="eb-message" role="status" aria-live="polite"></p>
+
+        <!-- ================= STANDARD MATH ================= -->
+        <div class="eb-tabpanel" id="panel-std" role="tabpanel" aria-labelledby="tab-std">
+
+          <div class="card">
+            <h2 class="card-title">1 · Build the expression</h2>
+            <div class="builder" id="stdBuilder" tabindex="0" role="textbox"
+                 aria-label="Expression" aria-describedby="stdBuilderHint"></div>
+            <p class="hint" id="stdBuilderHint">Type the numbers on your keyboard. Use these buttons for everything else.</p>
+            <div class="keys" data-target="stdBuilder">
+              <button class="btn key key-op" type="button" data-key="+" aria-label="Plus">+</button>
+              <button class="btn key key-op" type="button" data-key="−" aria-label="Minus">−</button>
+              <button class="btn key key-op" type="button" data-key="×" aria-label="Times">×</button>
+              <button class="btn key key-op" type="button" data-key="÷" aria-label="Divided by">÷</button>
+              <button class="btn key key-exp" type="button" data-key="^" aria-label="Exponent" aria-pressed="false" title="Exponent: press, type the power, press again (or any operation) to come back down">a<sup>n</sup></button>
+              <button class="btn key" type="button" data-key="(" aria-label="Open parenthesis">(</button>
+              <button class="btn key" type="button" data-key=")" aria-label="Close parenthesis">)</button>
+              <button class="btn key" type="button" data-key="back" aria-label="Backspace" title="Backspace">⌫</button>
+              <button class="btn key btn-danger key-wide" type="button" data-key="clear">Clear</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2 class="card-title">2 · Simplify it</h2>
+            <div class="run-row">
+              <button id="stdBack" class="btn btn-lg" type="button"><span aria-hidden="true">◀</span> Step back</button>
+              <button id="stdStep" class="btn btn-primary btn-lg run-main" type="button">Next step <span aria-hidden="true">▶</span></button>
+              <button id="stdRewind" class="btn btn-lg" type="button" aria-pressed="false">Rewind all</button>
+              <button id="stdPlay" class="btn btn-lg" type="button" aria-pressed="false">Play all</button>
+              <button id="stdInstant" class="btn btn-lg" type="button">Instant</button>
+            </div>
+
+            <ol class="pemdas" id="pemdas" aria-label="Order of operations">
+              <li data-cat="P"><b>P</b><span>Parentheses</span></li>
+              <li data-cat="E"><b>E</b><span>Exponents</span></li>
+              <li data-cat="MD"><b>MD</b><span>× ÷ left to right</span></li>
+              <li data-cat="AS"><b>AS</b><span>+ − left to right</span></li>
+            </ol>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <h2 class="card-title">Steps</h2>
+              <button id="stdReset" class="btn btn-sm" type="button">Start again</button>
+            </div>
+            <ol class="log" id="stdLog"></ol>
+            <p class="log-empty" id="stdLogEmpty">The steps will be listed here.</p>
+          </div>
+        </div>
+
+        <!-- ================= SOLVE FOR X ================= -->
+        <div class="eb-tabpanel" id="panel-alg" role="tabpanel" aria-labelledby="tab-alg" hidden>
+
+          <div class="card">
+            <h2 class="card-title">1 · Set up an equation</h2>
+
+            <div class="segmented segmented-full" role="radiogroup" aria-label="Where the equation comes from">
+              <label><input type="radio" name="algSource" value="random" checked><span>Random</span></label>
+              <label><input type="radio" name="algSource" value="build"><span>Build my own</span></label>
+            </div>
+
+            <div class="field-row">
+              <span class="field-label" id="divLabel">Show division as</span>
+              <div class="segmented" role="radiogroup" aria-labelledby="divLabel">
+                <label><input type="radio" name="algDiv" value="frac" checked><span class="seg-frac"><span>a</span><span>b</span></span></label>
+                <label><input type="radio" name="algDiv" value="sym"><span>a ÷ b</span></label>
+              </div>
+            </div>
+
+            <!-- Random equation -->
+            <div id="algRandom">
+              <div class="field-row">
+                <span class="field-label" id="stepsLabel">Steps</span>
+                <div class="segmented" role="radiogroup" aria-labelledby="stepsLabel">
+                  <label><input type="radio" name="algSteps" value="1"><span>1</span></label>
+                  <label><input type="radio" name="algSteps" value="2" checked><span>2</span></label>
+                  <label><input type="radio" name="algSteps" value="3"><span>3</span></label>
+                </div>
+              </div>
+              <label class="check"><input type="checkbox" id="algNeg"> Include negative numbers</label>
+              <button id="algNew" class="btn btn-primary btn-lg btn-block" type="button">New equation</button>
+            </div>
+
+            <!-- Build my own -->
+            <div id="algBuild" hidden>
+              <div class="field-row">
+                <span class="field-label" id="xFieldLabel">Value of x</span>
+                <div class="keyfield is-masked" id="xField" tabindex="0" role="textbox" aria-labelledby="xFieldLabel"></div>
+                <button id="xFieldEye" class="btn btn-sm" type="button" aria-pressed="false">Show</button>
+              </div>
+              <div class="builder" id="algBuilder" tabindex="0" role="textbox"
+                   aria-label="Left side of the equation" aria-describedby="algBuilderHint"></div>
+              <p class="hint" id="algBuilderHint">Build the left side with x. The right side is worked out for you.</p>
+              <div class="keys" data-target="algBuilder">
+                <button class="btn key key-op" type="button" data-key="+" aria-label="Plus">+</button>
+                <button class="btn key key-op" type="button" data-key="−" aria-label="Minus">−</button>
+                <button class="btn key key-op" type="button" data-key="×" aria-label="Times">×</button>
+                <button class="btn key key-op" type="button" data-key="÷" aria-label="Divided by">÷</button>
+                <button class="btn key key-exp" type="button" data-key="^" aria-label="Exponent" aria-pressed="false">a<sup>n</sup></button>
+                <button class="btn key" type="button" data-key="(" aria-label="Open parenthesis">(</button>
+                <button class="btn key" type="button" data-key=")" aria-label="Close parenthesis">)</button>
+                <button class="btn key key-x" type="button" data-key="x" aria-label="x"><i>x</i></button>
+                <button class="btn key" type="button" data-key="back" aria-label="Backspace" title="Backspace">⌫</button>
+                <button class="btn key btn-danger" type="button" data-key="clear">Clear</button>
+              </div>
+              <button id="algPlace" class="btn btn-primary btn-lg btn-block" type="button">Put it on the scale</button>
+            </div>
+          </div>
+
+          <!-- Shown once x is alone and the scale is level -->
+          <div class="card solved-card" id="algSolvedCard" hidden>
+            <h2 class="card-title">x is found</h2>
+            <button id="algPlug" class="btn btn-check btn-block" type="button" aria-pressed="false">Show the original with x</button>
+            <button id="algCheck" class="btn btn-block" type="button">Check the answer step by step</button>
+          </div>
+
+          <div class="card" id="algOpsCard">
+            <h2 class="card-title">2 · Undo it</h2>
+
+            <div class="op-row">
+              <div class="segmented segmented-ops" role="radiogroup" aria-label="Operation">
+                <label><input type="radio" name="algOp" value="+"><span aria-label="Add">+</span></label>
+                <label><input type="radio" name="algOp" value="−" checked><span aria-label="Subtract">−</span></label>
+                <label><input type="radio" name="algOp" value="×"><span aria-label="Multiply by">×</span></label>
+                <label><input type="radio" name="algOp" value="÷"><span aria-label="Divide by">÷</span></label>
+              </div>
+              <div class="keyfield keyfield-amt" id="amtField" tabindex="0" role="textbox" aria-label="Number to use"></div>
+            </div>
+
+            <div class="segmented segmented-full" role="radiogroup" aria-label="Which side of the scale">
+              <label><input type="radio" name="algSide" value="left"><span>Left side</span></label>
+              <label><input type="radio" name="algSide" value="both" checked><span>Both sides</span></label>
+              <label><input type="radio" name="algSide" value="right"><span>Right side</span></label>
+            </div>
+
+            <button id="algApply" class="btn btn-primary btn-lg btn-block" type="button">Submit</button>
+
+            <p class="inverse-pairs" aria-label="Inverse operations">
+              <span class="pair"><b>+</b> undoes <b>−</b></span>
+              <span class="pair"><b>×</b> undoes <b>÷</b></span>
+              <span class="pair-note">Undo the last thing done to x first.</span>
+            </p>
+
+            <div class="tool-row">
+              <button id="algHint" class="btn btn-sm" type="button">Hint</button>
+              <button id="algUndo" class="btn btn-sm" type="button">Take back last move</button>
+              <button id="algRestart" class="btn btn-sm" type="button">Start over</button>
+              <button id="algReveal" class="btn btn-sm" type="button" aria-pressed="false">Peek at x</button>
+            </div>
+            <label class="check check-sm"><input type="checkbox" id="algShowWork" checked> Show each operation before simplifying</label>
+          </div>
+
+          <div class="card">
+            <h2 class="card-title">Work</h2>
+            <ol class="log log-work" id="algLog"></ol>
+            <p class="log-empty" id="algLogEmpty">Each move you make is written here, the way it would look on paper.</p>
+          </div>
+        </div>
+
+        <!-- Optional on-screen digits for touch screens and smartboards -->
+        <details class="card numpad-card" id="numpadCard">
+          <summary>Number pad <small>for touch screens</small></summary>
+          <div class="numpad" id="numpad">
+            <button class="btn key" type="button" data-num="7">7</button>
+            <button class="btn key" type="button" data-num="8">8</button>
+            <button class="btn key" type="button" data-num="9">9</button>
+            <button class="btn key" type="button" data-num="4">4</button>
+            <button class="btn key" type="button" data-num="5">5</button>
+            <button class="btn key" type="button" data-num="6">6</button>
+            <button class="btn key" type="button" data-num="1">1</button>
+            <button class="btn key" type="button" data-num="2">2</button>
+            <button class="btn key" type="button" data-num="3">3</button>
+            <button class="btn key" type="button" data-num="-" aria-label="Negative sign" title="Negative sign (value of x and the Undo number only)">(−)</button>
+            <button class="btn key" type="button" data-num="0">0</button>
+            <button class="btn key" type="button" data-num="back" aria-label="Backspace">⌫</button>
+          </div>
+        </details>
+      </section>
+
+      <!-- ============ RIGHT: the balance scale ============ -->
+      <section class="eb-stage" aria-label="Balance scale">
+        <div class="banner" id="banner" aria-live="polite"></div>
+
+        <div class="scale-area" id="scaleArea">
+          <div class="x-chip" id="xChip" hidden><i>x</i> = <span id="xChipVal">?</span></div>
+          <div class="scale-box" id="scaleBox">
+            <!-- SVG frame, beam and pans are drawn by equation-balance.js -->
+            <div class="pan-card pan-card--left" id="cardL" aria-label="Left side">
+              <div class="pan-card__cap"></div>
+              <div class="pan-card__body"></div>
+            </div>
+            <div class="pan-card pan-card--right" id="cardR" aria-label="Right side">
+              <div class="pan-card__cap"></div>
+              <div class="pan-card__body"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Shown when x is found: the way x was built, and the way it was undone -->
+        <div class="chain" id="chain" hidden></div>
+      </section>
+
+    </div>
+  </div>
+
+  <!-- =============================================================
+       TEACHER NOTES (below the tool)
+       ============================================================= -->
+  <section class="tool-info" id="about-tool" aria-labelledby="about-tool-title">
+    <div class="container tool-info__grid">
+      <article class="prose">
+        <p class="overline">Teacher notes</p>
+        <h2 id="about-tool-title">A balance scale that keeps both sides honest</h2>
+        <p class="lead">Equation Balance puts an expression or an equation on a two-pan scale. In Standard math,
+          students watch an expression simplify one operation at a time, in order-of-operations order.
+          In Solve for x, they undo an equation one inverse operation at a time, and the scale tips the moment
+          they change only one side.</p>
+
+        <h3>Standard math: the order of operations, one step at a time</h3>
+        <p>Type the numbers on the keyboard and use the buttons for <strong>+ − × ÷</strong>, parentheses and
+          exponents. To type an exponent, press <strong>a<sup>n</sup></strong>, type the power, then press it again
+          (or press any operation) to come back down. The expression appears on the left pan as you type.</p>
+        <ul>
+          <li><strong>Step back</strong> undoes one step at a time, and <strong>Rewind all</strong> undoes them all,
+            2 seconds apart, until the original expression is back. It’s Play all in reverse.</li>
+          <li><strong>Next step</strong> does one operation per press. The part that goes next is outlined,
+            the PEMDAS strip lights up the rule being used, and that step’s answer goes on the right pan.</li>
+          <li><strong>Play all</strong> does the same thing on its own, 2 seconds per step.</li>
+          <li><strong>Instant</strong> jumps straight to the answer and lists every step.</li>
+        </ul>
+        <p>While the steps run, the scale leans toward whichever side is worth more. Once both pans show the same
+          number, it waits 3 seconds and then puts the original expression back on the left with the answer on
+          the right, perfectly level. The expression and its value are equal, so they balance.</p>
+
+        <h3>Solve for x: undo what was done to x</h3>
+        <p>Choose <strong>Random</strong> for a 1-, 2- or 3-step equation. A one-step equation can use any of the
+          four operations. Two-step equations always mix one of + and − with one of × and ÷, in either order
+          (3<i>x</i> + 4 or 3(<i>x</i> + 4)). You can show division as a fraction or with the ÷ sign. The value of
+          x is never shown unless you press <strong>Peek at x</strong>.</p>
+        <p>Choose <strong>Build my own</strong> to type in a value for x (it shows as dots) and build the left
+          side with the same buttons as Standard math, plus an <i>x</i> button. The right side is worked out for you.</p>
+        <p>To solve, pick an operation and a number, choose <strong>Left side</strong>, <strong>Both sides</strong>
+          or <strong>Right side</strong>, and press <strong>Submit</strong>. The operation first appears on the pan,
+          then simplifies, and the Work list writes the move the way it would look on paper.</p>
+
+        <div class="callout">
+          <p><strong>Teaching tip:</strong> on purpose, change only one side. The scale tips and the Work list
+            shows a ≠ sign. Ask the class what you have to do to the other side to make it level again. That’s the
+            idea behind “whatever you do to one side, do to the other.”</p>
+        </div>
+
+        <h3>Extras that help the idea land</h3>
+        <ul>
+          <li><strong>Hint</strong> names the last operation done to x, and sets up its opposite in the controls.</li>
+          <li><strong>Take back last move</strong> and <strong>Start over</strong> make wrong turns cheap to try.</li>
+          <li>When x is alone, a <strong>build-up and undo</strong> diagram appears under the scale: the same values,
+            with the arrows going forward when x was built and backward when it was undone.</li>
+          <li><strong>Show the original with x = …</strong> puts the original equation back on the scale with each x
+            replaced by its value in parentheses, marked with a small <i>x</i> tag so students can see where x was.
+            Press it again to go back to the solved equation.</li>
+          <li><strong>Check the answer step by step</strong> does the same, then simplifies the left side one
+            operation at a time, using the Standard math engine. The scale stays level the whole way.</li>
+          <li>The <strong>Number pad</strong> at the bottom of the panel types digits on touch screens and smartboards
+            with no keyboard.</li>
+        </ul>
+
+        <h2>Frequently asked questions</h2>
+        <div class="faq">
+          <details>
+            <summary>Why can’t I type + or ( on the keyboard?</summary>
+            <div><p>Only numbers come from the keyboard; every symbol comes from a button. That way students see which
+              operation is chosen, and nothing they can’t see sneaks into the expression. Backspace works, and Enter
+              presses the main button (Next step, Put it on the scale, or Submit).</p></div>
+          </details>
+          <details>
+            <summary>How does it decide how far the scale tips?</summary>
+            <div><p>The side worth more always goes down. The size of the tilt grows with the difference between
+              the two sides compared to their size, so 10 against 9 is a small lean and 10 against 1 is a big one.
+              An empty pan counts as lighter than anything.</p></div>
+          </details>
+          <details>
+            <summary>What happens with fractions, decimals and negative numbers?</summary>
+            <div><p>Everything is worked out with exact fractions, so rounding never builds up from step to step. In
+              Standard math, any answer that isn’t a whole number shows as a decimal rounded to the nearest hundredth
+              (7 ÷ 2 = 3.5, 1 ÷ 3 = 0.33). In Solve for x, values stay as exact fractions or short decimals. To type a
+              negative number in Standard math, press − at the start, after an operation or after an open parenthesis.</p></div>
+          </details>
+          <details>
+            <summary>Is Equation Balance free?</summary>
+            <div><p>Yes. Every tool on MathVisuals is currently free, needs no sign-up, and runs in the browser on smartboards, Chromebooks, tablets and phones. The tool itself is copyright Mordechai Klein, so please share a link to it rather than copying it.</p></div>
+          </details>
+        </div>
+      </article>
+
+      <aside aria-label="About this tool">
+        <section class="aside-card">
+          <h2>At a glance</h2>
+          <dl class="facts">
+            <div><dt>Grade level</dt><dd>Grades 5–8, review in Algebra 1</dd></div>
+            <div><dt>Topics</dt><dd>Order of operations, exponents, one- and two-step equations, inverse operations, properties of equality</dd></div>
+            <div><dt>Common Core</dt><dd>5.OA.A.1, 6.EE.A.1, 6.EE.A.2c, 6.EE.B.7, 7.EE.B.4a</dd></div>
+            <div><dt>Works on</dt><dd>Projectors, smartboards, laptops, tablets, phones</dd></div>
+            <div><dt>Cost</dt><dd><span class="tag tag--free">Free</span></dd></div>
+          </dl>
+        </section>
+        <section class="aside-card">
+          <h2>Related tools</h2>
+          <ul class="link-list">
+            <li><a href="../integer-number-line/">Integer Number Line<small>Add and subtract integers</small></a></li>
+            <li><a href="../graphing-explorer/">Graphing Explorer<small>Plot points and graph y = mx + b</small></a></li>
+          </ul>
+        </section>
+      </aside>
+    </div>
+  </section>
+
+  </main>
+
+  <!-- ===== Site footer ===== -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="site-footer__grid">
+        <div class="site-footer__about">
+          <a class="brand" href="../../">
+            <img class="brand__mark" src="../../assets/img/logo.svg" alt="" width="32" height="32">
+            <span class="brand__name">Math<span>Visuals</span></span>
+          </a>
+          <p>Free interactive math visuals for projectors and smartboards, designed by a math teacher with a UX/UI background.</p>
+        </div>
+        <nav aria-label="Number Sense & Operations tools">
+          <h2>Number Sense</h2>
+          <ul>
+            <li><a href="../../tools/integer-number-line/">Integer Number Line</a></li>
+            <li><a href="../../tools/fraction-visualizer/">Fraction Visualizer</a></li>
+          </ul>
+        </nav>
+        <nav aria-label="Algebra & Graphing tools">
+          <h2>Algebra & Graphing</h2>
+          <ul>
+            <li><a href="../../tools/equation-balance/">Equation Balance</a></li>
+            <li><a href="../../tools/graphing-explorer/">Graphing Explorer</a></li>
+            <li><a href="../../tools/real-life-graphs/">Graphs in Real Life</a></li>
+          </ul>
+        </nav>
+        <nav aria-label="Probability & Statistics tools">
+          <h2>Statistics</h2>
+          <ul>
+            <li><a href="../../tools/probability-manipulator/">Probability Manipulator</a></li>
+            <li><a href="../../tools/bell-curve-simulator/">Bell Curve Simulator</a></li>
+          </ul>
+        </nav>
+        <nav aria-label="Geometry tools">
+          <h2>Geometry</h2>
+          <ul>
+            <li><a href="../../tools/shape-transformations/">Shape Transformations</a></li>
+          </ul>
+        </nav>
+      </div>
+      <div class="site-footer__bottom">
+        <p>© <span data-year>2026</span> Mordechai Klein. All rights reserved. The tools are free to use for now, but their design and code are my copyright and may not be copied or republished.</p>
+        <p><a href="../../#about">About</a> · <a href="../../#contact">Suggest a tool</a> · <a href="../../privacy.html">Privacy</a></p>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

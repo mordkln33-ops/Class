@@ -17,6 +17,7 @@ MathVisuals/
 ├── tools/
 │   ├── integer-number-line/   index.html (vertical) + horizontal.html
 │   ├── fraction-visualizer/
+│   ├── equation-balance/
 │   ├── graphing-explorer/
 │   ├── real-life-graphs/
 │   ├── probability-manipulator/

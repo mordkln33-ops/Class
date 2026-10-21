@@ -100,30 +100,36 @@
       {
         "@type": "ListItem",
         "position": 3,
+        "name": "Equation Balance",
+        "url": "https://mathvisuals.online/tools/equation-balance/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 4,
         "name": "Graphing Explorer",
         "url": "https://mathvisuals.online/tools/graphing-explorer/"
       },
       {
         "@type": "ListItem",
-        "position": 4,
+        "position": 5,
         "name": "Graphs in Real Life",
         "url": "https://mathvisuals.online/tools/real-life-graphs/"
       },
       {
         "@type": "ListItem",
-        "position": 5,
+        "position": 6,
         "name": "Probability Manipulator",
         "url": "https://mathvisuals.online/tools/probability-manipulator/"
       },
       {
         "@type": "ListItem",
-        "position": 6,
+        "position": 7,
         "name": "Bell Curve Simulator",
         "url": "https://mathvisuals.online/tools/bell-curve-simulator/"
       },
       {
         "@type": "ListItem",
-        "position": 7,
+        "position": 8,
         "name": "Shape Transformations",
         "url": "https://mathvisuals.online/tools/shape-transformations/"
       }
@@ -255,9 +261,22 @@
         <section class="category" id="algebra" aria-labelledby="cat-algebra">
           <div class="category__head">
             <h3 id="cat-algebra">Algebra &amp; Graphing</h3>
-            <p>Connect points, equations and tables, and give slope a real-world meaning.</p>
+            <p>Solve equations on a balance scale, connect points, equations and tables, and give slope a real-world meaning.</p>
           </div>
           <ul class="tool-grid">
+            <li class="tool-card">
+              <img class="tool-card__img" src="assets/img/tools/equation-balance.webp"
+                   alt="A balance scale holding 3x + 4 on the left pan and 19 on the right pan, level, beside controls for undoing the equation"
+                   width="960" height="600" loading="lazy" decoding="async">
+              <div class="tool-card__body">
+                <h4 class="tool-card__title"><a class="tool-card__link" href="tools/equation-balance/">Equation Balance</a></h4>
+                <p>A two-pan balance scale: simplify an expression one order-of-operations step at a time, then solve for x by undoing each operation on both sides.</p>
+                <ul class="tool-card__tags" aria-label="Details">
+                  <li class="tag">Grades 5–8</li>
+                  <li class="tag">Solving equations</li>
+                </ul>
+              </div>
+            </li>
             <li class="tool-card">
               <img class="tool-card__img" src="assets/img/tools/graphing-explorer.webp"
                    alt="Interactive coordinate plane with two colored lines, their slope-intercept equations and tables of values"
@@ -507,7 +526,7 @@
 
           <div class="form-field">
             <label for="cf-topic">Your tool idea, in a few words</label>
-            <input class="form-control" id="cf-topic" name="topic" type="text" required maxlength="150" placeholder="e.g. Visual model for solving two-step equations" aria-describedby="cf-topic-error">
+            <input class="form-control" id="cf-topic" name="topic" type="text" required maxlength="150" placeholder="e.g. Area model for multiplying polynomials" aria-describedby="cf-topic-error">
             <p class="form-error" id="cf-topic-error" hidden></p>
           </div>
 
@@ -556,6 +575,7 @@
         <nav aria-label="Algebra & Graphing tools">
           <h2>Algebra & Graphing</h2>
           <ul>
+            <li><a href="tools/equation-balance/">Equation Balance</a></li>
             <li><a href="tools/graphing-explorer/">Graphing Explorer</a></li>
             <li><a href="tools/real-life-graphs/">Graphs in Real Life</a></li>
           </ul>

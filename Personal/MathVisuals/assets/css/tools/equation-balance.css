@@ -296,14 +296,16 @@ html[data-theme="dark"] .tool-frame {
 
 /* ---------- run buttons + PEMDAS strip ---------- */
 
-/* row 1: Step back | Next step (wide); row 2: Rewind all | Play all | Instant */
+/* row 1: Step back | Next step (equal halves); row 2: Rewind all | Play all | Instant (equal thirds) */
 .run-row {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: var(--space-2);
 }
 
-.run-row .run-main { grid-column: span 2; }
+.run-row .btn { grid-column: span 2; }
+.run-row #stdBack,
+.run-row #stdStep { grid-column: span 3; }
 
 .run-row .btn { padding-inline: .5em; font-size: var(--fs-md); }
 
@@ -1040,6 +1042,9 @@ html[data-theme="dark"] .tool-frame {
 @media (max-width: 480px) {
   .keys { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--space-1); }
   .run-row { grid-template-columns: 1fr; }
+  .run-row .btn,
+  .run-row #stdBack,
+  .run-row #stdStep { grid-column: auto; }
   .segmented-full input + span { padding-inline: .4em; }
 }
 

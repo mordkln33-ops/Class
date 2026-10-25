@@ -1,0 +1,105 @@
+gmp-map {
+    height: 100%;
+}
+
+html,
+body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.mapDiv {
+    height: 90%;
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+}
+.markerImage{
+    width: 35px;
+    height: 35px;
+    border-radius: 25px;
+    /* object-fit: contain; */
+    
+}
+#sideBar{
+    width: 30%;
+    font-size: smaller;
+    display: flex;
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    overflow: auto;
+}
+#sideBar img{
+    object-fit: contain;
+    max-width: 100px;
+    max-height: 100px;
+}
+.sideCard{
+    width: 95%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 5px;
+    border: 1px solid black;
+    border-radius: 5px;
+    margin-top: 5px;
+}
+.map {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+}
+
+#search {
+    border-radius: 5px;
+    opacity: 75%;
+    height: 3em;
+    width: 95%;
+    padding-left: 2%;
+}
+#submitButton{
+    width: 60px;
+    background-color: rgb(219, 222, 223);
+    border-radius: 5px;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+#clearButton{
+    width: 100px;
+    background-color: rgb(219, 222, 223);
+    border-radius: 5px;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+.searchDiv {
+    position: absolute;
+    top: 1%;
+    left: 37.5%;
+    width: 25%;
+    display: grid;
+    grid-auto-flow: column;
+    gap: 10px;
+    z-index: 10;
+}
+.searchDiv2{
+    position: absolute;
+    top: 7%;
+    left: 37.5%;
+    width: 25%;
+    z-index: 10;
+    display: grid;
+    grid-auto-flow: column;
+    gap: 10px;
+}
+#savedLocations{
+    height: 2em;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    width: 95%;
+}
+#sideList{
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+
+}

@@ -77,3 +77,16 @@ body {
     gap: 10px;
     z-index: 10;
 }
+.searchDiv2{
+    position: absolute;
+    top: 10%;
+    left: 37.5%;
+    width: 25%;
+    z-index: 10;
+}
+#sideList{
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+
+}

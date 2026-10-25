@@ -59,6 +59,7 @@ dropDwn.addEventListener('change', e => {
         cards.push(cardObj);
         currentArr.push(load[i]);
     }
+    map.panTo(markers[0].position);
 })
 
 const createMapObj = (lat, lng, title, text, image) => {

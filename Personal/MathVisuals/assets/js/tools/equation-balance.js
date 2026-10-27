@@ -6,11 +6,14 @@
    2. Expression trees ...... numbers, x, + − × ÷, exponents, ( )
    3. Typesetting ........... trees → HTML (fractions, exponents,
                               highlights)
-   4. Input fields .......... the expression builder and the number
-                              fields: digits from the keyboard only
-   5. Step engine ........... one order-of-operations step at a time
-   6. Equation moves ........ apply + − × ÷ to a side and tidy it up
-                              (3x + 4 − 4 → 3x), random equations
+   4. Input fields .......... the expression builder (with a caret that
+                              can go anywhere) and the number fields:
+                              digits from the keyboard only
+   5. Step engine ........... one order-of-operations step at a time,
+                              or straight left to right
+   6. Equation moves ........ write + − × ÷ onto a side, like terms,
+                              Simplify's tidy-up rules (3x + 4 − 4 → 3x),
+                              random equations
    7. The scale ............. SVG frame + HTML cards on the pans, tilted
                               by a small spring animation
    8. Standard math mode
@@ -137,6 +140,27 @@
   function valOf(n) { return unwrap(n).v; }
   function isAddSub(n) { return n.t === 'bin' && (n.op === '+' || n.op === MINUS); }
 
+  /* a sum as a list of terms, each with the sign in front of it:
+     3x + 4 − 2x → [+ 3x, + 4, − 2x]. stop: ids of inner sums to keep whole */
+  function sumTerms(n, stop) {
+    var list = (isAddSub(n.l) && !(stop && stop[n.l.id])) ? sumTerms(n.l, stop)
+      : [{ op: '+', node: n.l, opHl: false }];
+    list.push({ op: n.op, node: n.r, opHl: !!n.opHl });
+    return list;
+  }
+
+  function termsOf(n) { return isAddSub(n) ? sumTerms(n) : [{ op: '+', node: n, opHl: false }]; }
+
+  function findById(n, id) {
+    if (n.id === id) { return n; }
+    switch (n.t) {
+      case 'paren': return findById(n.inner, id);
+      case 'pow': return findById(n.base, id);
+      case 'bin': return findById(n.l, id) || findById(n.r, id);
+      default: return null;
+    }
+  }
+
   function hasVar(n) {
     switch (n.t) {
       case 'var': return true;
@@ -183,7 +207,10 @@
 
   /* ===================================================================
      3. TYPESETTING
-     ctx = { frac: show ÷ as a stacked fraction, hl: { nodeId: class } }
+     ctx = { frac: show ÷ as a stacked fraction, hl: { nodeId: class },
+             terms: { termNodeId: class } (a term together with its sign),
+             marks: { binId: { side, cls } } (an operation with its number),
+             pending: show operations waiting for Simplify }
      =================================================================== */
 
   /* dec: Standard math shows any non-whole number as a decimal rounded
@@ -203,7 +230,19 @@
     return '<span class="m-paren">(</span>' + html + '<span class="m-paren">)</span>';
   }
 
-  function isNegNum(n) { return n.t === 'num' && n.v.n < 0; }
+  /* a negative number or −3x after an operation gets ( ): 5 − (−2) */
+  function isNegTerm(n) {
+    return (n.t === 'num' && n.v.n < 0) ||
+      (n.t === 'bin' && n.implicit && n.l.t === 'num' && n.l.v.n < 0);
+  }
+
+  function wrapCls(cls, html) { return '<span class="' + cls + '">' + html + '</span>'; }
+
+  /* the highlight on an operation and its number (× 1, ÷ 3 …) */
+  function markOf(n, ctx) {
+    if (ctx.marks && ctx.marks[n.id]) { return ctx.marks[n.id]; }
+    return n.opHl && ctx.pending ? { side: 'r', cls: 'm-pending' } : null;
+  }
 
   function render(n, ctx, dropParens) {
     var h;
@@ -218,9 +257,24 @@
       var b = n.base, bh = render(b, ctx);
       if ((b.t === 'num' && (b.v.n < 0 || !showsAsDecimal(b.v) || b.v.d !== 1)) || b.t === 'bin' || b.t === 'pow') { bh = paren(bh); }
       h = bh + '<sup class="m-sup">' + n.e + '</sup>';
+    } else if (isAddSub(n)) {
+      /* a sum is written term by term, each term wrapped with the sign in
+         front of it, so a term can be marked or picked along with its sign */
+      var terms = ctx.terms || {};
+      h = '';
+      sumTerms(n, ctx.hl).forEach(function (e, i) {
+        var th = render(e.node, ctx);
+        if (i > 0) {
+          th = '<span class="m-op">' + e.op + '</span>' + (isNegTerm(e.node) ? paren(th) : th);
+        }
+        var tc = terms[e.node.id] || (e.opHl && ctx.pending ? 'm-pending' : '');
+        h += '<span class="m-term' + (tc ? ' ' + tc : '') + '" data-term="' + e.node.id + '" data-chain="' + n.id + '">' + th + '</span>';
+      });
     } else if (n.op === DIVIDE && ctx.frac) {
+      var bot = render(n.r, ctx, true), fm = markOf(n, ctx);
+      if (fm) { bot = wrapCls(fm.cls, bot); }
       h = '<span class="m-frac"><span class="m-top">' + render(n.l, ctx, true) +
-        '</span><span class="m-bot">' + render(n.r, ctx, true) + '</span></span>';
+        '</span><span class="m-bot">' + bot + '</span></span>';
     } else if (n.implicit) {
       /* a coefficient written next to what it multiplies: 3x, 3(x + 4), −x */
       var L = n.l, lh;
@@ -231,9 +285,12 @@
       if (n.r.t === 'num' || n.r.t === 'bin') { rh = paren(rh); }
       h = lh + rh;
     } else {
-      var rh2 = render(n.r, ctx);
-      if (isNegNum(n.r)) { rh2 = paren(rh2); }
-      h = render(n.l, ctx) + '<span class="m-op' + (n.opHl ? ' m-pending-op' : '') + '">' + n.op + '</span>' + rh2;
+      var lh2 = render(n.l, ctx), rh2 = render(n.r, ctx), oh = '<span class="m-op">' + n.op + '</span>';
+      if (isNegTerm(n.r)) { rh2 = paren(rh2); }
+      var mk = markOf(n, ctx);
+      if (mk && mk.side === 'l') { h = wrapCls(mk.cls, lh2 + oh) + rh2; }
+      else if (mk) { h = lh2 + wrapCls(mk.cls, oh + rh2); }
+      else { h = lh2 + oh + rh2; }
     }
     var cls = ctx.hl && ctx.hl[n.id];
     return cls ? '<span class="' + cls + '">' + h + '</span>' : h;
@@ -260,147 +317,228 @@
     shake(field.el);
   }
 
-  /* tokens as typed, before they are parsed */
-  function tokensHtml(tokens, expOpen, withCaret) {
-    var h = '';
-    tokens.forEach(function (t, i) {
-      if (t.t === 'num') { h += '<span class="m-num">' + t.s.replace('-', MINUS) + '</span>'; }
-      else if (t.t === 'x') { h += '<i class="m-var">x</i>'; }
-      else if (t.t === 'op') { h += '<span class="m-op">' + t.v + '</span>'; }
-      else if (t.t === '(' || t.t === ')') { h += '<span class="m-paren">' + t.t + '</span>'; }
-      else if (t.t === 'pow') {
-        var open = expOpen && i === tokens.length - 1;
-        h += '<sup class="m-sup' + (open ? ' is-open' : '') + '">' + (t.s || (open ? '&#8203;' : '')) +
-          (open && withCaret ? CARET : '') + '</sup>';
+  /* ---------- 4a. The expression builder ----------
+     The expression is a list of single items, and the caret can sit
+     anywhere in it, so it can be changed in the middle, not just at the
+     end. Items: a digit (d), a negative sign (neg), + − × ÷ (op), ( ),
+     x, =, and an exponent digit (sup). They are grouped into tokens
+     (whole numbers, exponents) only to be parsed. */
+
+  var VALUE_END = { d: true, x: true, ')': true, sup: true };
+
+  /* why item b can't come right after item a (null: it can) */
+  function pairMsg(a, b) {
+    if (!b) { return null; }
+    var A = a ? a.t : '', B = b.t;
+    if (B === 'sup') { return VALUE_END[A] ? null : 'Type a number (or close a parenthesis) first, then add its exponent.'; }
+    if (A === '' || A === '(' || A === 'op' || A === '=') {
+      if (B === 'op' || B === '=') {
+        return A === '' ? 'Start with a number.' : A === 'op' ? 'Two operations can’t sit side by side.' : 'Type a number first.';
+      }
+      if (B === ')') { return 'Put something inside the parentheses first.'; }
+      return null;
+    }
+    if (A === 'neg') { return B === 'd' || B === 'x' ? null : 'Type the number after the negative sign.'; }
+    /* a is the end of a value: a digit, x, ) or an exponent */
+    if (B === 'neg') { return 'Choose an operation before the next number.'; }
+    if (B === 'd') { return A === 'd' ? null : 'Choose an operation before the next number.'; }
+    if (B === 'x') { return A === 'd' ? null : 'Choose an operation before x.'; }
+    return null;
+  }
+
+  function endsValue(t) {
+    return (t.t === 'num' && t.s !== '-') || t.t === 'x' || t.t === ')' || t.t === 'pow';
+  }
+
+  /* items → tokens: { num s }, { op v }, { x }, { ( }, { ) }, { pow s }, { = } */
+  function toTokens(items) {
+    var T = [];
+    items.forEach(function (it, i) {
+      var last = T[T.length - 1], before = items[i - 1];
+      if (it.t === 'd') {
+        if (before && (before.t === 'd' || before.t === 'neg')) { last.s += it.c; }
+        else { T.push({ t: 'num', s: it.c }); }
+      } else if (it.t === 'neg') {
+        T.push({ t: 'num', s: '-' });
+      } else if (it.t === 'sup') {
+        if (before && before.t === 'sup') { last.s += it.c; }
+        else { T.push({ t: 'pow', s: it.c }); }
+      } else if (it.t === 'op') {
+        T.push({ t: 'op', v: it.v });
+      } else if (it.t === 'x') {
+        T.push({ t: 'x', implicit: !!last && last.t === 'num' });          /* 3x, −x */
+      } else if (it.t === '(') {
+        T.push({ t: '(', implicit: !!last && endsValue(last) });           /* 3( means 3 × ( */
+      } else {
+        T.push({ t: it.t });
       }
     });
-    if (withCaret && !expOpen) { h += CARET; }
+    return T;
+  }
+
+  function itemHtml(it, i) {
+    var a = ' data-i="' + i + '"';
+    if (it.t === 'd' || it.t === 'sup') { return '<span' + a + '>' + it.c + '</span>'; }
+    if (it.t === 'neg') { return '<span' + a + '>' + MINUS + '</span>'; }
+    if (it.t === 'op') { return '<span class="m-op"' + a + '>' + it.v + '</span>'; }
+    if (it.t === '=') { return '<span class="m-op"' + a + '>=</span>'; }
+    if (it.t === 'x') { return '<i class="m-var"' + a + '>x</i>'; }
+    return '<span class="m-paren"' + a + '>' + it.t + '</span>';
+  }
+
+  /* the items as typeset math; caret: index to show the caret at, or -1 */
+  function itemsHtml(items, caret, expOpen) {
+    var h = '', group = '';
+    function shut() {
+      if (group) { h += group === 'num' ? '</span>' : '</sup>'; group = ''; }
+    }
+    function open(g) {
+      if (group === g) { return; }
+      shut();
+      if (g) { h += g === 'num' ? '<span class="m-num">' : '<sup class="m-sup">'; group = g; }
+    }
+    for (var i = 0; i <= items.length; i++) {
+      var it = items[i];
+      var g = !it ? '' : (it.t === 'd' || it.t === 'neg') ? 'num' : it.t === 'sup' ? 'sup' : '';
+      if (i === caret) {
+        if (expOpen && (group === 'sup' || g === 'sup')) { open('sup'); h += CARET; }
+        else if (expOpen) { shut(); h += '<sup class="m-sup is-open">&#8203;' + CARET + '</sup>'; }
+        else { if (group === 'sup' || (group === 'num' && g !== 'num')) { shut(); } h += CARET; }
+      }
+      if (!it) { break; }
+      open(g);
+      h += itemHtml(it, i);
+    }
+    shut();
     return h;
   }
 
-  /* ---------- 4a. The expression builder ---------- */
-
   function Builder(el, opts) {
+    var self = this;
     this.el = el;
     this.allowX = !!opts.allowX;
+    this.allowEq = !!opts.allowEq;
     this.allowMinus = false;          /* the keyboard "-" is not accepted here */
     this.onChange = opts.onChange;
     this.onEnter = opts.onEnter;
     this.expBtn = opts.expBtn;
     this.placeholder = opts.placeholder;
-    this.tokens = [];
-    this.expOpen = false;
+    this.items = [];
+    this.pos = 0;                     /* the caret sits just before items[pos] */
+    this.expOpen = false;             /* digits typed now go into the exponent */
     el.__ebField = this;
+    el.addEventListener('click', function (e) { self.clickAt(e); });
     this.render();
   }
 
-  Builder.prototype.last = function () { return this.tokens[this.tokens.length - 1]; };
+  Builder.prototype.prev = function () { return this.items[this.pos - 1] || null; };
+  Builder.prototype.next = function () { return this.items[this.pos] || null; };
 
-  Builder.prototype.endsWithValue = function () {
-    var t = this.last();
-    if (!t) { return false; }
-    if (t.t === 'num') { return t.s !== '-'; }
-    if (t.t === 'pow') { return t.s !== ''; }
-    return t.t === 'x' || t.t === ')';
-  };
-
-  Builder.prototype.openCount = function () {
+  /* open parentheses before the caret (counted from the = sign) */
+  Builder.prototype.depthAt = function (p) {
     var d = 0;
-    this.tokens.forEach(function (t) { if (t.t === '(') { d++; } else if (t.t === ')') { d--; } });
+    for (var i = 0; i < p; i++) {
+      var t = this.items[i].t;
+      if (t === '(') { d++; } else if (t === ')') { d--; } else if (t === '=') { d = 0; }
+    }
     return d;
   };
 
-  Builder.prototype.closeExp = function () {
+  /* leave the exponent: the caret drops down after it */
+  Builder.prototype.leaveExp = function () {
     if (!this.expOpen) { return; }
     this.expOpen = false;
-    var t = this.last();
-    if (t && t.t === 'pow' && t.s === '') { this.tokens.pop(); }
+    while (this.next() && this.next().t === 'sup') { this.pos++; }
+  };
+
+  Builder.prototype.insert = function (it) {
+    var I = this.items;
+    if (I.length >= 60) { return 'That expression is long enough to fit on the scale.'; }
+    var m = pairMsg(this.prev(), it) || pairMsg(it, this.next());
+    if (m) { return m; }
+    I.splice(this.pos, 0, it);
+    this.pos++;
+    return true;
   };
 
   /* returns true, or a message saying why the key can't go here */
   Builder.prototype.apply = function (k) {
-    var T = this.tokens, t = this.last();
+    var I = this.items, a = this.prev(), b = this.next();
 
     if (/^[0-9]$/.test(k)) {
       if (this.expOpen) {
-        if (t.s.length >= 2) { return 'Exponents can have up to 2 digits.'; }
-        t.s += k;
-        return true;
+        var n = 0, j;
+        for (j = this.pos - 1; j >= 0 && I[j].t === 'sup'; j--) { n++; }
+        for (j = this.pos; j < I.length && I[j].t === 'sup'; j++) { n++; }
+        if (n >= 2) { return 'Exponents can have up to 2 digits.'; }
+        return this.insert({ t: 'sup', c: k });
       }
-      if (t && t.t === 'num') {
-        var digits = t.s.replace('-', '');
-        if (digits.length >= 6) { return 'Numbers can have up to 6 digits.'; }
-        if (digits === '0') { t.s = t.s.replace('0', k); return true; }   /* no leading zeros */
-        t.s += k;
-        return true;
-      }
-      if (t && (t.t === ')' || t.t === 'x' || t.t === 'pow')) { return 'Choose an operation before the next number.'; }
-      if (T.length >= 40) { return 'That expression is long enough to fit on the scale.'; }
-      T.push({ t: 'num', s: k });
-      return true;
+      var s = this.pos, e = this.pos;
+      while (s > 0 && I[s - 1].t === 'd') { s--; }
+      while (e < I.length && I[e].t === 'd') { e++; }
+      if (e - s >= 6) { return 'Numbers can have up to 6 digits.'; }
+      if (e - s === 1 && I[s].c === '0' && this.pos === e) { I[s] = { t: 'd', c: k }; return true; }   /* no leading zeros */
+      if (k === '0' && this.pos === s && e > s) { return 'A number can’t start with 0.'; }
+      return this.insert({ t: 'd', c: k });
     }
 
     if (k === 'back') {
-      if (!t) { return true; }
-      if (t.t === 'pow') {
-        if (t.s === '') { T.pop(); this.expOpen = false; }
-        else { t.s = t.s.slice(0, -1); this.expOpen = true; }
-        return true;
-      }
-      this.expOpen = false;
-      if (t.t === 'num' && t.s.length > 1) { t.s = t.s.slice(0, -1); return true; }
-      T.pop();
+      if (this.expOpen && !(a && a.t === 'sup')) { this.expOpen = false; return true; }
+      if (!a) { return true; }
+      I.splice(this.pos - 1, 1);
+      this.pos--;
+      this.expOpen = a.t === 'sup';
       return true;
     }
 
-    if (k === 'clear') { this.tokens = []; this.expOpen = false; return true; }
+    if (k === 'del') {
+      if (b) { I.splice(this.pos, 1); }
+      return true;
+    }
+
+    if (k === 'clear') { this.items = []; this.pos = 0; this.expOpen = false; return true; }
 
     if (k === '^') {
-      if (this.expOpen) { this.closeExp(); return true; }
-      if (t && t.t === 'pow') { return 'That already has an exponent.'; }
-      if (!this.endsWithValue()) { return 'Type a number (or close a parenthesis) first, then add its exponent.'; }
-      T.push({ t: 'pow', s: '' });
+      if (this.expOpen) { this.leaveExp(); return true; }
+      if ((a && a.t === 'sup') || (b && b.t === 'sup')) { this.expOpen = true; return true; }
+      if (!a || !VALUE_END[a.t]) { return 'Type a number (or close a parenthesis) first, then add its exponent.'; }
+      if (b && b.t === 'd') { return 'Put the exponent after the whole number.'; }
       this.expOpen = true;
       return true;
     }
 
-    this.closeExp();
-    t = this.last();
+    this.leaveExp();
+    a = this.prev();
+    b = this.next();
 
     if (k === '+' || k === MINUS || k === TIMES || k === DIVIDE) {
-      /* − at the start, after ( or after an operation starts a negative number */
-      if (k === MINUS && (!t || t.t === '(' || t.t === 'op')) { T.push({ t: 'num', s: '-' }); return true; }
-      if (t && t.t === 'op') { t.v = k; return true; }        /* swap the operation */
-      if (!this.endsWithValue()) { return t ? 'Type the number first.' : 'Start with a number.'; }
-      T.push({ t: 'op', v: k });
-      return true;
+      /* − at the start, after ( or = or after an operation starts a negative number */
+      if (k === MINUS && (!a || a.t === '(' || a.t === 'op' || a.t === '=')) { return this.insert({ t: 'neg' }); }
+      if (a && a.t === 'op') { a.v = k; return true; }                              /* swap the operation */
+      if (b && b.t === 'op' && a && VALUE_END[a.t]) { b.v = k; this.pos++; return true; }
+      return this.insert({ t: 'op', v: k });
     }
 
-    if (k === '(') {
-      if (t && t.t === 'num' && t.s === '-') { return 'Type the number after the negative sign.'; }
-      if (T.length >= 40) { return 'That expression is long enough to fit on the scale.'; }
-      T.push({ t: '(', implicit: this.endsWithValue() });   /* 3( means 3 × ( */
-      return true;
-    }
+    if (k === '(') { return this.insert({ t: '(' }); }
 
     if (k === ')') {
-      if (this.openCount() <= 0) { return 'There is no open parenthesis to close.'; }
-      if (!this.endsWithValue()) { return 'Put something inside the parentheses first.'; }
-      T.push({ t: ')' });
-      return true;
+      if (this.depthAt(this.pos) <= 0) { return 'There is no open parenthesis to close.'; }
+      return this.insert({ t: ')' });
     }
 
-    if (k === 'x' && this.allowX) {
-      if (t && t.t === 'num') { T.push({ t: 'x', implicit: true }); return true; }   /* 3x, −x */
-      if (t && (t.t === ')' || t.t === 'x' || t.t === 'pow')) { return 'Choose an operation before x.'; }
-      T.push({ t: 'x' });
-      return true;
+    if (k === 'x' && this.allowX) { return this.insert({ t: 'x' }); }
+
+    if (k === '=' && this.allowEq) {
+      if (I.some(function (t) { return t.t === '='; })) { return 'An equation has only one = sign.'; }
+      if (this.depthAt(this.pos) > 0) { return 'Close the parentheses before the = sign.'; }
+      return this.insert({ t: '=' });
     }
 
     return 'Only numbers come from the keyboard.';
   };
 
   Builder.prototype.key = function (k) {
+    if (k === 'left' || k === 'right') { this.move(k === 'left' ? 'ArrowLeft' : 'ArrowRight'); return; }
     var ok = this.apply(k);
     if (ok === true) {
       this.render();
@@ -410,40 +548,88 @@
     }
   };
 
+  /* arrow keys step through the exponent too: in, across, then out */
+  Builder.prototype.move = function (key) {
+    var p = this.pos, n = this.items.length;
+    var prevSup = !!this.prev() && this.prev().t === 'sup', nextSup = !!this.next() && this.next().t === 'sup';
+    if (key === 'Home') { this.pos = 0; this.expOpen = false; }
+    else if (key === 'End') { this.pos = n; this.expOpen = false; }
+    else if (key === 'ArrowRight') {
+      if (!this.expOpen && nextSup) { this.expOpen = true; }
+      else if (this.expOpen && !nextSup) { this.expOpen = false; }
+      else if (p < n) { this.pos++; }
+    } else {
+      if (this.expOpen && !prevSup) { this.expOpen = false; }
+      else if (!this.expOpen && prevSup) { this.expOpen = true; }
+      else if (p > 0) { this.pos--; }
+    }
+    this.render();
+  };
+
+  /* a click puts the caret before or after the item clicked */
+  Builder.prototype.clickAt = function (e) {
+    var t = e.target.closest('[data-i]');
+    if (!t || !this.el.contains(t)) {
+      this.pos = this.items.length;
+      this.expOpen = false;
+    } else {
+      var i = parseInt(t.getAttribute('data-i'), 10), r = t.getBoundingClientRect();
+      this.pos = i + (e.clientX > r.left + r.width / 2 ? 1 : 0);
+      this.expOpen = this.items[i].t === 'sup';
+    }
+    this.render();
+  };
+
   Builder.prototype.enter = function () { this.onEnter(); };
 
   Builder.prototype.render = function () {
-    this.el.innerHTML = this.tokens.length
-      ? tokensHtml(this.tokens, this.expOpen, true)
+    this.el.innerHTML = (this.items.length || this.expOpen)
+      ? itemsHtml(this.items, this.pos, this.expOpen)
       : '<span class="placeholder">' + this.placeholder + '</span>' + CARET;
     if (this.expBtn) { this.expBtn.setAttribute('aria-pressed', this.expOpen ? 'true' : 'false'); }
   };
 
-  /* → { tree } or { msg } */
-  Builder.prototype.parse = function () {
-    this.closeExp();
-    this.render();
-    var T = this.tokens, t = this.last();
-    if (!T.length) { return { msg: 'Type an expression first.' }; }
-    if (t.t === 'op' || (t.t === 'num' && t.s === '-')) { return { msg: 'The expression can’t end with an operation.' }; }
-    if (t.t === '(') { return { msg: 'Put something inside the parentheses.' }; }
-    if (this.openCount() > 0) { return { msg: 'Close every parenthesis first.' }; }
+  /* what goes on the pan while typing (no caret) */
+  Builder.prototype.html = function () { return itemsHtml(this.items, -1, false); };
+
+  /* → { tree, right } or { msg }. right: the side after the = sign, if any.
+     ltr: + − × ÷ all go left to right, with no order of operations */
+  Builder.prototype.parse = function (ltr) {
+    var I = this.items, i;
+    if (!I.length) { return { msg: 'Type an expression first.' }; }
+    for (i = 0; i < I.length; i++) {
+      var m = pairMsg(I[i - 1] || null, I[i]);
+      if (m) { return { msg: m }; }
+    }
+    var t = I[I.length - 1].t;
+    if (t === 'op' || t === 'neg') { return { msg: 'The expression can’t end with an operation.' }; }
+    if (t === '(') { return { msg: 'Put something inside the parentheses.' }; }
+    if (t === '=') { return { msg: 'Type the right side after the = sign.' }; }
+    var T = toTokens(I), eq = -1;
+    T.forEach(function (tk, j) { if (tk.t === '=') { eq = j; } });
+    var sides = eq < 0 ? [T] : [T.slice(0, eq), T.slice(eq + 1)];
+    for (i = 0; i < sides.length; i++) {
+      var d = 0;
+      sides[i].forEach(function (tk) { if (tk.t === '(') { d++; } else if (tk.t === ')') { d--; } });
+      if (d > 0) { return { msg: 'Close every parenthesis first.' }; }
+    }
     try {
-      return { tree: parseTokens(T) };
+      return { tree: parseTokens(sides[0], ltr), right: sides[1] ? parseTokens(sides[1], ltr) : null };
     } catch (e) {
       return { msg: 'Part of the expression is unfinished.' };
     }
   };
 
-  /* Precedence parser: + − below × ÷ (and implied ×) below exponents. */
-  function parseTokens(tokens) {
+  /* Precedence parser: + − below × ÷ (and implied ×) below exponents.
+     ltr: one level for + − × ÷, so they simply go left to right */
+  function parseTokens(tokens, ltr) {
     var i = 0;
     function peek() { return tokens[i]; }
     function fail() { throw new Error('parse'); }
 
     function expr() {
       var n = term();
-      while (peek() && peek().t === 'op' && (peek().v === '+' || peek().v === MINUS)) {
+      while (peek() && peek().t === 'op' && (ltr || peek().v === '+' || peek().v === MINUS)) {
         var op = tokens[i++].v;
         n = mkBin(op, n, term());
       }
@@ -454,7 +640,7 @@
       for (;;) {
         var t = peek();
         if (!t) { break; }
-        if (t.t === 'op' && (t.v === TIMES || t.v === DIVIDE)) { i++; n = mkBin(t.v, n, factor()); }
+        if (!ltr && t.t === 'op' && (t.v === TIMES || t.v === DIVIDE)) { i++; n = mkBin(t.v, n, factor()); }
         else if ((t.t === '(' || t.t === 'x') && t.implicit) { n = mkBin(TIMES, n, factor(), true); }
         else { break; }
       }
@@ -464,7 +650,6 @@
       var t = peek();
       if (t && t.t === 'pow') {
         i++;
-        if (t.s === '') { fail(); }
         return mkPow(n, parseInt(t.s, 10));
       }
       return n;
@@ -542,10 +727,13 @@
     return parseInt(this.value, 10);
   };
 
+  /* suffix: the Undo number is an x term (2x), so x is shown after it */
   KeyField.prototype.render = function () {
     var v = this.value;
     var shown = this.masked ? v.replace(/./g, '•') : v.replace('-', MINUS);
-    this.el.innerHTML = (v ? '<span class="kf-val">' + shown + '</span>' : '<span class="placeholder">' + this.placeholder + '</span>') + CARET;
+    this.el.innerHTML = (v ? '<span class="kf-val">' + shown + '</span>'
+      : this.suffix ? '' : '<span class="placeholder">' + this.placeholder + '</span>') +
+      CARET + (this.suffix ? '<i class="m-var">x</i>' : '');
     this.el.classList.toggle('is-masked', this.masked);
   };
 
@@ -554,6 +742,7 @@
      The next step is the operation whose two inputs are both plain
      numbers, chosen by: deepest inside parentheses first, then
      exponents, then × ÷, then + −, and leftmost on a tie.
+     Left to right (ltr): simply the first one in reading order.
      =================================================================== */
 
   var LEVEL = {};
@@ -562,9 +751,13 @@
   var VERB = {};
   VERB['+'] = 'Add'; VERB[MINUS] = 'Subtract'; VERB[TIMES] = 'Multiply'; VERB[DIVIDE] = 'Divide';
 
-  function findNext(root) {
+  function findNext(root, ltr) {
     var best = null, order = 0;
     function consider(n, depth, level, ord) {
+      if (ltr) {
+        if (!best) { best = { node: n, depth: depth }; }
+        return;
+      }
       if (!best || depth > best.depth ||
           (depth === best.depth && (level > best.level || (level === best.level && ord < best.ord)))) {
         best = { node: n, depth: depth, level: level, ord: ord };
@@ -605,10 +798,10 @@
     return n;
   }
 
-  function buildSteps(root) {
+  function buildSteps(root, ltr) {
     var steps = [], cur = root;
     for (var guard = 0; guard < 80; guard++) {
-      var nx = findNext(cur);
+      var nx = findNext(cur, ltr);
       if (!nx) { break; }
       var n = nx.node, value, verb, cat;
       if (n.t === 'pow') {
@@ -635,12 +828,6 @@
   var INVERSE = {};
   INVERSE['+'] = MINUS; INVERSE[MINUS] = '+'; INVERSE[TIMES] = DIVIDE; INVERSE[DIVIDE] = TIMES;
 
-  /* other + b, written as other − |b| when b is negative */
-  function plusConst(other, b) {
-    if (b.n === 0) { return unwrap(other); }
-    return b.n > 0 ? mkBin('+', other, mkNum(b)) : mkBin(MINUS, other, mkNum(neg(b)));
-  }
-
   /* c × other, written as a coefficient: 3x, 3(x + 4), −x */
   function coef(c, other) {
     var o = unwrap(other);
@@ -655,66 +842,310 @@
     return mkBin(DIVIDE, isAddSub(o) ? mkParen(o) : o, mkNum(d));
   }
 
-  /* when nothing tidies up, just write the operation on */
-  function fallbackOp(E, op, k) {
-    var e = unwrap(E);
-    if (op === '+' || op === MINUS) { return mkBin(op, E, mkNum(k)); }
-    if (op === TIMES) { return mkBin(TIMES, mkNum(k), (e.t === 'var' || e.t === 'pow') ? e : mkParen(e), true); }
-    return divBy(E, k);
+  /* the amount of a move: a number, or an x term like 2x */
+  function amtNode(k, isX) { return isX ? coef(k, mkVar()) : mkNum(k); }
+
+  function fmtAmt(k, isX) {
+    if (!isX) { return fmt(k); }
+    if (eqR(k, ONE)) { return '<i>x</i>'; }
+    if (eqR(k, rat(-1))) { return MINUS + '<i>x</i>'; }
+    return fmt(k) + '<i>x</i>';
   }
 
-  /* The side after "op k" is applied and tidied:
-     3x + 4 − 4 → 3x,  3x ÷ 3 → x,  x/2 × 2 → x,  3x + 4 − 1 → 3x + 3,
-     3x × 2 → 6x,  19 − 4 → 15. Anything else is written out in full. */
-  function simplifyOp(E, op, k) {
-    var e = unwrap(E);
-    var addsub = op === '+' || op === MINUS;
-    if (e.t === 'num') { return mkNum(opApply(op, e.v, k)); }
-    if (e.t === 'var') {
-      if (op === TIMES) { return coef(k, e); }
-      if (op === DIVIDE) { return divBy(e, k); }
-      return plusConst(e, op === '+' ? k : neg(k));
+  /* The side with "op k" written on. It stays written on, marked as
+     waiting, until Simplify tidies it away. */
+  function showOp(E, op, k, isX) {
+    var e = unwrap(E), amt = amtNode(k, isX);
+    var node = (op === '+' || op === MINUS)
+      ? mkBin(op, E, amt)
+      : mkBin(op, isAddSub(e) ? mkParen(e) : E, amt);
+    node.opHl = true;
+    return node;
+  }
+
+  /* ---------- terms of a sum ---------- */
+
+  /* the x coefficient of a term like x, 3x, −x or x ÷ 2; null if it isn't one */
+  function xCoef(n) {
+    n = unwrap(n);
+    if (n.t === 'var') { return ONE; }
+    if (n.t !== 'bin') { return null; }
+    var c;
+    if (n.op === TIMES && isNum(n.l) && (c = xCoef(n.r))) { return mul(valOf(n.l), c); }
+    if (n.op === TIMES && isNum(n.r) && (c = xCoef(n.l))) { return mul(valOf(n.r), c); }
+    if (n.op === DIVIDE && isNum(n.r) && (c = xCoef(n.l))) { return div(c, valOf(n.r)); }
+    return null;
+  }
+
+  /* 'num', 'x', or null for a term that can't be combined (x², 3(x + 1) …) */
+  function termKind(n) {
+    if (isNum(n)) { return 'num'; }
+    return xCoef(n) ? 'x' : null;
+  }
+
+  /* what a term is worth, sign included: − 4 → −4, − 2x → −2 */
+  function termVal(e) {
+    var v = isNum(e.node) ? valOf(e.node) : xCoef(e.node);
+    return e.op === MINUS ? neg(v) : v;
+  }
+
+  /* a term worth v; first in a sum it carries its own sign, later on the
+     sign is the + or − in front of it */
+  function makeTerm(kind, v, first) {
+    var pos = first || v.n >= 0;
+    return { op: pos ? '+' : MINUS, node: amtNode(pos ? v : neg(v), kind === 'x'), opHl: false };
+  }
+
+  function negTerm(n) {
+    if (isNum(n)) { return mkNum(neg(valOf(n))); }
+    var c = xCoef(n);
+    return c ? coef(neg(c), mkVar()) : coef(rat(-1), n);
+  }
+
+  /* a sum from a list of terms; a − in front of the first one moves onto it */
+  function joinTerms(list) {
+    if (!list.length) { return mkNum(rat(0)); }
+    var n = list[0].op === MINUS ? negTerm(list[0].node) : list[0].node;
+    for (var i = 1; i < list.length; i++) {
+      n = mkBin(list[i].op, n, list[i].node);
+      if (list[i].opHl) { n.opHl = true; }
     }
-    if (e.t === 'bin') {
-      var lN = isNum(e.l), rN = isNum(e.r);
-      if (addsub) {
-        var b = null, other = null;
-        if (e.op === '+' && rN) { b = valOf(e.r); other = e.l; }
-        else if (e.op === '+' && lN) { b = valOf(e.l); other = e.r; }
-        else if (e.op === MINUS && rN) { b = neg(valOf(e.r)); other = e.l; }
-        if (b !== null) { return plusConst(other, op === '+' ? add(b, k) : sub(b, k)); }
-        if (e.op === MINUS && lN) {                     /* c − (x part) */
-          var c0 = op === '+' ? add(valOf(e.l), k) : sub(valOf(e.l), k);
-          return c0.n === 0 ? coef(rat(-1), e.r) : mkBin(MINUS, mkNum(c0), e.r);
-        }
-      } else {
-        if (e.op === TIMES && (lN || rN)) {
-          var c = lN ? valOf(e.l) : valOf(e.r), o2 = lN ? e.r : e.l;
-          if (op === TIMES) { return coef(mul(c, k), o2); }
-          var q = div(c, k);
-          if (isInt(q)) { return coef(q, o2); }
-        }
-        if (e.op === DIVIDE && rN) {
-          var dv = valOf(e.r);
-          if (op === DIVIDE) { return divBy(e.l, mul(dv, k)); }
-          var q2 = div(dv, k);                          /* (A ÷ d) × k = A ÷ (d / k) */
-          if (isInt(q2)) { return divBy(e.l, q2); }
-          var inv = div(k, dv);                         /*             = (k / d) A    */
-          if (isInt(inv)) { return coef(inv, e.l); }
+    return n;
+  }
+
+  function without(list, idx) {
+    return list.filter(function (e, i) { return idx.indexOf(i) < 0; });
+  }
+
+  /* a term as written, sign included (for the banner and the Work list) */
+  function termText(e, i) {
+    var h = render(e.node, plainCtx(alg.frac));
+    if (i === 0) { return (e.op === MINUS ? '<span class="m-num">' + MINUS + '</span>' : '') + h; }
+    return '<span class="m-op">' + e.op + '</span>' + (isNegTerm(e.node) ? paren(h) : h);
+  }
+
+  /* add up the chosen terms of a sum (idx, in order), into the place of the first */
+  function combineTerms(sumNode, list, idx, kind) {
+    var total = rat(0), out = [], made = null;
+    idx.forEach(function (i) { total = add(total, termVal(list[i])); });
+    list.forEach(function (e, i) {
+      if (i === idx[0]) {
+        if (total.n !== 0) { made = makeTerm(kind, total, !out.length); out.push(made); }
+      } else if (idx.indexOf(i) < 0) {
+        out.push(e);
+      }
+    });
+    var label = idx.map(function (i, k) { return termText(list[i], k); }).join('') +
+      '<span class="m-op">=</span>' + (total.n === 0 ? numHtml(total) : render(amtNode(total, kind === 'x'), plainCtx(alg.frac)));
+    return {
+      target: sumNode, repl: joinTerms(out), cls: 'm-next', label: label,
+      terms: idx.map(function (i) { return list[i].node.id; }),
+      newId: made ? made.node.id : null
+    };
+  }
+
+  /* ---------- Simplify: one tidy-up at a time ----------
+     Each rule looks at one node and returns null, or
+     { target, repl, cls, label, nodes / terms / ops: what to mark, newId }.
+     The first rule that finds something anywhere on a side wins:
+       1. terms that cancel out ........ 3x + 4 − 4 → 3x
+       2. operations that do nothing ... + 0, × 1, ÷ 1, an exponent of 1
+       3. × and ÷ that undo each other . 3x ÷ 3 → x,  x ÷ 2 × 2 → x
+       4. arithmetic on two numbers .... 19 − 4 → 15
+       5. adding a negative ............ x + (−2) → x − 2
+       6. numbers in a sum, combined ... 3x + 4 − 1 → 3x + 3
+       7. a number put next to x ....... x × 3 → 3x,  3x × 2 → 6x
+     x terms are not combined here: that's Combine like terms. */
+
+  function ruleCancel(n) {
+    if (!isAddSub(n)) { return null; }
+    var list = sumTerms(n);
+    for (var i = 0; i < list.length; i++) {
+      var ki = termKind(list[i].node);
+      if (!ki) { continue; }
+      var vi = termVal(list[i]);
+      if (vi.n === 0) { continue; }
+      for (var j = i + 1; j < list.length; j++) {
+        if (termKind(list[j].node) === ki && eqR(termVal(list[j]), neg(vi))) {
+          return {
+            target: n, repl: joinTerms(without(list, [i, j])), cls: 'm-redundant',
+            terms: [list[i].node.id, list[j].node.id],
+            label: termText(list[i], i) + ' and ' + termText(list[j], j) + ' cancel out'
+          };
         }
       }
     }
-    return fallbackOp(E, op, k);
+    return null;
   }
 
-  /* The side with "op k" written on, before tidying — shown for a moment */
-  function showOp(E, op, k) {
-    var e = unwrap(E);
-    var node = (op === '+' || op === MINUS)
-      ? mkBin(op, E, mkNum(k))
-      : mkBin(op, isAddSub(e) ? mkParen(e) : E, mkNum(k));
-    node.opHl = true;
-    return node;
+  function ruleNothing(n) {
+    var i;
+    if (isAddSub(n)) {
+      var list = sumTerms(n);
+      for (i = 0; i < list.length; i++) {
+        if (termKind(list[i].node) && termVal(list[i]).n === 0) {
+          return {
+            target: n, repl: joinTerms(without(list, [i])), cls: 'm-redundant',
+            terms: [list[i].node.id], label: termText(list[i], i) + ' changes nothing'
+          };
+        }
+      }
+      return null;
+    }
+    if (n.t === 'pow' && n.e === 1) {
+      return { target: n, repl: n.base, cls: 'm-redundant', nodes: [n.id], label: 'An exponent of 1 changes nothing' };
+    }
+    if (n.t !== 'bin' || (n.op !== TIMES && n.op !== DIVIDE)) { return null; }
+    if (isNum(n.r) && eqR(valOf(n.r), ONE) && !isNum(n.l)) {
+      return {
+        target: n, repl: n.l, cls: 'm-redundant', ops: [{ id: n.id, side: 'r' }],
+        label: '<span class="m-op">' + n.op + '</span>1 changes nothing'
+      };
+    }
+    if (n.op === TIMES && isNum(n.l) && eqR(valOf(n.l), ONE) && !isNum(n.r)) {
+      var m = n.implicit ? { nodes: [n.l.id] } : { ops: [{ id: n.id, side: 'l' }] };
+      m.target = n; m.repl = n.r; m.cls = 'm-redundant'; m.label = '1<span class="m-op">' + TIMES + '</span> changes nothing';
+      return m;
+    }
+    return null;
+  }
+
+  /* A × k, k × A or A ÷ k, written with the sign (not 3x itself) */
+  function mulDivParts(n) {
+    if (n.t !== 'bin' || n.implicit) { return null; }
+    if ((n.op === DIVIDE || n.op === TIMES) && isNum(n.r) && !isNum(n.l)) { return { op: n.op, k: valOf(n.r), a: unwrap(n.l), side: 'r' }; }
+    if (n.op === TIMES && isNum(n.l) && !isNum(n.r)) { return { op: TIMES, k: valOf(n.l), a: unwrap(n.r), side: 'l' }; }
+    return null;
+  }
+
+  /* the c and the rest of c × B (3x, 3(x + 4), x × 3) */
+  function coefParts(a) {
+    if (a.t !== 'bin' || a.op !== TIMES) { return null; }
+    if (isNum(a.l)) { return { c: valOf(a.l), cNode: unwrap(a.l), b: a.r }; }
+    if (isNum(a.r)) { return { c: valOf(a.r), cNode: unwrap(a.r), b: a.l }; }
+    return null;
+  }
+
+  function mulDivResult(n, repl, cls, extra) {
+    var ctx = plainCtx(alg.frac);
+    return {
+      target: n, repl: repl, cls: cls, nodes: extra || [], ops: [{ id: n.id, side: mulDivParts(n).side }],
+      label: render(n, ctx) + '<span class="m-op">=</span>' + render(repl, ctx), newId: repl.id
+    };
+  }
+
+  function ruleUndo(n) {
+    var p = mulDivParts(n);
+    if (!p) { return null; }
+    var cp = coefParts(p.a);
+    if (cp && p.op === DIVIDE) {                          /* 3x ÷ 3 → x,  6x ÷ 3 → 2x */
+      var q = div(cp.c, p.k);
+      if (isInt(q)) { return mulDivResult(n, coef(q, cp.b), 'm-redundant', [cp.cNode.id]); }
+    }
+    if (p.op === TIMES && p.a.t === 'bin' && p.a.op === DIVIDE && isNum(p.a.r)) {
+      var d = valOf(p.a.r), q2 = div(d, p.k), inv = div(p.k, d);
+      if (isInt(q2)) { return mulDivResult(n, divBy(p.a.l, q2), 'm-redundant', [unwrap(p.a.r).id]); }   /* x ÷ 2 × 2 → x */
+      if (isInt(inv)) { return mulDivResult(n, coef(inv, p.a.l), 'm-redundant', [unwrap(p.a.r).id]); }   /* x ÷ 2 × 6 → 3x */
+    }
+    return null;
+  }
+
+  function ruleArith(n) {
+    var v;
+    if (n.t === 'bin' && isNum(n.l) && isNum(n.r)) { v = opApply(n.op, valOf(n.l), valOf(n.r)); }
+    else if (n.t === 'pow' && isNum(n.base)) { v = powR(valOf(n.base), n.e); }
+    else { return null; }
+    var repl = mkNum(v);
+    return {
+      target: n, repl: repl, cls: 'm-next', nodes: [n.id], newId: repl.id,
+      label: render(n, plainCtx(alg.frac)) + '<span class="m-op">=</span>' + numHtml(v)
+    };
+  }
+
+  function ruleSigns(n) {
+    if (!isAddSub(n)) { return null; }
+    var list = sumTerms(n);
+    for (var i = 1; i < list.length; i++) {
+      if (termKind(list[i].node) && isNegTerm(unwrap(list[i].node))) {
+        var e = list[i], flip = { op: e.op === '+' ? MINUS : '+', node: negTerm(e.node), opHl: false };
+        var out = list.slice();
+        out[i] = flip;
+        return {
+          target: n, repl: joinTerms(out), cls: 'm-next', terms: [e.node.id], newId: flip.node.id,
+          label: termText(e, i) + ' is the same as ' + termText(flip, i)
+        };
+      }
+    }
+    return null;
+  }
+
+  function ruleNumbers(n) {
+    if (!isAddSub(n)) { return null; }
+    var list = sumTerms(n), idx = [];
+    list.forEach(function (e, i) { if (isNum(e.node)) { idx.push(i); } });
+    return idx.length < 2 ? null : combineTerms(n, list, idx, 'num');
+  }
+
+  function ruleCoef(n) {
+    var p = mulDivParts(n);
+    if (!p) { return null; }
+    var cp = coefParts(p.a), repl = null;
+    if (p.op === TIMES && cp) { repl = coef(mul(cp.c, p.k), cp.b); }                     /* 3x × 2 → 6x */
+    else if (p.op === TIMES && (p.a.t === 'var' || p.a.t === 'pow' || isAddSub(p.a))) {
+      repl = coef(p.k, p.a);                                                             /* x × 3 → 3x */
+    } else if (p.op === DIVIDE && p.a.t === 'bin' && p.a.op === DIVIDE && isNum(p.a.r)) {
+      repl = divBy(p.a.l, mul(valOf(p.a.r), p.k));                                       /* x ÷ 2 ÷ 3 → x ÷ 6 */
+    }
+    return repl ? mulDivResult(n, repl, 'm-next') : null;
+  }
+
+  var TIDY_RULES = [ruleCancel, ruleNothing, ruleUndo, ruleArith, ruleSigns, ruleNumbers, ruleCoef];
+
+  /* the first node (reading order) a rule applies to; a sum is visited
+     once, as a whole, then its terms */
+  function walkFind(n, fn) {
+    var r = fn(n);
+    if (r) { return r; }
+    if (n.t === 'paren') { return walkFind(n.inner, fn); }
+    if (n.t === 'pow') { return walkFind(n.base, fn); }
+    if (n.t !== 'bin') { return null; }
+    var kids = isAddSub(n) ? sumTerms(n).map(function (e) { return e.node; }) : [n.l, n.r];
+    for (var i = 0; i < kids.length; i++) {
+      r = walkFind(kids[i], fn);
+      if (r) { return r; }
+    }
+    return null;
+  }
+
+  function findTidy(tree) {
+    for (var i = 0; i < TIDY_RULES.length; i++) {
+      var r = walkFind(tree, TIDY_RULES[i]);
+      if (r) { return r; }
+    }
+    return null;
+  }
+
+  /* after a change: ( ) where a sum needs them, none around a lone
+     number, x or power, and none around a whole side */
+  function tidyTree(n, top) {
+    var c, l, r;
+    if (n.t === 'paren') {
+      c = tidyTree(n.inner, false);
+      if (top) { return tidyTree(c, true); }
+      if (c.t === 'num' || c.t === 'var' || c.t === 'pow' || c.t === 'paren') { return c; }
+      return c === n.inner ? n : copyNode(n, { inner: c });
+    }
+    if (n.t === 'pow') {
+      c = tidyTree(n.base, false);
+      if (isAddSub(c)) { c = mkParen(c); }
+      return c === n.base ? n : copyNode(n, { base: c });
+    }
+    if (n.t !== 'bin') { return n; }
+    l = tidyTree(n.l, false);
+    r = tidyTree(n.r, false);
+    if (isAddSub(r) || (n.op === DIVIDE && r.t === 'bin')) { r = mkParen(r); }
+    if (!isAddSub(n) && isAddSub(l)) { l = mkParen(l); }
+    return (l === n.l && r === n.r) ? n : copyNode(n, { l: l, r: r });
   }
 
   /* the outermost thing done to x, e.g. 3x + 4 → { op: +, k: 4, inner: 3x } */
@@ -1015,14 +1446,12 @@
 
   /* ===================================================================
      8. STANDARD MATH MODE
-     state: 'edit' → 'stepping' (idx = steps done) → 'done' (finale)
+     The right pan always holds the value of what is typed, worked out
+     again on every change, in the chosen order: PEMDAS, or straight
+     left to right.
      =================================================================== */
 
-  /* playing: false, 'fwd' (Play all) or 'back' (Rewind all).
-     lastDir: which way the last step went, for the banner. */
-  var std = { state: 'edit', orig: null, value: null, steps: [], idx: 0, playTimer: null, finaleTimer: null, playing: false, lastDir: 'fwd' };
-  var stdPlayBtn = $('stdPlay');
-  var stdRewindBtn = $('stdRewind');
+  var std = { ltr: false, value: null };
 
   function stdCtx() { return { frac: false, hl: {}, dec: true }; }
   function stdNum(v) { return numHtml(v, true); }
@@ -1032,257 +1461,113 @@
   var stdBuilder = new Builder($('stdBuilder'), {
     placeholder: 'Type a number to start',
     expBtn: document.querySelector('.keys[data-target="stdBuilder"] .key-exp'),
-    onChange: function () {
-      if (std.state !== 'edit') { stdToEdit(); }
-      stdRender();
-    },
-    onEnter: function () { stdNext(); }
+    onChange: function () { stdRender(); },
+    onEnter: function () {}
   });
 
-  function stdStopPlay() {
-    clearTimeout(std.playTimer);
-    std.playTimer = null;
-    std.playing = false;
-    stdPlayBtn.setAttribute('aria-pressed', 'false');
-    stdPlayBtn.textContent = 'Play all';
-    stdRewindBtn.setAttribute('aria-pressed', 'false');
-    stdRewindBtn.textContent = 'Rewind all';
-  }
-
-  function stdStopAll() {
-    stdStopPlay();
-    clearTimeout(std.finaleTimer);
-    std.finaleTimer = null;
-  }
-
-  function stdToEdit() {
-    stdStopAll();
-    std.state = 'edit';
-    std.steps = [];
-    std.idx = 0;
-  }
-
-  /* parse and work out every step up front */
-  function stdPrepare() {
-    if (std.state !== 'edit') { return true; }
-    var p = stdBuilder.parse();
-    if (p.msg) { reject(stdBuilder, p.msg); return false; }
-    try {
-      std.value = evaluate(p.tree);
-      std.steps = buildSteps(p.tree);
-    } catch (e) {
-      if (e instanceof MathError) { say(MATH_MESSAGES[e.code]); shake(stdBuilder.el); return false; }
-      throw e;
-    }
-    say('');
-    std.orig = p.tree;
-    std.idx = 0;
-    std.state = 'stepping';
-    return true;
-  }
-
-  function stdAdvance() {
-    std.lastDir = 'fwd';
-    std.idx++;
-    stdRender();
-    if (std.idx >= std.steps.length) {
-      stdStopPlay();
-      std.finaleTimer = setTimeout(stdFinale, 3000);
-    }
-  }
-
-  function stdFinale() {
-    stdStopAll();
-    std.idx = std.steps.length;
-    std.state = 'done';
-    stdRender();
-  }
-
-  function stdNext() {
-    if (!stdPrepare()) { return; }
-    stdStopPlay();
-    if (std.state === 'done') { std.state = 'stepping'; std.idx = 0; }
-    if (std.idx >= std.steps.length) { stdFinale(); return; }
-    stdAdvance();
-  }
-
-  function stdPlay() {
-    if (std.playing === 'fwd') { stdStopPlay(); stdRender(); return; }
-    stdStopPlay();
-    if (!stdPrepare()) { return; }
-    if (std.state === 'done') { std.state = 'stepping'; std.idx = 0; }
-    if (std.idx >= std.steps.length) { stdFinale(); return; }
-    std.playing = 'fwd';
-    stdPlayBtn.setAttribute('aria-pressed', 'true');
-    stdPlayBtn.textContent = 'Pause';
-    (function tick() {
-      stdAdvance();
-      if (std.playing === 'fwd' && std.idx < std.steps.length) { std.playTimer = setTimeout(tick, 2000); }
-    })();
-  }
-
-  /* ---------- going backward: the inverse of the steps above ---------- */
-
-  function stdCanGoBack() {
-    if (std.state === 'done') { return std.steps.length > 0; }
-    return std.state === 'stepping' && std.idx > 0;
-  }
-
-  /* one step back; from the finale, back to "both sides match" */
-  function stdRetreat() {
-    clearTimeout(std.finaleTimer);
-    std.finaleTimer = null;
-    std.lastDir = 'back';
-    if (std.state === 'done') { std.state = 'stepping'; std.idx = std.steps.length; }
-    else { std.idx--; }
-    stdRender();
-  }
-
-  function stdBack() {
-    stdStopPlay();
-    if (!stdCanGoBack()) {
-      say(std.state === 'edit' ? 'Run the steps first, then you can step back through them.'
-        : 'This is the start: there is no step left to undo.', 'info');
-      return;
-    }
-    say('');
-    stdRetreat();
-  }
-
-  /* Rewind all: undo every step, 2 seconds apart, back to the start */
-  function stdRewind() {
-    if (std.playing === 'back') { stdStopPlay(); stdRender(); return; }
-    stdStopPlay();
-    var fromEdit = std.state === 'edit';
-    if (fromEdit) {
-      if (!stdPrepare()) { return; }
-      stdFinale();                       /* start from the finished answer */
-    }
-    if (!stdCanGoBack()) { say('This is the start: there is no step left to undo.', 'info'); return; }
-    say('');
-    std.playing = 'back';
-    stdRewindBtn.setAttribute('aria-pressed', 'true');
-    stdRewindBtn.textContent = 'Pause';
-    function tick() {
-      stdRetreat();
-      if (std.playing === 'back' && stdCanGoBack()) { std.playTimer = setTimeout(tick, 2000); }
-      else { stdStopPlay(); }
-    }
-    if (fromEdit) { std.playTimer = setTimeout(tick, 2000); } else { tick(); }
-  }
-
-  function stdInstant() {
-    if (!stdPrepare()) { return; }
-    stdFinale();
-  }
-
-  function setPemdas(step) {
+  /* light up the PEMDAS letters this expression uses */
+  function setPemdas(steps) {
     Array.prototype.forEach.call(pemdas.children, function (li) {
       var c = li.getAttribute('data-cat');
-      li.classList.toggle('is-on', !!step && (c === step.cat || (c === 'P' && step.inParens)));
+      li.classList.toggle('is-on', steps.some(function (s) { return s.cat === c || (c === 'P' && s.inParens); }));
     });
   }
 
-  function stdLogHtml(upto, current) {
+  function stdLogHtml(steps) {
     var h = '';
-    for (var i = 0; i < upto; i++) {
-      var s = std.steps[i];
-      h += '<li' + (i === current ? ' class="is-current"' : '') + '><div><span class="log-verb">' + s.verb +
-        (s.inParens ? ' · inside ( )' : '') + '</span><span class="log-math">' +
-        render(s.node, stdCtx()) + '<span class="m-op">=</span>' + stdNum(s.value) + '</span></div></li>';
-    }
+    steps.forEach(function (s) {
+      h += '<li><div><span class="log-verb">' + s.verb + (s.inParens ? ' · inside ( )' : '') +
+        '</span><span class="log-math">' + render(s.node, stdCtx()) + '<span class="m-op">=</span>' +
+        stdNum(s.value) + '</span></div></li>';
+    });
     stdLog.innerHTML = h;
-    $('stdLogEmpty').hidden = upto > 0;
+    $('stdLogEmpty').hidden = steps.length > 0;
   }
 
   function stdRender() {
     if (mode !== 'std') { return; }
-    var n = std.steps.length, ctx = stdCtx();
+    var B = stdBuilder;
 
-    if (std.state === 'edit') {
-      var empty = !stdBuilder.tokens.length;
-      scale.setSide('L', empty ? '?' : tokensHtml(stdBuilder.tokens, stdBuilder.expOpen, false), '', empty);
+    if (!B.items.length) {
+      std.value = null;
+      scale.setSide('L', '?', '', true);
       scale.setSide('R', '?', '', true);
-      scale.setBalance(empty ? null : 'some', null);
-      setBanner('std', empty
-        ? 'Type an expression. <span class="b-small">Numbers from the keyboard, everything else from the buttons.</span>'
-        : 'Ready? <span class="b-small">Press Next step, Play all or Instant.</span>');
-      setPemdas(null);
-      stdLogHtml(0, -1);
+      scale.setBalance(null, null);
+      setBanner('std', 'Type an expression. <span class="b-small">Numbers from the keyboard, everything else from the buttons.</span>');
+      setPemdas([]);
+      stdLogHtml([]);
       return;
     }
 
-    if (std.state === 'done') {
-      scale.setSide('L', render(std.orig, ctx), '', false, true);
-      scale.setSide('R', stdNum(std.value), '', false, true);
-      scale.setBalance(std.value, std.value);
-      setBanner('std', render(std.orig, ctx) + '<span class="m-op">=</span>' + stdNum(std.value) +
-        (n ? ' <span class="b-small">The expression and its value balance.</span>' : ' <span class="b-small">Nothing to simplify: it is already one number.</span>'), 'success');
-      setPemdas(null);
-      stdLogHtml(n, -1);
-      return;
+    var p = B.parse(std.ltr), msg = p.msg, kind = '', steps = [], value = null;
+    if (!msg) {
+      try {
+        steps = buildSteps(p.tree, std.ltr);
+        value = evaluate(p.tree);
+      } catch (e) {
+        if (!(e instanceof MathError)) { throw e; }
+        msg = MATH_MESSAGES[e.code];
+        kind = 'warn';
+      }
     }
 
-    var i = std.idx;
-    var tree = i === 0 ? std.orig : std.steps[i - 1].after;
-    if (i > 0) { ctx.hl[std.steps[i - 1].newId] = 'm-new'; }
-    if (i < n) { ctx.hl[std.steps[i].node.id] = 'm-next'; }
-    scale.setSide('L', render(tree, ctx), '', false);
-
-    var back = std.lastDir === 'back';
-    if (i === 0) {
-      scale.setSide('R', '?', '', true, back);
+    if (msg) {
+      std.value = null;
+      scale.setSide('L', B.html(), '', false);
+      scale.setSide('R', '?', '', true);
       scale.setBalance('some', null);
-      var s0 = std.steps[0];
-      if (back) {
-        setBanner('std', '<span class="b-tag">Back to the start</span> ' + stdNum(s0.value) + ' goes back to ' +
-          render(s0.node, stdCtx()) + ' <span class="b-small">The expression is whole again.</span>', 'step');
-      } else {
-        setBanner('std', '<span class="b-tag">Up next</span> ' + s0.verb + ': ' + render(s0.node, stdCtx()) +
-          ' <span class="b-small">Press Next step.</span>', 'step');
-      }
-    } else {
-      var s = std.steps[i - 1];
-      scale.setSide('R', stdNum(s.value), render(s.node, stdCtx()), false, true);
-      scale.setBalance(std.value, s.value);
-      if (back && i < n) {
-        var u = std.steps[i];
-        setBanner('std', '<span class="b-tag">Undo step ' + (i + 1) + '</span> ' + stdNum(u.value) + ' goes back to ' +
-          render(u.node, stdCtx()), 'step');
-      } else if (i < n) {
-        setBanner('std', '<span class="b-tag">Step ' + i + ' of ' + n + '</span> ' + s.verb + ': ' +
-          render(s.node, stdCtx()) + '<span class="m-op">=</span>' + stdNum(s.value), 'step');
-      } else {
-        setBanner('std', 'Both sides match: ' + stdNum(s.value) + '<span class="m-op">=</span>' + stdNum(s.value) +
-          (back ? ' <span class="b-small">Step back to unfold it again.</span>'
-                : ' <span class="b-small">The whole expression comes back in 3 seconds…</span>'), 'success');
-      }
+      setBanner('std', (kind ? '' : 'Keep going… ') + '<span class="b-small">' + msg + '</span>', kind);
+      setPemdas([]);
+      stdLogHtml([]);
+      return;
     }
-    setPemdas(i < n ? std.steps[i] : null);
-    stdLogHtml(i, i - 1);
+
+    var changed = !std.value || !eqR(std.value, value), ctx = stdCtx();
+    std.value = value;
+    scale.setSide('L', render(p.tree, ctx), '', false);
+    scale.setSide('R', stdNum(value), '', false, changed);
+    scale.setBalance(value, value);
+
+    var note = steps.length ? '' : ' <span class="b-small">Nothing to work out: it is already one number.</span>';
+    if (std.ltr && steps.length) {
+      var pv = null;
+      try { pv = evaluate(B.parse(false).tree); } catch (e) { if (!(e instanceof MathError)) { throw e; } }
+      note = pv && !eqR(pv, value)
+        ? ' <span class="b-small">That’s left to right. With PEMDAS it would be ' + stdNum(pv) + '.</span>'
+        : ' <span class="b-small">Left to right gives the same answer as PEMDAS here.</span>';
+    }
+    setBanner('std', render(p.tree, ctx) + '<span class="m-op">=</span>' + stdNum(value) + note, 'success');
+    setPemdas(std.ltr ? [] : steps);
+    stdLogHtml(steps);
   }
 
-  $('stdStep').addEventListener('click', stdNext);
-  stdPlayBtn.addEventListener('click', stdPlay);
-  $('stdBack').addEventListener('click', stdBack);
-  stdRewindBtn.addEventListener('click', stdRewind);
-  $('stdInstant').addEventListener('click', stdInstant);
-  $('stdReset').addEventListener('click', function () { stdToEdit(); say(''); stdRender(); });
+  document.querySelectorAll('input[name="stdOrder"]').forEach(function (r) {
+    r.addEventListener('change', function () {
+      std.ltr = radioVal('stdOrder') === 'ltr';
+      pemdas.hidden = std.ltr;
+      $('ltrNote').hidden = !std.ltr;
+      stdRender();
+    });
+  });
 
   /* ===================================================================
      9. SOLVE FOR X MODE
+     A move writes its operation onto the side(s), and it stays there
+     (marked) until Simplify tidies it away, one stage at a time.
+     Combine like terms adds up terms picked on the scale.
      =================================================================== */
 
   var alg = {
     source: 'random', frac: true, ready: false, everShown: false,
     x: null, origLeft: null, origRight: null, left: null, right: null,
     history: [], log: [], solved: false, revealed: false,
-    display: null, pendingMove: null, phaseTimer: null, checking: null, subView: null
+    simp: null, picking: null, newMark: null, checking: null, subView: null
   };
 
   var algLog = $('algLog');
   var xChip = $('xChip');
   var chainEl = $('chain');
+  var combineBtn = $('algCombine');
 
   function radioVal(name) {
     var el = document.querySelector('input[name="' + name + '"]:checked');
@@ -1304,9 +1589,16 @@
     onEnter: function () { algApply(); }
   });
 
+  function setAmtX(on) {
+    amtField.suffix = on;
+    amtField.render();
+    $('amtX').setAttribute('aria-pressed', on ? 'true' : 'false');
+  }
+
   var algBuilder = new Builder($('algBuilder'), {
     allowX: true,
-    placeholder: 'Build the left side',
+    allowEq: true,
+    placeholder: 'Build the equation',
     expBtn: document.querySelector('.keys[data-target="algBuilder"] .key-exp'),
     onChange: function () { algDirty(); },
     onEnter: function () { algPlace(); }
@@ -1321,25 +1613,17 @@
     return c === 0 ? '=' : '≠';
   }
 
+  /* x alone on one side, a number on the other */
   function isSolved() {
-    return unwrap(alg.left).t === 'var' && isNum(alg.right) && balanced();
+    var l = unwrap(alg.left), r = unwrap(alg.right);
+    return ((l.t === 'var' && isNum(r)) || (r.t === 'var' && isNum(l))) && balanced();
   }
 
   function eqEntry() {
     return { type: 'eq', left: alg.left, right: alg.right, rel: relOf(alg.left, alg.right), solved: isSolved() };
   }
 
-  /* end the "operation written on" moment: tidy both sides, then narrate */
-  function finishPhase() {
-    if (!alg.phaseTimer) { return; }
-    clearTimeout(alg.phaseTimer);
-    alg.phaseTimer = null;
-    alg.display = null;
-    var move = alg.pendingMove;
-    alg.pendingMove = null;
-    algRender(true);
-    algAfterMove(move);
-  }
+  function snapshot() { return { left: alg.left, right: alg.right, logLen: alg.log.length }; }
 
   function stopCheck() {
     if (!alg.checking) { return; }
@@ -1348,15 +1632,22 @@
     $('algCheck').disabled = false;
   }
 
-  function algStopAll() { finishPhase(); stopCheck(); alg.subView = null; }
+  function algStopAll() { finishSimplify(); stopCheck(); endPicking(); alg.subView = null; alg.newMark = null; }
 
-  function algSetEquation(left, rightVal, x) {
+  function algCanAct() {
+    if (alg.ready) { return true; }
+    say('Set up an equation first: press New equation or Put it on the scale.');
+    return false;
+  }
+
+  /* right: a tree (a number for random equations) */
+  function algSetEquation(left, right, x) {
     algStopAll();
     alg.x = x;
     alg.origLeft = left;
-    alg.origRight = rightVal;
+    alg.origRight = right;
     alg.left = left;
-    alg.right = mkNum(rightVal);
+    alg.right = right;
     alg.history = [];
     alg.solved = false;
     alg.revealed = false;
@@ -1364,6 +1655,7 @@
     alg.log = [eqEntry()];
     $('algReveal').setAttribute('aria-pressed', 'false');
     amtField.set('');
+    setAmtX(false);
     algRender(true);
     algAfterMove(null);
     refreshTargets();
@@ -1386,33 +1678,58 @@
   function algNew() {
     say('');
     var g = generate(parseInt(radioVal('algSteps'), 10), $('algNeg').checked);
-    algSetEquation(g.left, g.right, g.x);
+    algSetEquation(g.left, mkNum(g.right), g.x);
+  }
+
+  /* the x that makes L = R, when both sides are straight lines in x */
+  function solveFor(L, R) {
+    function f(t) { return sub(evaluate(L, t), evaluate(R, t)); }
+    try {
+      var f0 = f(rat(0)), a = sub(f(ONE), f0);
+      if (a.n === 0) { return null; }
+      var x = div(neg(f0), a);
+      if (!eqR(f(rat(2)), add(f0, mul(a, rat(2)))) || f(x).n !== 0) { return null; }
+      return x;
+    } catch (e) {
+      if (e instanceof MathError) { return null; }
+      throw e;
+    }
   }
 
   function algPlace() {
-    var p = algBuilder.parse();
+    var p = algBuilder.parse(false);
     if (p.msg) { reject(algBuilder, p.msg); return; }
-    if (!hasVar(p.tree)) { reject(algBuilder, 'Put an x in it: use the x button.'); return; }
-    var xv = xField.number();
-    if (xv === null) { reject(xField, 'Type a value for x first. It stays hidden.'); xField.el.focus(); return; }
-    var X = rat(xv), val;
+    if (!hasVar(p.tree) && !(p.right && hasVar(p.right))) { reject(algBuilder, 'Put an x in it: use the x button.'); return; }
+    var xv = xField.number(), X = xv === null ? null : rat(xv), right = p.right, worked = false;
     try {
-      val = evaluate(p.tree, X);
+      if (!right) {
+        if (!X) { reject(xField, 'Type a value for x first (it stays hidden), or press = and type the right side too.'); xField.el.focus(); return; }
+        right = mkNum(evaluate(p.tree, X));
+      } else if (X) {
+        if (cmpR(evaluate(p.tree, X), evaluate(right, X)) !== 0) {
+          reject(algBuilder, 'With that value of x the two sides aren’t equal. Change x or the equation, or clear x to have it worked out.');
+          return;
+        }
+      } else {
+        X = solveFor(p.tree, right);
+        if (!X) { reject(xField, 'x can’t be worked out from this equation. Type the value x should have.'); xField.el.focus(); return; }
+        worked = true;
+      }
     } catch (e) {
       if (e instanceof MathError) { say(MATH_MESSAGES[e.code] + ' Try another value for x.'); shake(algBuilder.el); return; }
       throw e;
     }
-    say('');
+    say(worked ? 'x was worked out from your equation. It stays hidden until it’s found.' : '', 'info');
     xField.masked = true;
     xField.render();
     $('xFieldEye').setAttribute('aria-pressed', 'false');
     $('xFieldEye').textContent = 'Show';
-    algSetEquation(p.tree, val, X);
+    algSetEquation(p.tree, right, X);
     refreshTargets();
   }
 
-  function moveText(op, k, side) {
-    var n = '<b>' + fmt(k) + '</b>';
+  function moveText(op, k, side, isX) {
+    var n = '<b>' + fmtAmt(k, isX) + '</b>';
     if (side === 'both') {
       if (op === '+') { return 'Add ' + n + ' to both sides'; }
       if (op === MINUS) { return 'Subtract ' + n + ' from both sides'; }
@@ -1426,19 +1743,26 @@
     return 'Divide ' + s + ' by ' + n;
   }
 
+  /* Submit: write the operation onto the chosen side(s) */
   function algApply() {
-    if (!alg.ready) { say('Set up an equation first: press New equation or Put it on the scale.'); return; }
+    if (!algCanAct()) { return; }
     algStopAll();
-    var op = radioVal('algOp'), side = radioVal('algSide'), kv = amtField.number();
+    var op = radioVal('algOp'), side = radioVal('algSide'), kv = amtField.number(), isX = !!amtField.suffix;
+    if (kv === null && isX) { kv = amtField.value === '-' ? -1 : 1; }
     if (kv === null) { reject(amtField, 'Type the number to use first.'); amtField.el.focus(); return; }
+    if (isX && (op === TIMES || op === DIVIDE)) {
+      reject(amtField, 'x terms can only be added or subtracted. Choose + or −, or turn x off.');
+      return;
+    }
+    if (isX && kv === 0) { reject(amtField, 'Adding 0x changes nothing. Try another number.'); return; }
     var k = rat(kv);
     if (op === DIVIDE && kv === 0) { reject(amtField, MATH_MESSAGES.zero); return; }
     if (op === TIMES && kv === 0) { reject(amtField, 'Multiplying by 0 turns both sides into 0, and x disappears. Try another number.'); return; }
 
-    var L = alg.left, R = alg.right, nl = L, nr = R, sl = null, sr = null;
+    var L = alg.left, R = alg.right, nl = L, nr = R;
     try {
-      if (side !== 'right') { nl = simplifyOp(L, op, k); sl = showOp(L, op, k); }
-      if (side !== 'left') { nr = simplifyOp(R, op, k); sr = showOp(R, op, k); }
+      if (side !== 'right') { nl = showOp(L, op, k, isX); }
+      if (side !== 'left') { nr = showOp(R, op, k, isX); }
       evaluate(nl, alg.x);
       evaluate(nr, alg.x);
     } catch (e) {
@@ -1447,25 +1771,181 @@
     }
     say('');
     var wasBalanced = balanced();
-    alg.solved = false;
-    alg.history.push({ left: L, right: R, logLen: alg.log.length });
+    alg.history.push(snapshot());
     alg.left = nl;
     alg.right = nr;
-    alg.log.push({ type: 'move', html: '<b>' + op + ' ' + fmt(k) + '</b> · ' + moveText(op, k, side), warn: side !== 'both' });
+    alg.log.push({ type: 'move', html: '<b>' + op + ' ' + fmtAmt(k, isX) + '</b> · ' + moveText(op, k, side, isX), warn: side !== 'both' });
     alg.log.push(eqEntry());
-
-    var move = { op: op, k: k, side: side, wasBalanced: wasBalanced };
-    if ($('algShowWork').checked && !reduceMotion) {
-      alg.display = { left: sl, right: sr };
-      alg.pendingMove = move;
-      algRender();
-      setBanner('alg', '<span class="b-tag">Now</span> ' + moveText(op, k, side), 'step');
-      alg.phaseTimer = setTimeout(finishPhase, 1300);
-    } else {
-      algRender(true);
-      algAfterMove(move);
-    }
+    algRender(true);
+    algAfterMove({ side: side, wasBalanced: wasBalanced });
   }
+
+  /* ---------- Simplify: mark, pause, tidy, pause, … ---------- */
+
+  function tidyStage() {
+    var L = findTidy(alg.left), R = findTidy(alg.right);
+    return (L || R) ? { L: L, R: R } : null;
+  }
+
+  function applyStage(st) {
+    if (st.L) { alg.left = tidyTree(replaceNode(alg.left, st.L.target, st.L.repl), true); }
+    if (st.R) { alg.right = tidyTree(replaceNode(alg.right, st.R.target, st.R.repl), true); }
+  }
+
+  function algSimplify() {
+    if (!algCanAct()) { return; }
+    algStopAll();
+    var st = tidyStage();
+    if (!st) { say('Nothing to simplify: no operations are left to clear away or work out.', 'info'); return; }
+    say('');
+    alg.history.push(snapshot());
+    alg.simp = { stage: st, phase: 'mark', timer: null, count: 0 };
+    $('algSimplify').disabled = true;
+    simpShow();
+  }
+
+  function simpShow() {
+    var s = alg.simp, st = s.stage, marking = s.phase === 'mark';
+    algRender(!marking);
+    var parts = [];
+    if (st.L) { parts.push('<span class="b-small">Left:</span> ' + st.L.label); }
+    if (st.R) { parts.push('<span class="b-small">Right:</span> ' + st.R.label); }
+    setBanner('alg', '<span class="b-tag">Simplify</span> ' + parts.join(' <span class="b-small">·</span> '), 'step');
+    s.timer = setTimeout(simpStep, marking ? 1500 : 1000);
+  }
+
+  function simpStep() {
+    var s = alg.simp;
+    if (s.phase === 'mark') {
+      applyStage(s.stage);
+      s.count++;
+      s.phase = 'new';
+      simpShow();
+      return;
+    }
+    var st = s.count < 60 ? tidyStage() : null;
+    if (!st) { simpDone(); return; }
+    s.stage = st;
+    s.phase = 'mark';
+    simpShow();
+  }
+
+  function simpDone() {
+    clearTimeout(alg.simp.timer);
+    alg.simp = null;
+    $('algSimplify').disabled = false;
+    alg.log.push({ type: 'move', html: '<b>Simplify</b> · clear away what cancels, work out what can be worked out' });
+    alg.log.push(eqEntry());
+    algRender(true);
+    algAfterMove({ side: 'simplify', wasBalanced: true });
+  }
+
+  /* skip to the end (anything else pressed part way through) */
+  function finishSimplify() {
+    var s = alg.simp;
+    if (!s) { return; }
+    clearTimeout(s.timer);
+    if (s.phase === 'mark') { applyStage(s.stage); }
+    for (var guard = 0, st; guard < 60 && (st = tidyStage()); guard++) { applyStage(st); }
+    simpDone();
+  }
+
+  /* ---------- Combine like terms: press, pick terms on the scale, press again ---------- */
+
+  function endPicking() {
+    alg.picking = null;
+    combineBtn.setAttribute('aria-pressed', 'false');
+    combineBtn.textContent = 'Combine like terms';
+    $('algCombineCancel').hidden = true;
+    $('scaleBox').classList.remove('is-picking');
+  }
+
+  function pickLabel() {
+    var n = alg.picking.ids.length;
+    combineBtn.textContent = n ? 'Combine ' + n + ' term' + (n > 1 ? 's' : '') : 'Pick the terms…';
+  }
+
+  function cancelPicking() {
+    endPicking();
+    say('');
+    algRender();
+    algAfterMove({ side: 'none', wasBalanced: true });
+  }
+
+  function algCombine() {
+    if (!algCanAct()) { return; }
+    var p = alg.picking;
+    if (!p) {
+      algStopAll();
+      say('');
+      alg.picking = { side: null, chain: null, kind: null, ids: [] };
+      combineBtn.setAttribute('aria-pressed', 'true');
+      pickLabel();
+      $('algCombineCancel').hidden = false;
+      $('scaleBox').classList.add('is-picking');
+      setBanner('alg', '<span class="b-tag">Combine like terms</span> Click the terms to put together. ' +
+        '<span class="b-small">x terms with x terms, numbers with numbers, on the same side.</span>', 'step');
+      algRender();
+      return;
+    }
+    if (p.ids.length < 2) { say('Click at least two like terms on the scale, then press this again.', 'info'); return; }
+
+    var tree = p.side === 'L' ? alg.left : alg.right;
+    var sumNode = findById(tree, p.chain), list = sumTerms(sumNode), idx = [];
+    list.forEach(function (e, i) { if (p.ids.indexOf(e.node.id) >= 0) { idx.push(i); } });
+    var res = combineTerms(sumNode, list, idx, p.kind);
+    var side = p.side;
+    endPicking();
+    say('');
+    alg.history.push(snapshot());
+    var nt = tidyTree(replaceNode(tree, sumNode, res.repl), true);
+    if (side === 'L') { alg.left = nt; } else { alg.right = nt; }
+    alg.newMark = res.newId ? { side: side, id: res.newId } : null;
+    alg.log.push({ type: 'move', html: '<b>Combine like terms</b> · ' + res.label });
+    alg.log.push(eqEntry());
+    algRender(true);
+    algAfterMove({ side: 'combine', wasBalanced: true, label: res.label });
+  }
+
+  /* a click on a term on the scale while picking */
+  function algPick(side, id, chainId) {
+    var p = alg.picking, tree = side === 'L' ? alg.left : alg.right;
+    var sumNode = findById(tree, chainId);
+    if (!sumNode || !isAddSub(sumNode)) { return; }
+    var e = sumTerms(sumNode).filter(function (t) { return t.node.id === id; })[0];
+    var kind = e ? termKind(e.node) : null;
+    if (!kind) { say('Only numbers and x terms (like 3x) can be combined.'); return; }
+    var at = p.ids.indexOf(id);
+    if (at >= 0) {
+      p.ids.splice(at, 1);
+      say('');
+    } else {
+      if (p.ids.length && (p.side !== side || p.chain !== chainId)) {
+        say('Like terms are combined on the same side of the scale, inside the same sum. That one starts a new pick.', 'info');
+        p.ids = [];
+      } else if (p.ids.length && p.kind !== kind) {
+        say(kind === 'x' ? 'That’s an x term, and the terms picked so far are numbers. Numbers go with numbers, x terms with x terms.'
+          : 'That’s a number, and the terms picked so far are x terms. Numbers go with numbers, x terms with x terms.');
+        return;
+      } else {
+        say('');
+      }
+      p.side = side;
+      p.chain = chainId;
+      p.kind = kind;
+      p.ids.push(id);
+    }
+    pickLabel();
+    algRender();
+  }
+
+  ['L', 'R'].forEach(function (side) {
+    $('card' + side).addEventListener('click', function (e) {
+      if (mode !== 'alg' || !alg.picking) { return; }
+      var t = e.target.closest('[data-term]');
+      if (t) { algPick(side, parseInt(t.getAttribute('data-term'), 10), parseInt(t.getAttribute('data-chain'), 10)); }
+    });
+  });
 
   /* narrate the move on the banner */
   function algAfterMove(move) {
@@ -1473,7 +1953,8 @@
     var eq = render(alg.left, ctx) + '<span class="m-op">' + relOf(alg.left, alg.right) + '</span>' + render(alg.right, ctx);
     alg.solved = isSolved();
     if (alg.solved) {
-      setBanner('alg', '<i class="m-var">x</i><span class="m-op">=</span>' + render(alg.right, ctx) +
+      var val = unwrap(alg.left).t === 'var' ? alg.right : alg.left;
+      setBanner('alg', '<i class="m-var">x</i><span class="m-op">=</span>' + render(val, ctx) +
         ' <span class="b-small">x is alone and the scale is level. Press Check the answer to test it.</span>', 'success');
     } else if (!move) {
       setBanner('alg', 'Find x. <span class="b-small">Undo what was done to x, and keep the scale level.</span>');
@@ -1486,44 +1967,82 @@
         setBanner('alg', 'The scale is not level. <span class="b-small">One side has had something done to it that the other has not.</span>', 'warn');
       }
     } else if (!move.wasBalanced) {
-      setBanner('alg', 'Level again: ' + eq + ' <span class="b-small">Both sides have now had the same thing done to them.</span>', 'success');
+      setBanner('alg', 'Level again: ' + eq + ' <span class="b-small">Both sides have now had the same thing done to them.' +
+        (tidyStage() ? ' Press Simplify to tidy up.' : '') + '</span>', 'success');
+    } else if (move.side === 'simplify') {
+      setBanner('alg', eq + ' <span class="b-small">Simplified. Nothing is left to clear away.</span>');
+    } else if (move.side === 'combine') {
+      setBanner('alg', eq + ' <span class="b-small">Like terms combined: ' + move.label + '</span>');
     } else {
-      setBanner('alg', eq + ' <span class="b-small">Still balanced: the same thing was done to both sides.</span>');
+      setBanner('alg', eq + ' <span class="b-small">' + (move.side === 'both' ? 'Still balanced: the same thing was done to both sides.' : 'Balanced.') +
+        (tidyStage() ? ' Press Simplify to tidy up.' : '') + '</span>');
     }
     algRender();
   }
 
+  /* the x term of a side (2x in 2x + 3), sign included */
+  function xTermOf(tree) {
+    var list = termsOf(unwrap(tree));
+    for (var i = 0; i < list.length; i++) {
+      if (termKind(list[i].node) === 'x') { return termVal(list[i]); }
+    }
+    return null;
+  }
+
+  /* x shows up in two terms of the same sum */
+  function hasLikeX(tree) {
+    return !!walkFind(tree, function (n) {
+      return isAddSub(n) && sumTerms(n).filter(function (e) { return termKind(e.node) === 'x'; }).length > 1;
+    });
+  }
+
   function algHint() {
-    if (!alg.ready) { say('Set up an equation first.'); return; }
+    if (!algCanAct()) { return; }
     algStopAll();
     if (!balanced()) {
       say('First level the scale: do the same operation to the other side, or press Take back last move.', 'info');
       return;
     }
-    var e = unwrap(alg.left);
-    if (e.t === 'var') { say('x is already alone. You’re done!', 'info'); return; }
-    var s = topStep(alg.left), op, k, why;
-    if (s) {
-      op = INVERSE[s.op];
-      k = s.k;
-      why = 'The last thing done to x is “' + s.op + ' ' + fmt(k) + '.” Undo it with the opposite: ' +
-        op + ' ' + fmt(k) + ' on both sides.';
-    } else if (e.t === 'bin' && e.op === MINUS && isNum(e.l)) {
-      op = MINUS;
-      k = valOf(e.l);
-      why = 'Here x is being taken away from ' + fmt(k) + '. Subtract ' + fmt(k) +
-        ' from both sides first, then divide by −1.';
-    } else if (countVar(alg.left) > 1) {
-      say('x shows up more than once. Those like terms would need to be combined first, which these moves can’t do.', 'info');
+    if (isSolved()) { say('x is already alone. You’re done!', 'info'); return; }
+    if (tidyStage()) { say('First press Simplify: part of the equation can be cleared away or worked out.', 'info'); return; }
+    if (hasLikeX(alg.left) || hasLikeX(alg.right)) {
+      say('x shows up more than once on one side. Press Combine like terms, click those x terms, then press it again.', 'info');
       return;
+    }
+    var op, k, why, isX = false;
+    var lx = hasVar(alg.left), rx = hasVar(alg.right);
+    if (lx && rx) {
+      var c = xTermOf(alg.right);
+      if (!c) { say('x is on both sides here in a way these moves can’t untangle.', 'info'); return; }
+      op = c.n > 0 ? MINUS : '+';
+      k = c.n > 0 ? c : neg(c);
+      isX = true;
+      why = 'x is on both sides. Move it off the right: ' + op + ' ' + fmtAmt(k, true).replace(/<\/?i>/g, '') + ' on both sides.';
     } else {
-      say('This one needs more than + − × ÷ to undo (an exponent needs a root).', 'info');
-      return;
+      var xs = lx ? alg.left : alg.right, e = unwrap(xs), s = topStep(xs);
+      if (s) {
+        op = INVERSE[s.op];
+        k = s.k;
+        why = 'The last thing done to x is “' + s.op + ' ' + fmt(k) + '.” Undo it with the opposite: ' +
+          op + ' ' + fmt(k) + ' on both sides.';
+      } else if (e.t === 'bin' && e.op === MINUS && isNum(e.l)) {
+        op = MINUS;
+        k = valOf(e.l);
+        why = 'Here x is being taken away from ' + fmt(k) + '. Subtract ' + fmt(k) +
+          ' from both sides first, then divide by −1.';
+      } else if (countVar(xs) > 1) {
+        say('x shows up more than once, in a way Combine like terms can’t reach.', 'info');
+        return;
+      } else {
+        say('This one needs more than + − × ÷ to undo (an exponent needs a root).', 'info');
+        return;
+      }
     }
     if (isInt(k)) {
       setRadio('algOp', op);
       setRadio('algSide', 'both');
       amtField.set(String(k.n));
+      setAmtX(isX);
       why += ' It’s set up below. Press Submit.';
     }
     say(why, 'info');
@@ -1559,28 +2078,32 @@
     algStopAll();
     say('');
     var ids = [];
-    alg.subView = { tree: substitute(alg.origLeft, alg.x, ids), ids: ids };
+    alg.subView = { left: substitute(alg.origLeft, alg.x, ids), right: substitute(alg.origRight, alg.x, ids), ids: ids };
     algRender(true);
     setBanner('alg', 'The original equation, with ' + (ids.length > 1 ? 'each' : 'the') + ' <i class="m-var">x</i> replaced by ' +
       numHtml(alg.x) + ' <span class="b-small">The scale is still level: ' + numHtml(alg.x) + ' is the value that makes it true.</span>', 'success');
   }
 
-  /* put x back in and simplify the original left side, step by step */
+  /* put x back in and simplify the original sides, left then right, step by step */
   function algCheck() {
     if (!alg.solved) { return; }
     algStopAll();
     say('');
-    var ids = [];
-    var tree = substitute(alg.origLeft, alg.x, ids);
-    var steps;
-    try { steps = buildSteps(tree); } catch (e) { if (e instanceof MathError) { say(MATH_MESSAGES[e.code]); return; } throw e; }
-    alg.checking = { tree: tree, steps: steps, idx: 0, subIds: ids, timer: null, done: false };
+    var ids = [], c;
+    var lt = substitute(alg.origLeft, alg.x, ids), rt = substitute(alg.origRight, alg.x, ids);
+    try {
+      c = { L: lt, R: rt, sl: buildSteps(lt), sr: buildSteps(rt), value: evaluate(lt), idx: 0, subIds: ids, timer: null, done: false };
+    } catch (e) {
+      if (e instanceof MathError) { say(MATH_MESSAGES[e.code]); return; }
+      throw e;
+    }
+    alg.checking = c;
     $('algCheck').disabled = true;
     checkRender();
+    var n = c.sl.length + c.sr.length;
     (function tick() {
-      var c = alg.checking;
-      if (!c) { return; }
-      if (c.idx < c.steps.length) {
+      if (alg.checking !== c) { return; }
+      if (c.idx < n) {
         c.timer = setTimeout(function () { c.idx++; checkRender(); tick(); }, c.idx === 0 ? 2200 : 1800);
       } else {
         c.timer = setTimeout(function () { c.done = true; checkRender(); $('algCheck').disabled = false; }, 3000);
@@ -1590,36 +2113,45 @@
 
   function checkRender() {
     if (mode !== 'alg') { return; }
-    var c = alg.checking, ctx = plainCtx(alg.frac), n = c.steps.length, i = c.idx;
+    var c = alg.checking, nL = c.sl.length, n = nL + c.sr.length, i = c.idx;
+    var lctx = plainCtx(alg.frac), rctx = plainCtx(alg.frac);
     var xs = '<i class="m-var">x</i><span class="m-op">=</span>' + numHtml(alg.x);
     if (c.done) {
-      scale.setSide('L', render(alg.origLeft, ctx), '', false, true);
-      scale.setSide('R', numHtml(alg.origRight), '', false, true);
-      setBanner('alg', render(alg.origLeft, ctx) + '<span class="m-op">=</span>' + numHtml(alg.origRight) +
+      scale.setSide('L', render(alg.origLeft, lctx), '', false, true);
+      scale.setSide('R', render(alg.origRight, rctx), '', false, true);
+      setBanner('alg', render(alg.origLeft, lctx) + '<span class="m-op">=</span>' + render(alg.origRight, rctx) +
         ' <span class="b-small">is true when</span> ' + xs, 'success');
     } else {
-      var tree = i === 0 ? c.tree : c.steps[i - 1].after;
-      if (i === 0) { c.subIds.forEach(function (id) { ctx.hl[id] = 'm-sub'; }); }
-      else { ctx.hl[c.steps[i - 1].newId] = 'm-new'; }
-      if (i < n) { ctx.hl[c.steps[i].node.id] = 'm-next'; }
-      scale.setSide('L', render(tree, ctx), '', false, i > 0);
-      scale.setSide('R', numHtml(alg.origRight), '', false);
+      var li = Math.min(i, nL), ri = Math.max(0, i - nL);
+      var lt = li === 0 ? c.L : c.sl[li - 1].after, rt = ri === 0 ? c.R : c.sr[ri - 1].after;
+      if (i === 0) {
+        c.subIds.forEach(function (id) { lctx.hl[id] = 'm-sub'; rctx.hl[id] = 'm-sub'; });
+      } else if (i <= nL) {
+        lctx.hl[c.sl[i - 1].newId] = 'm-new';
+      } else {
+        rctx.hl[c.sr[i - nL - 1].newId] = 'm-new';
+      }
+      if (i < nL) { lctx.hl[c.sl[i].node.id] = 'm-next'; }
+      else if (i < n) { rctx.hl[c.sr[i - nL].node.id] = 'm-next'; }
+      scale.setSide('L', render(lt, lctx), '', false, i > 0 && i <= nL);
+      scale.setSide('R', render(rt, rctx), '', false, i > nL);
       if (i === 0) {
         setBanner('alg', '<span class="b-tag">Check</span> Put ' + xs + ' back into the original equation.', 'step');
       } else if (i < n) {
-        var s = c.steps[i - 1];
+        var s = i <= nL ? c.sl[i - 1] : c.sr[i - nL - 1];
         setBanner('alg', '<span class="b-tag">Check ' + i + ' of ' + n + '</span> ' + s.verb + ': ' +
           render(s.node, plainCtx(alg.frac)) + '<span class="m-op">=</span>' + numHtml(s.value), 'step');
       } else {
-        setBanner('alg', '✓ ' + numHtml(alg.origRight) + '<span class="m-op">=</span>' + numHtml(alg.origRight) +
+        setBanner('alg', '✓ ' + numHtml(c.value) + '<span class="m-op">=</span>' + numHtml(c.value) +
           ' <span class="b-small">It balances, so</span> ' + xs + ' <span class="b-small">is right.</span>', 'success');
       }
     }
-    scale.setBalance(alg.origRight, alg.origRight);
+    scale.setBalance(c.value, c.value);
   }
 
   /* the forward chain (how x was built) above the backward one (how it was undone) */
   function chainHtml() {
+    if (!isNum(alg.origRight)) { return ''; }
     var ch = peel(alg.origLeft);
     if (!ch || !ch.length) { return ''; }
     var vals = [alg.x];
@@ -1657,17 +2189,38 @@
     $('algLogEmpty').hidden = alg.log.length > 0;
   }
 
+  /* highlights for one side of the scale: operations waiting for
+     Simplify, what Simplify is about to tidy, terms being picked */
+  function sideCtx(side) {
+    var ctx = plainCtx(alg.frac), s = alg.simp, st = s && s.stage[side];
+    ctx.pending = true;
+    ctx.terms = {};
+    ctx.marks = {};
+    if (st && s.phase === 'mark') {
+      (st.nodes || []).forEach(function (id) { ctx.hl[id] = st.cls; });
+      (st.terms || []).forEach(function (id) { ctx.terms[id] = st.cls; });
+      (st.ops || []).forEach(function (o) { ctx.marks[o.id] = { side: o.side, cls: st.cls }; });
+    } else if (st && st.newId) {
+      ctx.hl[st.newId] = 'm-new';
+    }
+    if (alg.picking && alg.picking.side === side) {
+      alg.picking.ids.forEach(function (id) { ctx.terms[id] = 'm-picked'; });
+    }
+    if (alg.newMark && alg.newMark.side === side) { ctx.hl[alg.newMark.id] = 'm-new'; }
+    return ctx;
+  }
+
   function algRender(flash) {
     if (mode !== 'alg') { return; }
     if (alg.checking) { checkRender(); }
 
     if (!alg.ready) {
-      var building = alg.source === 'build' && algBuilder.tokens.length;
-      scale.setSide('L', building ? tokensHtml(algBuilder.tokens, algBuilder.expOpen, false) : '?', '', !building);
+      var building = alg.source === 'build' && algBuilder.items.length;
+      scale.setSide('L', building ? algBuilder.html() : '?', '', !building);
       scale.setSide('R', '?', '', true);
       scale.setBalance(building ? 'some' : null, null);
       setBanner('alg', alg.source === 'build'
-        ? 'Choose a value for x, build the left side, then press <span class="b-small">Put it on the scale.</span>'
+        ? 'Build the equation, then press <span class="b-small">Put it on the scale.</span>'
         : 'Press New equation. <span class="b-small">Choose 1, 2 or 3 steps first.</span>');
       xChip.hidden = mode !== 'alg';
       $('xChipVal').textContent = '?';
@@ -1682,18 +2235,13 @@
       /* the original equation, with each x replaced by (its value) */
       var sctx = plainCtx(alg.frac);
       alg.subView.ids.forEach(function (id) { sctx.hl[id] = 'm-sub'; });
-      scale.setSide('L', render(alg.subView.tree, sctx), '', false, flash);
-      scale.setSide('R', numHtml(alg.origRight), '', false, flash);
-      scale.setBalance(alg.origRight, alg.origRight);
+      var v = evaluate(alg.origLeft, alg.x);
+      scale.setSide('L', render(alg.subView.left, sctx), '', false, flash);
+      scale.setSide('R', render(alg.subView.right, sctx), '', false, flash);
+      scale.setBalance(v, v);
     } else if (!alg.checking) {
-      var ctx = plainCtx(alg.frac);
-      var L = alg.left, R = alg.right;
-      if (alg.display) {
-        if (alg.display.left) { L = alg.display.left; ctx.hl[L.r.id] = 'm-pending'; }
-        if (alg.display.right) { R = alg.display.right; ctx.hl[R.r.id] = 'm-pending'; }
-      }
-      scale.setSide('L', render(L, ctx), '', false, flash);
-      scale.setSide('R', render(R, ctx), '', false, flash);
+      scale.setSide('L', render(alg.left, sideCtx('L')), '', false, flash);
+      scale.setSide('R', render(alg.right, sideCtx('R')), '', false, flash);
       scale.setBalance(evaluate(alg.left, alg.x), evaluate(alg.right, alg.x));
     }
 
@@ -1718,11 +2266,26 @@
   $('algNew').addEventListener('click', algNew);
   $('algPlace').addEventListener('click', algPlace);
   $('algApply').addEventListener('click', algApply);
+  $('algSimplify').addEventListener('click', algSimplify);
+  $('algCombine').addEventListener('click', algCombine);
+  $('algCombineCancel').addEventListener('click', cancelPicking);
   $('algHint').addEventListener('click', algHint);
   $('algUndo').addEventListener('click', algUndo);
   $('algRestart').addEventListener('click', algRestart);
   $('algCheck').addEventListener('click', algCheck);
   $('algPlug').addEventListener('click', algPlug);
+
+  $('amtX').addEventListener('click', function () {
+    setAmtX(!amtField.suffix);
+    if (amtField.suffix && (radioVal('algOp') === TIMES || radioVal('algOp') === DIVIDE)) { setRadio('algOp', MINUS); }
+  });
+
+  /* × and ÷ don't go with x terms */
+  document.querySelectorAll('input[name="algOp"]').forEach(function (r) {
+    r.addEventListener('change', function () {
+      if (amtField.suffix && (r.value === TIMES || r.value === DIVIDE)) { setAmtX(false); }
+    });
+  });
 
   $('algReveal').addEventListener('click', function () {
     alg.revealed = !alg.revealed;
@@ -1787,8 +2350,14 @@
     var inField = !!(a && a.__ebField);
     var t = currentTarget();
 
+    if (e.key === 'Escape' && mode === 'alg' && alg.picking) { cancelPicking(); return; }
+    if (inField && t instanceof Builder && /^(ArrowLeft|ArrowRight|Home|End)$/.test(e.key)) { e.preventDefault(); t.move(e.key); return; }
     if (/^[0-9]$/.test(e.key)) { e.preventDefault(); t.key(e.key); return; }
-    if (e.key === 'Backspace' || e.key === 'Delete') { e.preventDefault(); t.key('back'); return; }
+    if (e.key === 'Backspace' || e.key === 'Delete') {
+      e.preventDefault();
+      t.key(e.key === 'Delete' && t instanceof Builder ? 'del' : 'back');
+      return;
+    }
     if (e.key === '-' && t.allowMinus) { e.preventDefault(); t.key('-'); return; }
     if (e.key === 'Enter' && (inField || a === document.body)) { e.preventDefault(); t.enter(); return; }
     if (inField && e.key.length === 1 && e.key !== ' ') {
@@ -1831,11 +2400,7 @@
 
   function setMode(m) {
     if (m === mode) { return; }
-    if (mode === 'std') {
-      /* a finale that was about to play just happens off-screen */
-      if (std.finaleTimer) { stdStopAll(); std.state = 'done'; std.idx = std.steps.length; }
-      stdStopPlay();
-    } else {
+    if (mode === 'alg') {
       var hadSub = !!alg.subView;
       algStopAll();
       if (hadSub) { algAfterMove({ side: 'both', wasBalanced: true }); }   /* restore the solved banner */

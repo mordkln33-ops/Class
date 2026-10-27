@@ -1,0 +1,10 @@
+body{
+    background-color: aqua;
+}
+
+.bodyImg{
+    position: absolute;
+    left: 40%;
+    top: 25%;
+    height: 50%;
+}

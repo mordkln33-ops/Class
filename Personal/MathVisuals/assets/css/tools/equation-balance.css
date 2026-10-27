@@ -281,6 +281,8 @@ html[data-theme="dark"] .tool-frame {
 
 .key-op { font-size: var(--fs-xl); --btn-fg: var(--color-accent); }
 .key-wide { grid-column: span 2; }
+.key-span3 { grid-column: span 3; }
+.key-full { grid-column: 1 / -1; }
 .key-x { --btn-fg: var(--eb-var); font-size: var(--fs-xl); }
 .key-x i { font-family: Georgia, "Times New Roman", serif; }
 .key-exp { gap: 0; }
@@ -294,27 +296,7 @@ html[data-theme="dark"] .tool-frame {
 
 .keys .btn-danger { font-size: var(--fs-md); }
 
-/* ---------- run buttons + PEMDAS strip ---------- */
-
-/* row 1: Step back | Next step (equal halves); row 2: Rewind all | Play all | Instant (equal thirds) */
-.run-row {
-  display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-  gap: var(--space-2);
-}
-
-.run-row .btn { grid-column: span 2; }
-.run-row #stdBack,
-.run-row #stdStep { grid-column: span 3; }
-
-.run-row .btn { padding-inline: .5em; font-size: var(--fs-md); }
-
-#stdPlay[aria-pressed="true"],
-#stdRewind[aria-pressed="true"] {
-  --btn-bg: var(--color-warning-soft);
-  --btn-border: var(--color-warning);
-  --btn-bg-hover: var(--color-warning-soft);
-}
+/* ---------- PEMDAS strip ---------- */
 
 .pemdas {
   display: grid;
@@ -478,7 +460,7 @@ html[data-theme="dark"] .tool-frame {
 .seg-frac span:first-child { border-bottom: 2px solid currentColor; }
 
 .segmented-ops { flex: none; }
-.segmented-ops input + span { min-width: 2.2em; padding-inline: .4em; font-size: var(--fs-xl); }
+.segmented-ops input + span { min-width: 1.6em; padding-inline: .25em; font-size: var(--fs-xl); }
 
 .field-row {
   display: flex;
@@ -509,6 +491,32 @@ html[data-theme="dark"] .tool-frame {
 }
 
 .keyfield-amt { font-size: var(--fs-xl); }
+
+/* the x switch next to the Undo number: on = add or subtract an x term */
+.op-row .keyfield { flex-basis: 0; min-width: 2.2em; }
+.amt-x { flex: none; min-width: 2em; padding-inline: .3em; }
+
+#amtX[aria-pressed="true"] {
+  --btn-bg: var(--eb-pend-bg);
+  --btn-border: var(--eb-var);
+  --btn-bg-hover: var(--eb-pend-bg);
+}
+
+/* Simplify | Combine like terms */
+.tidy-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+
+.tidy-row .btn { padding-inline: .5em; font-size: var(--fs-md); line-height: 1.15; white-space: normal; }
+.tidy-cancel { grid-column: 1 / -1; }
+
+#algCombine[aria-pressed="true"] {
+  --btn-bg: var(--eb-next-bg);
+  --btn-border: var(--eb-next-line);
+  --btn-bg-hover: var(--eb-next-bg);
+}
 
 .check {
   display: flex;
@@ -698,7 +706,47 @@ html[data-theme="dark"] .tool-frame {
   box-shadow: 0 0 0 .06em var(--eb-pend-line);
 }
 
-.m-op.m-pending-op { color: var(--eb-pend-line); }
+/* Simplify: about to be cleared away (crossed out, sign included) */
+.m-redundant {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  border-radius: .2em;
+  padding: 0 .08em;
+  color: var(--color-danger);
+  background: var(--color-danger-soft);
+  box-shadow: 0 0 0 .06em var(--color-danger);
+}
+
+.m-redundant::after {
+  content: "";
+  position: absolute;
+  left: .05em;
+  right: .05em;
+  top: 50%;
+  height: .08em;
+  background: currentColor;
+  border-radius: .04em;
+  transform: rotate(-8deg);
+}
+
+/* Combine like terms: click a term (with its sign) to pick it */
+.is-picking .m-term {
+  cursor: pointer;
+  border-radius: .2em;
+}
+
+.is-picking .m-term:hover:not(:has(.m-term:hover)) {
+  box-shadow: 0 0 0 .06em var(--color-accent);
+}
+
+.m-term.m-picked {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 .08em;
+  background: var(--eb-next-bg);
+  box-shadow: 0 0 0 .08em var(--eb-next-line);
+}
 
 /* a value put back in for x: x's color, plus a small "x" tag on top */
 .m-sub {
@@ -1041,10 +1089,6 @@ html[data-theme="dark"] .tool-frame {
 
 @media (max-width: 480px) {
   .keys { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--space-1); }
-  .run-row { grid-template-columns: 1fr; }
-  .run-row .btn,
-  .run-row #stdBack,
-  .run-row #stdStep { grid-column: auto; }
   .segmented-full input + span { padding-inline: .4em; }
 }
 

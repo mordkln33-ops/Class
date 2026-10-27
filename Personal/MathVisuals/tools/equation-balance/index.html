@@ -200,7 +200,7 @@
             <h2 class="card-title">1 · Build the expression</h2>
             <div class="builder" id="stdBuilder" tabindex="0" role="textbox"
                  aria-label="Expression" aria-describedby="stdBuilderHint"></div>
-            <p class="hint" id="stdBuilderHint">Type the numbers on your keyboard. Use these buttons for everything else.</p>
+            <p class="hint" id="stdBuilderHint">Type the numbers on your keyboard. Use these buttons for everything else. Click anywhere in the expression (or use ◀ ▶) to change it there.</p>
             <div class="keys" data-target="stdBuilder">
               <button class="btn key key-op" type="button" data-key="+" aria-label="Plus">+</button>
               <button class="btn key key-op" type="button" data-key="−" aria-label="Minus">−</button>
@@ -209,34 +209,32 @@
               <button class="btn key key-exp" type="button" data-key="^" aria-label="Exponent" aria-pressed="false" title="Exponent: press, type the power, press again (or any operation) to come back down">a<sup>n</sup></button>
               <button class="btn key" type="button" data-key="(" aria-label="Open parenthesis">(</button>
               <button class="btn key" type="button" data-key=")" aria-label="Close parenthesis">)</button>
+              <button class="btn key" type="button" data-key="left" aria-label="Move the caret left" title="Move the caret left">◀</button>
+              <button class="btn key" type="button" data-key="right" aria-label="Move the caret right" title="Move the caret right">▶</button>
               <button class="btn key" type="button" data-key="back" aria-label="Backspace" title="Backspace">⌫</button>
-              <button class="btn key btn-danger key-wide" type="button" data-key="clear">Clear</button>
+              <button class="btn key btn-danger key-full" type="button" data-key="clear">Clear</button>
             </div>
           </div>
 
           <div class="card">
-            <h2 class="card-title">2 · Simplify it</h2>
-            <div class="run-row">
-              <button id="stdBack" class="btn btn-lg" type="button"><span aria-hidden="true">◀</span> Step back</button>
-              <button id="stdStep" class="btn btn-primary btn-lg run-main" type="button">Next step <span aria-hidden="true">▶</span></button>
-              <button id="stdRewind" class="btn btn-lg" type="button" aria-pressed="false">Rewind all</button>
-              <button id="stdPlay" class="btn btn-lg" type="button" aria-pressed="false">Play all</button>
-              <button id="stdInstant" class="btn btn-lg" type="button">Instant</button>
+            <h2 class="card-title">2 · Choose the order</h2>
+            <div class="segmented segmented-full" role="radiogroup" aria-label="Order to work it out in">
+              <label><input type="radio" name="stdOrder" value="pemdas" checked><span>PEMDAS</span></label>
+              <label><input type="radio" name="stdOrder" value="ltr"><span>Left to right</span></label>
             </div>
 
-            <ol class="pemdas" id="pemdas" aria-label="Order of operations">
+            <ol class="pemdas" id="pemdas" aria-label="Order of operations (the ones this expression uses light up)">
               <li data-cat="P"><b>P</b><span>Parentheses</span></li>
               <li data-cat="E"><b>E</b><span>Exponents</span></li>
               <li data-cat="MD"><b>MD</b><span>× ÷ left to right</span></li>
               <li data-cat="AS"><b>AS</b><span>+ − left to right</span></li>
             </ol>
+            <p class="hint" id="ltrNote" hidden>No order of operations: every + − × ÷ is done in reading order, left to right.
+              A group in ( ) is worked out when you reach it, and an exponent stays with its number.</p>
           </div>
 
           <div class="card">
-            <div class="card-head">
-              <h2 class="card-title">Steps</h2>
-              <button id="stdReset" class="btn btn-sm" type="button">Start again</button>
-            </div>
+            <h2 class="card-title">Steps</h2>
             <ol class="log" id="stdLog"></ol>
             <p class="log-empty" id="stdLogEmpty">The steps will be listed here.</p>
           </div>
@@ -283,8 +281,10 @@
                 <button id="xFieldEye" class="btn btn-sm" type="button" aria-pressed="false">Show</button>
               </div>
               <div class="builder" id="algBuilder" tabindex="0" role="textbox"
-                   aria-label="Left side of the equation" aria-describedby="algBuilderHint"></div>
-              <p class="hint" id="algBuilderHint">Build the left side with x. The right side is worked out for you.</p>
+                   aria-label="Equation" aria-describedby="algBuilderHint"></div>
+              <p class="hint" id="algBuilderHint">Build the left side with x. Press = to type the right side as well
+                (x can be on both sides), or leave it off and the right side is worked out from x.
+                With both sides typed, the value of x is optional: leave it blank and it is worked out.</p>
               <div class="keys" data-target="algBuilder">
                 <button class="btn key key-op" type="button" data-key="+" aria-label="Plus">+</button>
                 <button class="btn key key-op" type="button" data-key="−" aria-label="Minus">−</button>
@@ -294,8 +294,11 @@
                 <button class="btn key" type="button" data-key="(" aria-label="Open parenthesis">(</button>
                 <button class="btn key" type="button" data-key=")" aria-label="Close parenthesis">)</button>
                 <button class="btn key key-x" type="button" data-key="x" aria-label="x"><i>x</i></button>
+                <button class="btn key key-op" type="button" data-key="=" aria-label="Equals">=</button>
                 <button class="btn key" type="button" data-key="back" aria-label="Backspace" title="Backspace">⌫</button>
-                <button class="btn key btn-danger" type="button" data-key="clear">Clear</button>
+                <button class="btn key" type="button" data-key="left" aria-label="Move the caret left" title="Move the caret left">◀</button>
+                <button class="btn key" type="button" data-key="right" aria-label="Move the caret right" title="Move the caret right">▶</button>
+                <button class="btn key btn-danger key-span3" type="button" data-key="clear">Clear</button>
               </div>
               <button id="algPlace" class="btn btn-primary btn-lg btn-block" type="button">Put it on the scale</button>
             </div>
@@ -309,7 +312,7 @@
           </div>
 
           <div class="card" id="algOpsCard">
-            <h2 class="card-title">2 · Undo it</h2>
+            <h2 class="card-title">2 · Solve it</h2>
 
             <div class="op-row">
               <div class="segmented segmented-ops" role="radiogroup" aria-label="Operation">
@@ -319,6 +322,7 @@
                 <label><input type="radio" name="algOp" value="÷"><span aria-label="Divide by">÷</span></label>
               </div>
               <div class="keyfield keyfield-amt" id="amtField" tabindex="0" role="textbox" aria-label="Number to use"></div>
+              <button id="amtX" class="btn key key-x amt-x" type="button" aria-pressed="false" aria-label="Make it an x term" title="Make it an x term, like 2x (for + and − only)"><i>x</i></button>
             </div>
 
             <div class="segmented segmented-full" role="radiogroup" aria-label="Which side of the scale">
@@ -328,6 +332,12 @@
             </div>
 
             <button id="algApply" class="btn btn-primary btn-lg btn-block" type="button">Submit</button>
+
+            <div class="tidy-row">
+              <button id="algSimplify" class="btn btn-lg" type="button" title="Clear away operations that cancel, and work out what can be worked out">Simplify</button>
+              <button id="algCombine" class="btn btn-lg" type="button" aria-pressed="false">Combine like terms</button>
+              <button id="algCombineCancel" class="btn btn-sm tidy-cancel" type="button" hidden>Cancel picking</button>
+            </div>
 
             <p class="inverse-pairs" aria-label="Inverse operations">
               <span class="pair"><b>+</b> undoes <b>−</b></span>
@@ -341,7 +351,6 @@
               <button id="algRestart" class="btn btn-sm" type="button">Start over</button>
               <button id="algReveal" class="btn btn-sm" type="button" aria-pressed="false">Peek at x</button>
             </div>
-            <label class="check check-sm"><input type="checkbox" id="algShowWork" checked> Show each operation before simplifying</label>
           </div>
 
           <div class="card">
@@ -406,25 +415,23 @@
         <p class="overline">Teacher notes</p>
         <h2 id="about-tool-title">A balance scale that keeps both sides honest</h2>
         <p class="lead">Equation Balance puts an expression or an equation on a two-pan scale. In Standard math,
-          students watch an expression simplify one operation at a time, in order-of-operations order.
+          students see an expression balance its value, with every step listed in order-of-operations order
+          (or left to right, to show why the order matters).
           In Solve for x, they undo an equation one inverse operation at a time, and the scale tips the moment
           they change only one side.</p>
 
-        <h3>Standard math: the order of operations, one step at a time</h3>
+        <h3>Standard math: the order of operations, live</h3>
         <p>Type the numbers on the keyboard and use the buttons for <strong>+ − × ÷</strong>, parentheses and
           exponents. To type an exponent, press <strong>a<sup>n</sup></strong>, type the power, then press it again
-          (or press any operation) to come back down. The expression appears on the left pan as you type.</p>
-        <ul>
-          <li><strong>Step back</strong> undoes one step at a time, and <strong>Rewind all</strong> undoes them all,
-            2 seconds apart, until the original expression is back. It’s Play all in reverse.</li>
-          <li><strong>Next step</strong> does one operation per press. The part that goes next is outlined,
-            the PEMDAS strip lights up the rule being used, and that step’s answer goes on the right pan.</li>
-          <li><strong>Play all</strong> does the same thing on its own, 2 seconds per step.</li>
-          <li><strong>Instant</strong> jumps straight to the answer and lists every step.</li>
-        </ul>
-        <p>While the steps run, the scale leans toward whichever side is worth more. Once both pans show the same
-          number, it waits 3 seconds and then puts the original expression back on the left with the answer on
-          the right, perfectly level. The expression and its value are equal, so they balance.</p>
+          (or press any operation) to come back down. To change something in the middle, click there in the
+          expression, or move the caret with the arrow keys or the <strong>◀ ▶</strong> buttons.</p>
+        <p>The expression sits on the left pan and its value on the right, worked out again every time the
+          expression changes, so the scale is always level. The Steps list shows every operation in the order it
+          was done, and the PEMDAS strip lights up the rules the expression uses.</p>
+        <p>Switch <strong>PEMDAS</strong> to <strong>Left to right</strong> to work it out with no order of
+          operations: every + − × ÷ in reading order. When that gives a different answer, the banner shows what
+          PEMDAS would give, which makes a good “why do we need rules?” discussion (3 + 4 × 2 is 14 left to right,
+          but 11 with PEMDAS).</p>
 
         <h3>Solve for x: undo what was done to x</h3>
         <p>Choose <strong>Random</strong> for a 1-, 2- or 3-step equation. A one-step equation can use any of the
@@ -432,10 +439,21 @@
           (3<i>x</i> + 4 or 3(<i>x</i> + 4)). You can show division as a fraction or with the ÷ sign. The value of
           x is never shown unless you press <strong>Peek at x</strong>.</p>
         <p>Choose <strong>Build my own</strong> to type in a value for x (it shows as dots) and build the left
-          side with the same buttons as Standard math, plus an <i>x</i> button. The right side is worked out for you.</p>
+          side with the same buttons as Standard math, plus an <i>x</i> button. The right side is worked out for you.
+          Or press <strong>=</strong> and type the right side too, with x on one side or both
+          (5<i>x</i> + 3 = 2<i>x</i> + 12). Then the value of x is optional: leave it blank and it’s worked out.</p>
         <p>To solve, pick an operation and a number, choose <strong>Left side</strong>, <strong>Both sides</strong>
-          or <strong>Right side</strong>, and press <strong>Submit</strong>. The operation first appears on the pan,
-          then simplifies, and the Work list writes the move the way it would look on paper.</p>
+          or <strong>Right side</strong>, and press <strong>Submit</strong>. Turn on the <i>x</i> button next to the
+          number to add or subtract an x term (like 2<i>x</i>) instead. The operation is written onto the pan and
+          stays there, marked, and the Work list writes the move the way it would look on paper.</p>
+        <ul>
+          <li><strong>Simplify</strong> looks through both sides, marks what can go (operations that cancel out, like
+            + 4 − 4, or × 3 ÷ 3, and ones that change nothing, like × 1), pauses, then clears them away. It works
+            out any arithmetic the same way, one stage at a time, until nothing is left to tidy.</li>
+          <li><strong>Combine like terms</strong>: press it, click the terms on the scale (each one is picked
+            together with its + or − sign), then press it again. Numbers go with numbers and x terms with x terms,
+            on the same side.</li>
+        </ul>
 
         <div class="callout">
           <p><strong>Teaching tip:</strong> on purpose, change only one side. The scale tips and the Work list
@@ -445,7 +463,8 @@
 
         <h3>Extras that help the idea land</h3>
         <ul>
-          <li><strong>Hint</strong> names the last operation done to x, and sets up its opposite in the controls.</li>
+          <li><strong>Hint</strong> names the last operation done to x, and sets up its opposite in the controls.
+            When x is on both sides, it sets up moving the x term off the right side.</li>
           <li><strong>Take back last move</strong> and <strong>Start over</strong> make wrong turns cheap to try.</li>
           <li>When x is alone, a <strong>build-up and undo</strong> diagram appears under the scale: the same values,
             with the arrows going forward when x was built and backward when it was undone.</li>
@@ -463,8 +482,8 @@
           <details>
             <summary>Why can’t I type + or ( on the keyboard?</summary>
             <div><p>Only numbers come from the keyboard; every symbol comes from a button. That way students see which
-              operation is chosen, and nothing they can’t see sneaks into the expression. Backspace works, and Enter
-              presses the main button (Next step, Put it on the scale, or Submit).</p></div>
+              operation is chosen, and nothing they can’t see sneaks into the expression. Backspace, Delete and the
+              arrow keys work, and Enter presses the main button (Put it on the scale, or Submit).</p></div>
           </details>
           <details>
             <summary>How does it decide how far the scale tips?</summary>

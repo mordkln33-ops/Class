@@ -68,3 +68,10 @@ body {
 .imgPart {
     height: 100%;
 }
+
+#saver{
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    height: 100px;
+}

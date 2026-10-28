@@ -8,11 +8,18 @@ const mrsPartsDiv = document.querySelector('#mrsParts');
 const potato = document.querySelector('#bodyImg');
 const mrButton = document.querySelector('#mrPotato');
 const mrsButton = document.querySelector('#mrsPotato');
-
+const saveButton = document.querySelector('#saver');
+const saveParts = [];
 let draggee = null;
 let offset = null;
+let hideTimer = null;
 
 console.log(potato.getClientRects())
+saveButton.addEventListener('click', () => {
+    saveParts.forEach(p => {
+
+    })
+})
 
 mrsParts.forEach(p => {
     const holder = document.createElement('div');
@@ -22,7 +29,10 @@ mrsParts.forEach(p => {
     holder.appendChild(part);
     mrsPartsDiv.appendChild(holder);
     console.log(`${p} was added`)
-    part.addEventListener('click', addCopy)
+    part.addEventListener('click', (e) => {
+        const newPart = addCopy(e);
+        saveParts.push(newPart);
+    });
 })
 
 mrParts.forEach(p => {
@@ -33,11 +43,14 @@ mrParts.forEach(p => {
     holder.appendChild(part);
     mrPartsDiv.appendChild(holder);
     console.log(`${p} was added`)
-    part.addEventListener('click', addCopy);
+    part.addEventListener('click', (e) => {
+        const newPart = addCopy(e);
+        saveParts.push(newPart);
+        console.log(newPart);
+    });
 })
 
 function addCopy(e) {
-    let hideTimer;
     console.log(e.target);
     const partDiv = document.createElement('div');
     partDiv.className = 'partDiv';
@@ -56,18 +69,37 @@ function addCopy(e) {
     const rotater = document.createElement('img');
     rotater.src = 'images/buttons/rotate.png'
 
-    deleter.addEventListener('click', () => {
+    deleter.addEventListener('click', (e) => {
         deleter.src = 'images/buttons/delete_clicked.png';
         setTimeout(() => partDiv.remove(), 100);
+        const index = saveParts.indexOf(e.target.parentElement);
+        saveParts.splice(index, 1);
     })
     sizer.addEventListener('mousedown', () => {
-        // e.preventDefault();
+        sizer.src = 'images/buttons/expand_clicked.png'
+        e.preventDefault();
         clearTimeout(hideTimer);
         buttons.style.display = 'flex';
         const resize = e => expanderMove(e, partDiv);
         window.addEventListener('mousemove', resize);
         window.addEventListener('mouseup', () => {
+            sizer.src = 'images/buttons/expand.png'
             window.removeEventListener('mousemove', resize);
+            hideTimer = setTimeout(() => { buttonHider(buttons) }, 3000);
+        });
+        
+    });
+
+    rotater.addEventListener('mousedown', () => {
+        e.preventDefault();
+        rotater.src = 'images/buttons/rotate_clicked.png'
+        clearTimeout(hideTimer);
+        buttons.style.display = 'flex';
+        const rotate = e => rotaterMove(e, partDiv);
+        window.addEventListener('mousemove', rotate);
+        window.addEventListener('mouseup', () => {
+            rotater.src = 'images/buttons/rotate.png';
+            window.removeEventListener('mousemove', rotate);
             hideTimer = setTimeout(() => { buttonHider(buttons) }, 3000);
         });
     });
@@ -84,6 +116,7 @@ function addCopy(e) {
         hideTimer = setTimeout(() => { buttonHider(buttons) }, 3000);
     });
     document.body.appendChild(partDiv);
+    return partDiv;
 }
 
 mrButton.addEventListener('click', () => {
@@ -131,7 +164,13 @@ function buttonHider(buttons) {
 }
 
 function expanderMove(e, div) {
-    const change = e.movementY;
+    const change = e.movementY * 3;
     const currentHeight = parseFloat(getComputedStyle(div).height);
     div.style.height = `${currentHeight + change}px`;
+};
+
+function rotaterMove(e, div) {
+    const change = e.movementX;
+    const currentRotate = parseFloat(getComputedStyle(div).rotate) || 0;
+    div.style.rotate = `${currentRotate + change * - 1}deg`;
 };

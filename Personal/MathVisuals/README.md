@@ -18,6 +18,7 @@ MathVisuals/
 │   ├── integer-number-line/   index.html (vertical) + horizontal.html
 │   ├── fraction-visualizer/
 │   ├── equation-balance/
+│   ├── polynomial-playground/
 │   ├── graphing-explorer/
 │   ├── real-life-graphs/
 │   ├── probability-manipulator/
@@ -82,6 +83,11 @@ The originals in `Personal/School/` were **not edited**. Each tool was copied he
 The only script change is in `graphing-explorer.js`, which draws its line colors in JavaScript. A `paint()` helper
 swaps in lighter partners in dark mode, and the plane redraws on the `themechange` event fired by `site.js`.
 The inline `style="margin-top:8px"` attributes in its pop-ups were moved into the stylesheet.
+
+`polynomial-playground.js` (from `Personal/School/Polynomials/`) keeps the original's math core unchanged
+(everything between `CORE START` and `CORE END`). Its drawing code uses `pp-` class names, writes to the
+banner and the panel message line, reads the random-expression choices from radio buttons, adds the
+"Hide panel" toggle, and shrinks long expressions to fit the board (`fit()`).
 
 ## Adding a new tool
 

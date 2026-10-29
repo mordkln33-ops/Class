@@ -10,6 +10,7 @@ const mrButton = document.querySelector('#mrPotato');
 const mrsButton = document.querySelector('#mrsPotato');
 const saveButton = document.querySelector('#saver');
 const saveParts = [];
+const getParts = [];
 let draggee = null;
 let offset = null;
 let hideTimer = null;
@@ -17,8 +18,16 @@ let hideTimer = null;
 console.log(potato.getClientRects())
 saveButton.addEventListener('click', () => {
     saveParts.forEach(p => {
-
+    const part = {
+        height: p.stlye.height,
+        left: p.style.left,
+        top: p.style.top,
+        src: p.img.src
+    }
+    getParts.push(part);
     })
+    console.log(getParts);
+    localStorage.setItem('savedParts', JSON.stringify(getParts));
 })
 
 mrsParts.forEach(p => {
@@ -87,7 +96,7 @@ function addCopy(e) {
             window.removeEventListener('mousemove', resize);
             hideTimer = setTimeout(() => { buttonHider(buttons) }, 3000);
         });
-        
+
     });
 
     rotater.addEventListener('mousedown', () => {

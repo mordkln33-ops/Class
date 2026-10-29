@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en" class="is-tool">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+  <!-- ===== SEO: title + description are unique to this page ===== -->
+  <title>Polynomial Playground: Distribute &amp; Combine Like Terms | MathVisuals</title>
+  <meta name="description" content="Drag the terms of an expression, distribute parentheses step by step, and combine like terms, with an animation the whole class can follow on the big screen.">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <link rel="canonical" href="https://mathvisuals.online/tools/polynomial-playground/">
+  <meta name="author" content="Mordechai Klein">
+
+  <!-- ===== Social sharing (Open Graph + X/Twitter) ===== -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="MathVisuals">
+  <meta property="og:title" content="Polynomial Playground: Distribute &amp; Combine Like Terms | MathVisuals">
+  <meta property="og:description" content="Drag the terms of an expression, distribute parentheses step by step, and combine like terms, with an animation the whole class can follow on the big screen.">
+  <meta property="og:url" content="https://mathvisuals.online/tools/polynomial-playground/">
+  <meta property="og:image" content="https://mathvisuals.online/assets/img/og/polynomial-playground.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="The expression 3(x + 2) − 2x + 5 − x² + 4x² as draggable tiles, with an arrow showing 3 being multiplied into the parentheses">
+  <meta property="og:locale" content="en_US">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- ===== Theme + icons ===== -->
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#111a2e" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="../../assets/img/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" href="../../assets/img/apple-touch-icon.png">
+  <link rel="manifest" href="../../site.webmanifest">
+
+  <!-- Applies saved light/dark mode before the page paints (must not be deferred) -->
+  <script src="../../assets/js/theme-init.js"></script>
+
+  <!-- ===== Styles: font → global style guide → this page ===== -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&amp;display=swap">
+  <link rel="stylesheet" href="../../assets/css/site.css">
+  <link rel="stylesheet" href="../../assets/css/tools/polynomial-playground.css">
+
+  <!-- ===== Scripts (deferred: run after the HTML is parsed) ===== -->
+  <script src="../../assets/js/tools/polynomial-playground.js" defer></script>
+  <script src="../../assets/js/site.js" defer></script>
+
+  <!-- ===== Structured data (schema.org JSON-LD) for search engines ===== -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": [
+      "WebApplication",
+      "LearningResource"
+    ],
+    "name": "Polynomial Playground",
+    "url": "https://mathvisuals.online/tools/polynomial-playground/",
+    "description": "Drag the terms of an expression, distribute parentheses step by step, and combine like terms, with an animation the whole class can follow on the big screen.",
+    "image": "https://mathvisuals.online/assets/img/og/polynomial-playground.jpg",
+    "applicationCategory": "EducationalApplication",
+    "operatingSystem": "Any (runs in a web browser)",
+    "browserRequirements": "Requires JavaScript",
+    "inLanguage": "en",
+    "isAccessibleForFree": true,
+    "copyrightYear": 2026,
+    "copyrightHolder": { "@id": "https://mathvisuals.online/#person" },
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "learningResourceType": "Interactive simulation",
+    "educationalUse": [
+      "Classroom demonstration",
+      "Whole-class instruction"
+    ],
+    "educationalLevel": "Grades 6–9 (Pre-Algebra and Algebra 1)",
+    "teaches": [
+      "The distributive property",
+      "Combining like terms",
+      "Equivalent expressions",
+      "The commutative property of addition",
+      "Order of operations",
+      "Adding and subtracting polynomials"
+    ],
+    "audience": {
+      "@type": "EducationalAudience",
+      "educationalRole": "teacher"
+    },
+    "author": {
+      "@id": "https://mathvisuals.online/#person"
+    },
+    "publisher": {
+      "@id": "https://mathvisuals.online/#person"
+    }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://mathvisuals.online/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Algebra & Graphing",
+        "item": "https://mathvisuals.online/#algebra"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": "Polynomial Playground",
+        "item": "https://mathvisuals.online/tools/polynomial-playground/"
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#tool">Skip to the tool</a>
+
+  <!-- ===== Site header: brand, breadcrumb, navigation, dark-mode toggle ===== -->
+  <header class="site-header">
+    <div class="site-header__inner container">
+      <a class="brand" href="../../" aria-label="MathVisuals home">
+        <img class="brand__mark" src="../../assets/img/logo.svg" alt="" width="32" height="32">
+        <span class="brand__name">Math<span>Visuals</span></span>
+      </a>
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ol>
+          <li><a href="../../">Home</a></li>
+          <li><a href="../../#algebra">Algebra</a></li>
+          <li><span aria-current="page">Polynomial Playground</span></li>
+        </ol>
+      </nav>
+
+      <div class="site-nav">
+        <nav aria-label="Main">
+          <ul class="site-nav__list" id="site-nav-list">
+            <li><a class="site-nav__link" href="#about-tool">Teacher notes</a></li>
+            <li><a class="site-nav__link" href="../../#tools">All tools</a></li>
+            <li><a class="site-nav__link" href="../../#contact">Suggest a tool</a></li>
+          </ul>
+        </nav>
+
+        <!-- Dark-mode switch (wired up in site.js) -->
+        <button class="theme-toggle" type="button" aria-pressed="false" aria-label="Switch to dark mode">
+          <span class="theme-toggle__thumb">
+            <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></svg>
+            <svg class="icon-moon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M20.5 14.6A8.6 8.6 0 0 1 9.4 3.5a8.6 8.6 0 1 0 11.1 11.1z"/></svg>
+          </span>
+        </button>
+
+        <!-- Menu button: only visible on narrow screens -->
+        <button class="nav-toggle btn btn-ghost btn-icon" type="button" aria-expanded="false" aria-controls="site-nav-list" aria-label="Open menu">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+  <!-- =============================================================
+       TOOL: Polynomial Playground
+       Left: write or generate an expression, settings.
+       Right: narration banner, actions, and the expression board,
+       where every term is a draggable tile.
+       ============================================================= -->
+  <div class="tool-frame" id="tool">
+    <div class="pp-app" id="ppApp">
+
+      <!-- ============ LEFT: controls ============ -->
+      <section class="pp-panel" id="ppPanel" aria-labelledby="pp-title">
+        <header class="panel-header">
+          <h1 id="pp-title">Polynomial Playground</h1>
+          <p class="subtitle">Every term is a tile. Drag them around, distribute parentheses
+            and combine like terms, one step at a time.</p>
+        </header>
+
+        <p id="ppMessage" class="pp-message" role="status" aria-live="polite"></p>
+
+        <!-- Write your own -->
+        <div class="card">
+          <h2 class="card-title">1 · Write an expression</h2>
+          <form id="exprForm" class="pp-form" novalidate>
+            <input id="exprInput" class="pp-input" type="text" inputmode="text"
+                   autocomplete="off" autocapitalize="off" spellcheck="false"
+                   aria-label="Expression" aria-describedby="exprHint">
+
+            <div class="keys" id="keypad">
+              <button class="btn key key-op" type="button" data-insert=" + " aria-label="Plus">+</button>
+              <button class="btn key key-op" type="button" data-insert=" − " aria-label="Minus">−</button>
+              <button class="btn key key-op" type="button" data-insert=" × " aria-label="Times">×</button>
+              <button class="btn key key-op" type="button" data-insert=" ÷ " aria-label="Divided by">÷</button>
+              <button class="btn key key-exp" type="button" data-insert="^" aria-label="Power" title="Power: type ^ then the exponent, like x^2">a<sup>n</sup></button>
+
+              <button class="btn key" type="button" data-insert="(" aria-label="Open parenthesis">(</button>
+              <button class="btn key" type="button" data-insert=")" aria-label="Close parenthesis">)</button>
+              <button class="btn key key-frac" type="button" data-insert="/" aria-label="Fraction bar" title="Fraction: 3/4 or 3/4x">
+                <span class="key-fr"><span>a</span><span>b</span></span>
+              </button>
+              <button class="btn key key-var" type="button" data-insert="x" aria-label="Variable x"><i>x</i></button>
+              <button class="btn key key-var" type="button" data-insert="y" aria-label="Variable y"><i>y</i></button>
+            </div>
+
+            <details class="numpad-card" id="numpadCard">
+              <summary>Number pad <small>for touch screens</small></summary>
+              <div class="keys keys-num">
+                <button class="btn key" type="button" data-insert="7">7</button>
+                <button class="btn key" type="button" data-insert="8">8</button>
+                <button class="btn key" type="button" data-insert="9">9</button>
+                <button class="btn key" type="button" data-insert="4">4</button>
+                <button class="btn key" type="button" data-insert="5">5</button>
+                <button class="btn key" type="button" data-insert="6">6</button>
+                <button class="btn key" type="button" data-insert="1">1</button>
+                <button class="btn key" type="button" data-insert="2">2</button>
+                <button class="btn key" type="button" data-insert="3">3</button>
+                <button class="btn key" type="button" data-insert=".">.</button>
+                <button class="btn key" type="button" data-insert="0">0</button>
+                <button class="btn key" type="button" id="backspaceKey" aria-label="Backspace" title="Backspace">⌫</button>
+              </div>
+            </details>
+
+            <div class="pp-form-row">
+              <button class="btn btn-danger" type="button" id="clearKey">Clear</button>
+              <button class="btn btn-primary btn-lg" type="submit" id="buildBtn">Put it on the board</button>
+            </div>
+          </form>
+          <p class="hint" id="exprHint">Type on the keyboard or use the buttons.
+            Fractions: <code>3/4x</code>. Powers: <code>x^2</code>.
+            A term in front of parentheses multiplies them: <code>3(x + 2)</code>.</p>
+        </div>
+
+        <!-- Random -->
+        <div class="card">
+          <h2 class="card-title">Or · Random expression</h2>
+
+          <div class="field-row">
+            <span class="field-label" id="termsLabel">Terms</span>
+            <div class="segmented segmented-full" role="radiogroup" aria-labelledby="termsLabel">
+              <label><input type="radio" name="genTerms" value="3"><span>3</span></label>
+              <label><input type="radio" name="genTerms" value="4"><span>4</span></label>
+              <label><input type="radio" name="genTerms" value="5" checked><span>5</span></label>
+              <label><input type="radio" name="genTerms" value="6"><span>6</span></label>
+              <label><input type="radio" name="genTerms" value="7"><span>7</span></label>
+              <label><input type="radio" name="genTerms" value="8"><span>8</span></label>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <span class="field-label" id="varsLabel">Variables</span>
+            <div class="segmented segmented-full" role="radiogroup" aria-labelledby="varsLabel">
+              <label><input type="radio" name="genVars" value="0"><span>None</span></label>
+              <label><input type="radio" name="genVars" value="1" checked><span><i class="v">x</i></span></label>
+              <label><input type="radio" name="genVars" value="2"><span><i class="v">x</i>&nbsp;and&nbsp;<i class="v">y</i></span></label>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <span class="field-label" id="powLabel">Powers</span>
+            <div class="segmented segmented-full" role="radiogroup" aria-labelledby="powLabel">
+              <label><input type="radio" name="genPowers" value="1"><span>None</span></label>
+              <label><input type="radio" name="genPowers" value="4" checked><span>Up to 4</span></label>
+            </div>
+          </div>
+
+          <label class="check"><input type="checkbox" id="genParens" checked> Include parentheses</label>
+          <button id="generateBtn" class="btn btn-primary btn-lg btn-block" type="button">New expression</button>
+        </div>
+
+        <!-- Settings -->
+        <div class="card">
+          <h2 class="card-title">Settings</h2>
+
+          <div class="field-stack">
+            <span class="field-label" id="dragLabel">Dragging a term moves</span>
+            <div class="segmented segmented-full" role="radiogroup" aria-labelledby="dragLabel" id="dragMode">
+              <label><input type="radio" name="dragMode" value="attached" checked><span>The term + its sign</span></label>
+              <label><input type="radio" name="dragMode" value="number"><span>Only the number</span></label>
+            </div>
+          </div>
+
+          <div class="field-stack">
+            <label class="field-label" for="delay">Time between steps: <output id="delayOut" for="delay">1.5 s</output></label>
+            <input id="delay" class="pp-range" type="range" min="0" max="10000" step="500" value="1500"
+                   aria-describedby="delayHint">
+            <span class="range-ends" id="delayHint" aria-hidden="true"><span>No delay</span><span>10 s</span></span>
+          </div>
+
+          <label class="check"><input type="checkbox" id="colorLike" checked> Color like terms</label>
+        </div>
+      </section>
+
+      <!-- ============ RIGHT: the expression board ============ -->
+      <section class="pp-stage" aria-label="Expression board">
+        <div class="pp-banner" id="banner" aria-live="polite"></div>
+
+        <div class="pp-toolbar" id="toolbar" role="toolbar" aria-label="Actions">
+          <button id="distributeBtn" class="btn" type="button" aria-pressed="false">Distribute</button>
+          <button id="combineAllBtn" class="btn" type="button">Combine like terms</button>
+          <button id="pickTermsBtn" class="btn" type="button" aria-pressed="false">Choose terms</button>
+          <button id="combineSelBtn" class="btn btn-primary" type="button" hidden>Combine selected</button>
+          <button id="cancelBtn" class="btn btn-danger" type="button" hidden>Cancel</button>
+          <button id="skipBtn" class="btn" type="button" hidden title="Finish this animation now">Skip</button>
+          <span class="pp-toolbar__gap" aria-hidden="true"></span>
+          <button id="undoBtn" class="btn btn-sm" type="button">Undo</button>
+          <button id="resetBtn" class="btn btn-sm" type="button">Reset</button>
+          <button id="panelBtn" class="btn btn-sm pp-panel-btn" type="button" aria-pressed="false" aria-controls="ppPanel"
+                  title="Hide the controls so the expression fills the screen">Hide panel</button>
+        </div>
+
+        <div class="pp-board" id="stage">
+          <svg class="pp-arcs" id="arcs" aria-hidden="true" focusable="false">
+            <defs>
+              <marker id="ppArrow" viewBox="0 0 10 10" refX="8" refY="5"
+                      markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M0,0 L10,5 L0,10 z"></path>
+              </marker>
+            </defs>
+          </svg>
+          <div class="pp-expr" id="expr" aria-label="Expression tiles"></div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <!-- =============================================================
+       TEACHER NOTES (below the tool)
+       ============================================================= -->
+  <section class="tool-info" id="about-tool" aria-labelledby="about-tool-title">
+    <div class="container tool-info__grid">
+      <article class="prose">
+        <p class="overline">Teacher notes</p>
+        <h2 id="about-tool-title">Expressions you can pick up and move</h2>
+        <p class="lead">Polynomial Playground turns every term of an expression into a tile. Students see that a
+          term travels with its sign, watch a factor being multiplied into parentheses one term at a time, and
+          see like terms light up in the same color before they merge.</p>
+
+        <h3>Getting an expression on the board</h3>
+        <p>Type an expression, or build it with the buttons for <strong>+ − × ÷</strong>, parentheses, powers
+          (<strong>a<sup>n</sup></strong>), fractions (<strong>a/b</strong>) and the variables <i>x</i> and
+          <i>y</i>, then press <strong>Put it on the board</strong>. A number or term written right before
+          parentheses multiplies them, so <code>3(x + 2)</code> and <code>−2x(x − 4)</code> both work.
+          If something can’t be read, the message above the card says what is missing.</p>
+        <p>For a quick example, choose how many terms (3 to 8), which variables (none, <i>x</i>, or <i>x</i> and
+          <i>y</i>), whether to use powers up to 4, and whether to include parentheses, then press
+          <strong>New expression</strong>. Random expressions reuse a few kinds of terms on purpose, so there is
+          always something to combine.</p>
+
+        <h3>Dragging: the sign belongs to the term</h3>
+        <p>Drag any tile to a new place (or focus it and press the left and right arrow keys). In
+          <strong>The term + its sign</strong> mode, the operation on a tile’s left moves with it, so
+          10 − 4 + 3 becomes −4 + 10 + 3 and the value stays 9. Switch to <strong>Only the number</strong> and the
+          operations stay where they are: moving the 4 to the front gives 4 − 10 + 3, which is −3. The banner
+          reports the value before and after, which makes the point without a word from you.</p>
+        <p>With numbers only, an <strong>=</strong> sign and the value sit at the end of the expression and update
+          after every move. As soon as there is an <i>x</i> or a <i>y</i>, the expression has no single value, so
+          the = sign goes away.</p>
+
+        <div class="callout">
+          <p><strong>Teaching tip:</strong> with a numbers-only expression like 2 + 3 × 4, drag
+            <strong>+ 3</strong> to the end. The value changes from 14 to 11, because 3 was part of a product.
+            Ask the class why moving a term was fine before but not here.</p>
+        </div>
+
+        <h3>Distributing, step by step</h3>
+        <p>Press <strong>Distribute</strong>, then click the parentheses. The factor lights up and an arrow
+          points to each term inside in turn: first the multiplication is written out, like (−3)·(−5), then
+          its result, +15. When every term has been multiplied, the parentheses fade away, then the factor
+          does too.</p>
+        <ul>
+          <li>A minus sign in front, as in 5 − 3(<i>x</i> − 2), goes with the factor: the tool distributes −3 and
+            says so.</li>
+          <li>Parentheses with nothing in front, like −(<i>x</i> + 1), distribute −1, and +(…) just comes off.</li>
+          <li>When the parentheses are part of a product, like 2 × 3(<i>x</i> + 1), the factor is distributed but
+            the parentheses stay, and the banner explains why.</li>
+        </ul>
+
+        <h3>Combining like terms</h3>
+        <p><strong>Combine like terms</strong> takes one group at a time: the like terms glow, the banner
+          writes out the sum (3<i>x</i> − 2<i>x</i>), then they merge into one tile. To let students decide,
+          press <strong>Choose terms</strong>, click the terms, and press
+          <strong>Combine selected</strong>. If the terms aren’t alike, the banner says why: different powers, a
+          term that is part of a product, or a term still inside parentheses.</p>
+        <p>With <strong>Color like terms</strong> on, every set of terms that can be combined shares a color.
+          Turn it off when you want students to find them on their own.</p>
+
+        <h3>Pacing for the whole class</h3>
+        <ul>
+          <li><strong>Time between steps</strong> goes from no delay (instant) up to 10 seconds, so you can talk
+            through each multiplication. <strong>Skip</strong> finishes the current one at once.</li>
+          <li><strong>Hide panel</strong> gives the whole screen to the expression when projecting.</li>
+          <li><strong>Undo</strong> takes back the last move, and <strong>Reset</strong> returns to the expression
+            you started with.</li>
+        </ul>
+
+        <h2>Frequently asked questions</h2>
+        <div class="faq">
+          <details>
+            <summary>Why can’t I drag “× 4” to the front?</summary>
+            <div><p>An expression can’t start with × or ÷. In <strong>The term + its sign</strong> mode, the ×
+              moves with the 4, so the tile shakes and stays put. Switch to <strong>Only the number</strong> to
+              move just the 4.</p></div>
+          </details>
+          <details>
+            <summary>How are fractions and powers shown?</summary>
+            <div><p>Type <code>3/4x</code> for three fourths x; it is drawn as a stacked fraction. Type
+              <code>x^2</code> or <code>2^3</code> for powers up to 9. All the arithmetic is done with exact
+              fractions, so nothing is ever rounded.</p></div>
+          </details>
+          <details>
+            <summary>Does it follow the order of operations?</summary>
+            <div><p>Yes. The value after the = sign does × and ÷ before + and −. Terms that are part of a product,
+              like the 3 in 2 × 3, can’t be combined with other terms on their own, and the tool says so.</p></div>
+          </details>
+          <details>
+            <summary>Is Polynomial Playground free?</summary>
+            <div><p>Yes. Every tool on MathVisuals is currently free, needs no sign-up, and runs in the browser on smartboards, Chromebooks, tablets and phones. The tool itself is copyright Mordechai Klein, so please share a link to it rather than copying it.</p></div>
+          </details>
+        </div>
+      </article>
+
+      <aside aria-label="About this tool">
+        <section class="aside-card">
+          <h2>At a glance</h2>
+          <dl class="facts">
+            <div><dt>Grade level</dt><dd>Grades 6–9, Algebra 1</dd></div>
+            <div><dt>Topics</dt><dd>Distributive property, combining like terms, equivalent expressions, order of operations, adding polynomials</dd></div>
+            <div><dt>Common Core</dt><dd>6.EE.A.3, 6.EE.A.4, 7.EE.A.1, 7.EE.A.2, HSA.APR.A.1</dd></div>
+            <div><dt>Works on</dt><dd>Projectors, smartboards, laptops, tablets, phones</dd></div>
+            <div><dt>Cost</dt><dd><span class="tag tag--free">Free</span></dd></div>
+          </dl>
+        </section>
+        <section class="aside-card">
+          <h2>Related tools</h2>
+          <ul class="link-list">
+            <li><a href="../equation-balance/">Equation Balance<small>Order of operations and solving for x</small></a></li>
+            <li><a href="../integer-number-line/">Integer Number Line<small>Add and subtract integers</small></a></li>
+          </ul>
+        </section>
+      </aside>
+    </div>
+  </section>
+
+  </main>
+
+  <!-- ===== Site footer ===== -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="site-footer__grid">
+        <div class="site-footer__about">
+          <a class="brand" href="../../">
+            <img class="brand__mark" src="../../assets/img/logo.svg" alt="" width="32" height="32">
+            <span class="brand__name">Math<span>Visuals</span></span>
+          </a>
+          <p>Free interactive math visuals for projectors and smartboards, designed by a math teacher with a UX/UI background.</p>
+        </div>
+        <nav aria-label="Number Sense & Operations tools">
+          <h2>Number Sense</h2>
+          <ul>
+            <li><a href="../../tools/integer-number-line/">Integer Number Line</a></li>
+            <li><a href="../../tools/fraction-visualizer/">Fraction Visualizer</a></li>
+          </ul>
+        </nav>
+        <nav aria-label="Algebra & Graphing tools">
+          <h2>Algebra & Graphing</h2>
+          <ul>
+            <li><a href="../../tools/equation-balance/">Equation Balance</a></li>
+            <li><a href="../../tools/polynomial-playground/">Polynomial Playground</a></li>
+            <li><a href="../../tools/graphing-explorer/">Graphing Explorer</a></li>
+            <li><a href="../../tools/real-life-graphs/">Graphs in Real Life</a></li>
+          </ul>
+        </nav>
+        <nav aria-label="Probability & Statistics tools">
+          <h2>Statistics</h2>
+          <ul>
+            <li><a href="../../tools/probability-manipulator/">Probability Manipulator</a></li>
+            <li><a href="../../tools/bell-curve-simulator/">Bell Curve Simulator</a></li>
+          </ul>
+        </nav>
+        <nav aria-label="Geometry tools">
+          <h2>Geometry</h2>
+          <ul>
+            <li><a href="../../tools/shape-transformations/">Shape Transformations</a></li>
+          </ul>
+        </nav>
+      </div>
+      <div class="site-footer__bottom">
+        <p>© <span data-year>2026</span> Mordechai Klein. All rights reserved. The tools are free to use for now, but their design and code are my copyright and may not be copied or republished.</p>
+        <p><a href="../../#about">About</a> · <a href="../../#contact">Suggest a tool</a> · <a href="../../privacy.html">Privacy</a></p>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Polynomial Playground</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <main class="app">
+
+        <!-- ============ LEFT: controls ============ -->
+        <section class="panel">
+            <header class="panel-header">
+                <h1>Polynomial Playground</h1>
+                <p class="subtitle">Build an expression, then drag its terms, distribute
+                    parentheses and combine like terms one step at a time.</p>
+            </header>
+
+            <!-- Write your own -->
+            <div class="card">
+                <h2 class="card-title">Write an expression</h2>
+
+                <form id="exprForm" class="expr-form" novalidate>
+                    <input id="exprInput" class="expr-input" type="text"
+                           autocomplete="off" spellcheck="false"
+                           aria-label="Expression" aria-describedby="parseMsg">
+
+                    <div class="keypad" id="keypad">
+                        <button type="button" class="key" data-insert="7">7</button>
+                        <button type="button" class="key" data-insert="8">8</button>
+                        <button type="button" class="key" data-insert="9">9</button>
+                        <button type="button" class="key key-op" data-insert=" + " aria-label="Plus">+</button>
+                        <button type="button" class="key key-op" data-insert="(" aria-label="Open parenthesis">(</button>
+
+                        <button type="button" class="key" data-insert="4">4</button>
+                        <button type="button" class="key" data-insert="5">5</button>
+                        <button type="button" class="key" data-insert="6">6</button>
+                        <button type="button" class="key key-op" data-insert=" − " aria-label="Minus">&minus;</button>
+                        <button type="button" class="key key-op" data-insert=")" aria-label="Close parenthesis">)</button>
+
+                        <button type="button" class="key" data-insert="1">1</button>
+                        <button type="button" class="key" data-insert="2">2</button>
+                        <button type="button" class="key" data-insert="3">3</button>
+                        <button type="button" class="key key-op" data-insert=" × " aria-label="Times">&times;</button>
+                        <button type="button" class="key key-var" data-insert="x" aria-label="Variable x"><i>x</i></button>
+
+                        <button type="button" class="key" data-insert="0">0</button>
+                        <button type="button" class="key" data-insert=".">.</button>
+                        <button type="button" class="key key-op" data-insert="^" aria-label="Power">x<sup>n</sup></button>
+                        <button type="button" class="key key-op" data-insert=" ÷ " aria-label="Divided by">&divide;</button>
+                        <button type="button" class="key key-var" data-insert="y" aria-label="Variable y"><i>y</i></button>
+
+                        <button type="button" class="key key-op key-wide" data-insert="/" aria-label="Fraction bar">
+                            <span class="fr"><span>a</span><span>b</span></span>
+                        </button>
+                        <button type="button" class="key key-wide" id="backspaceKey" aria-label="Delete last character">&#9003;</button>
+                        <button type="button" class="key" id="clearKey">Clear</button>
+                    </div>
+
+                    <button class="btn btn-primary btn-block" type="submit">Build</button>
+                </form>
+
+                <p id="parseMsg" class="hint" role="status">Fractions: <code>3/4x</code>.
+                    Powers: <code>x^2</code>. A number in front of parentheses
+                    multiplies them: <code>3(x + 2)</code>.</p>
+            </div>
+
+            <!-- Random -->
+            <div class="card">
+                <h2 class="card-title">Random expression</h2>
+
+                <div class="field-grid">
+                    <label class="field">
+                        <span>Terms</span>
+                        <select id="genTerms">
+                            <option>3</option><option>4</option><option selected>5</option>
+                            <option>6</option><option>7</option><option>8</option>
+                        </select>
+                    </label>
+                    <label class="field">
+                        <span>Variables</span>
+                        <select id="genVars">
+                            <option value="0">None (numbers)</option>
+                            <option value="1" selected>One (x)</option>
+                            <option value="2">Two (x and y)</option>
+                        </select>
+                    </label>
+                    <label class="field">
+                        <span>Powers</span>
+                        <select id="genPowers">
+                            <option value="1">None</option>
+                            <option value="4" selected>Up to 4</option>
+                        </select>
+                    </label>
+                    <label class="check">
+                        <input id="genParens" type="checkbox" checked>
+                        <span>Include parentheses</span>
+                    </label>
+                </div>
+
+                <button id="generateBtn" class="btn btn-primary btn-block" type="button">Generate</button>
+            </div>
+
+            <!-- Settings -->
+            <div class="card">
+                <h2 class="card-title">Settings</h2>
+
+                <fieldset class="segmented" id="dragMode">
+                    <legend>When I drag a term, move&hellip;</legend>
+                    <label><input type="radio" name="dragMode" value="attached" checked>
+                        <span>the term and its sign</span></label>
+                    <label><input type="radio" name="dragMode" value="number">
+                        <span>only the number</span></label>
+                </fieldset>
+
+                <label class="field">
+                    <span>Time between steps: <strong id="delayOut">1.5 s</strong></span>
+                    <input id="delay" type="range" min="0" max="10000" step="500" value="1500">
+                </label>
+
+                <label class="check">
+                    <input id="colorLike" type="checkbox" checked>
+                    <span>Color like terms</span>
+                </label>
+            </div>
+        </section>
+
+        <!-- ============ RIGHT: the expression ============ -->
+        <section class="stage-wrap">
+            <div class="toolbar" id="toolbar">
+                <button id="distributeBtn" class="btn btn-tool" type="button">Distribute</button>
+                <button id="combineAllBtn" class="btn btn-tool" type="button">Combine all like terms</button>
+                <button id="pickTermsBtn" class="btn btn-tool" type="button">Choose terms to combine</button>
+                <button id="combineSelBtn" class="btn btn-primary" type="button" hidden>Combine selected</button>
+                <button id="cancelBtn" class="btn btn-ghost" type="button" hidden>Cancel</button>
+                <button id="skipBtn" class="btn btn-ghost" type="button" hidden>Skip animation</button>
+                <span class="toolbar-gap"></span>
+                <button id="undoBtn" class="btn btn-ghost" type="button">Undo</button>
+                <button id="resetBtn" class="btn btn-ghost" type="button">Reset</button>
+            </div>
+
+            <div class="stage" id="stage">
+                <svg class="arcs" id="arcs" aria-hidden="true">
+                    <defs>
+                        <marker id="arrowHead" viewBox="0 0 10 10" refX="8" refY="5"
+                                markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                            <path d="M0,0 L10,5 L0,10 z"></path>
+                        </marker>
+                    </defs>
+                </svg>
+                <div class="expr" id="expr" aria-label="Expression tiles"></div>
+            </div>
+
+            <p class="narration" id="narration" aria-live="polite"></p>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>

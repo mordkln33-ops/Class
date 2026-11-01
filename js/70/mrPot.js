@@ -18,13 +18,13 @@ let hideTimer = null;
 console.log(potato.getClientRects())
 saveButton.addEventListener('click', () => {
     saveParts.forEach(p => {
-    const part = {
-        height: p.stlye.height,
-        left: p.style.left,
-        top: p.style.top,
-        src: p.img.src
-    }
-    getParts.push(part);
+        const part = {
+            height: p.stlye.height,
+            left: p.style.left,
+            top: p.style.top,
+            src: p.img.src
+        }
+        getParts.push(part);
     })
     console.log(getParts);
     localStorage.setItem('savedParts', JSON.stringify(getParts));
@@ -181,5 +181,32 @@ function expanderMove(e, div) {
 function rotaterMove(e, div) {
     const change = e.movementX;
     const currentRotate = parseFloat(getComputedStyle(div).rotate) || 0;
+    const x = parseFloat(getComputedStyle(div).right)
     div.style.rotate = `${currentRotate + change * - 1}deg`;
 };
+
+// New Function to rotate more intuitively //
+
+// function rotatePartX(x) {
+//     let moveX;
+//     window.addEventListener('mousemove', e => {
+//         moveX = Number(e.movementX);
+//     })
+//     return x + moveX;
+// }
+
+// function rotatePartY(y) {
+//     let moveY;
+//     window.addEventListener('mousemove', e => {
+//         moveY = Number(e.movementY);
+//     })
+//     return y + moveY;
+// }
+
+// function newRotater(x, y, div) {
+//     const newX = Number(div.getBoundingClientRect().right + x);
+//     const newY = Number(div.getBoundingClientRect().bottom + y);
+//     div.style.bottom = newY;
+//     div.style.right = newX;
+// }
+

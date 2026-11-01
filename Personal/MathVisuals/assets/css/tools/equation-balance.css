@@ -80,6 +80,8 @@ html[data-theme="dark"] .tool-frame {
   gap: var(--space-4);
   background: var(--color-bg);
   border-right: var(--border-width) solid var(--color-border-soft);
+  /* the controls adapt to the panel's own width (see the end of the file) */
+  container: eb-panel / inline-size;
 }
 
 .panel-header h1 {
@@ -386,7 +388,8 @@ html[data-theme="dark"] .tool-frame {
 .log li.is-current { outline: var(--border-width) solid var(--eb-new-line); }
 
 /* Work list: equations and the moves between them, like a worked page */
-.log-work li { counter-increment: none; grid-template-columns: minmax(0, 1fr); }
+/* block, not grid: each equation is a run of inline pieces that must stay on one line */
+.log-work li { counter-increment: none; display: block; }
 .log-work li::before { content: none; }
 
 .log-work .w-eq {
@@ -473,6 +476,7 @@ html[data-theme="dark"] .tool-frame {
   font-size: var(--fs-sm);
   font-weight: var(--fw-bold);
   color: var(--color-ink-soft);
+  white-space: nowrap;
 }
 
 .keyfield {
@@ -484,8 +488,23 @@ html[data-theme="dark"] .tool-frame {
 
 .keyfield.is-masked .kf-val { letter-spacing: .12em; }
 
+/* a placeholder is cut short rather than broken one letter per line */
+.keyfield .placeholder {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* Value of x | field | Show: keep the Show button on the same line */
+#algBuild > .field-row { flex-wrap: nowrap; }
+#xField { min-width: 2.5em; }
+
+/* operations | number | x — when there is no room, the number and x
+   drop to a second line and the operation picker spans the first */
 .op-row {
   display: flex;
+  flex-wrap: wrap;
   align-items: stretch;
   gap: var(--space-2);
 }
@@ -493,7 +512,8 @@ html[data-theme="dark"] .tool-frame {
 .keyfield-amt { font-size: var(--fs-xl); }
 
 /* the x switch next to the Undo number: on = add or subtract an x term */
-.op-row .keyfield { flex-basis: 0; min-width: 2.2em; }
+.op-row .segmented-ops { flex: 1 0 auto; }
+.op-row .keyfield { flex: 1 1 3.5em; min-width: 3.5em; }
 .amt-x { flex: none; min-width: 2em; padding-inline: .3em; }
 
 #amtX[aria-pressed="true"] {
@@ -549,11 +569,14 @@ html[data-theme="dark"] .tool-frame {
 
 .inverse-pairs b { color: var(--eb-pend-line); font-size: 1.1em; }
 
+/* Hint | Take back | Start over | Peek: an even 2 × 2 grid */
 .tool-row {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--space-2);
 }
+
+.tool-row .btn { padding-inline: .5em; line-height: 1.15; white-space: normal; }
 
 #algReveal[aria-pressed="true"],
 #xFieldEye[aria-pressed="true"] {
@@ -1090,6 +1113,26 @@ html[data-theme="dark"] .tool-frame {
 @media (max-width: 480px) {
   .keys { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--space-1); }
   .segmented-full input + span { padding-inline: .4em; }
+}
+
+/* ---------- narrow control panel (laptops: the projector-sized type
+   leaves the panel only ~20–22rem wide) ---------- */
+
+@container eb-panel (max-width: 26rem) {
+  .eb-panel > * { min-width: 0; }
+
+  .eb-tab { padding-inline: .3em; line-height: 1.15; }
+
+  /* full-width pickers: tighter, and a long label wraps instead of being cut off */
+  .segmented-full input + span {
+    padding-inline: .4em;
+    line-height: 1.15;
+    text-align: center;
+    white-space: normal;
+  }
+
+  /* PEMDAS strip: 2 × 2, so the words fit */
+  .pemdas { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 @media (prefers-reduced-motion: reduce) {

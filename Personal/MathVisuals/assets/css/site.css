@@ -49,10 +49,18 @@
                "Liberation Mono", Menlo, monospace;
 
   /* Root size for reading pages (home, style guide). Tool pages
-     override this with --root-size-projector — see html.is-tool. */
-  --root-size: clamp(16px, 0.9rem + 0.25vw, 20px);
-  /* ≈18px on a 1280px laptop, ≈23px on a 1080p projector, 28px max */
-  --root-size-projector: clamp(16px, 0.55rem + 0.75vw, 28px);
+     override this with --root-size-projector — see html.is-tool.
+     20px up to a 1080p screen, then it keeps growing with the screen
+     (≈37px at 4K, ≈80px at 8K) so a high-resolution display at 100%
+     scaling isn't left with tiny text. The vh term stops very wide,
+     short screens (ultrawides) from getting oversized text. */
+  --root-size: max(clamp(16px, 0.9rem + 0.25vw, 20px), min(1.04vw, 1.85vh));
+  /* ≈18px on a 1280px laptop, ≈23px on a 1080p projector; above that
+     it grows in step with the screen (1.21vw / 2.15vh is the 1080p size),
+     so 4K (≈46px) and 8K (≈93px) look like 1080p, only sharper.
+     Taking the smaller of the width and height sizes keeps ultrawides
+     from getting oversized text. */
+  --root-size-projector: clamp(16px, min(max(0.55rem + 0.75vw, 1.21vw), max(0.55rem + 1.6vh, 2.15vh)), 128px);
 
   /* Type scale (rem, so it follows the root size above).
      Smallest step is 0.8rem: below that nothing reads on a projector. */
@@ -86,23 +94,30 @@
   --space-9: 6rem;
 
   /* ---------- 1c. Shape ---------- */
-  --radius-sm: 8px;      /* inputs, chips, small buttons   */
-  --radius-md: 12px;     /* buttons, cards inside panels   */
-  --radius-lg: 18px;     /* panels, cards, modals          */
-  --radius-pill: 999px;  /* badges, toggles                */
+  /* Shape sizes are their px value up to a 1080p screen, then grow with
+     the root size (the rem value is the px value ÷ 23px, the 1080p
+     tool root), so lines and corners keep their weight on 4K and 8K. */
+  --radius-sm: max(8px, .35rem);    /* inputs, chips, small buttons   */
+  --radius-md: max(12px, .52rem);   /* buttons, cards inside panels   */
+  --radius-lg: max(18px, .78rem);   /* panels, cards, modals          */
+  --radius-pill: 999px;             /* badges, toggles                */
 
-  --border-width: 2px;          /* every visible boundary          */
-  --border-width-thick: 3px;    /* emphasis: active, selected      */
-  --border-width-accent: 6px;   /* color bands on cards / callouts */
+  --border-width: max(2px, .087rem);        /* every visible boundary          */
+  --border-width-thick: max(3px, .13rem);   /* emphasis: active, selected      */
+  --border-width-accent: max(6px, .26rem);  /* color bands on cards / callouts */
 
-  --focus-width: 3px;
-  --focus-offset: 2px;
+  --focus-width: max(3px, .13rem);
+  --focus-offset: max(2px, .087rem);
 
   /* ---------- 1d. Layout ---------- */
   --container: 72rem;           /* max width of reading pages        */
   --container-narrow: 46rem;    /* max width of long paragraphs      */
   --site-bar-h: 3.5rem;         /* header height (tool pages shrink it) */
-  --tap-target: 44px;           /* WCAG 2.5.5 minimum touch size     */
+  --tap-target: max(44px, 1.91rem); /* WCAG 2.5.5 minimum touch size; grows on 4K+ */
+  /* A "screen pixel" for tools sized in px: 1px up to a 1080p screen,
+     2px at 4K, 4px at 8K (1 ÷ 23.232, the 1080p tool root). Use it as
+     calc(12 * var(--px)) so fixed sizes keep their proportions. */
+  --px: max(1px, .043rem);
 
   /* ---------- 1e. Motion ---------- */
   --ease-out: cubic-bezier(.2, .8, .3, 1);
@@ -234,7 +249,7 @@ html {
 /* Tool pages: bigger, fluid type for projection */
 html.is-tool {
   font-size: var(--root-size-projector);
-  --site-bar-h: clamp(48px, 2.6rem, 60px);
+  --site-bar-h: max(48px, min(2.6rem, 60px), 2.4rem);
 }
 
 body {
@@ -441,7 +456,7 @@ html:not([data-theme="dark"]) .btn-solid-danger {
 
 .btn-sm,
 .btn-small {
-  min-height: 36px;
+  min-height: max(36px, 1.57rem);
   padding: .35em .8em;
   font-size: var(--fs-sm);
   border-radius: var(--radius-sm);
@@ -725,7 +740,7 @@ select.form-control {
 }
 
 .is-tool .theme-toggle {
-  font-size: clamp(14px, .85rem, 18px);
+  font-size: clamp(14px, .85rem, max(18px, .78rem));
 }
 
 /* ---------- Header on tablets and phones ---------- */
@@ -812,7 +827,7 @@ select.form-control {
 
 .tool-info {
   /* reading-page sizes even though the html root is projector-sized */
-  font-size: clamp(16px, 0.9rem + 0.25vw, 20px);
+  font-size: var(--root-size);
   padding-block: var(--space-8);
   background: var(--color-surface);
   border-top: var(--border-width) solid var(--color-border-soft);
@@ -1043,7 +1058,7 @@ html[data-theme="dark"] .tag {
    ===================================================================== */
 
 .site-footer {
-  font-size: clamp(16px, 0.9rem + 0.25vw, 20px);
+  font-size: var(--root-size);
   padding-block: var(--space-7) var(--space-6);
   color: var(--color-ink-muted);
   background: var(--color-surface-2);

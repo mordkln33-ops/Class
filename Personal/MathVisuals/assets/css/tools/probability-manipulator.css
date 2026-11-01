@@ -126,7 +126,9 @@ html[data-theme="dark"] .tool-frame {
   min-width: 0;
   min-height: 0;
   display: grid;
-  grid-template-rows: 15fr 85fr;   /* grid owns 85% of the height */
+  /* grid owns 85% of the height, unless the setup row wraps (laptops)
+     and needs more: then the setup row is never cut off */
+  grid-template-rows: minmax(max-content, 15fr) 85fr;
   gap: var(--space-2);
   padding: var(--space-3) var(--space-4) var(--space-4);
 }

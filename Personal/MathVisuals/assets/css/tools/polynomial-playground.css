@@ -60,6 +60,8 @@ html[data-theme="dark"] .tool-frame {
   gap: var(--space-4);
   background: var(--color-bg);
   border-right: var(--border-width) solid var(--color-border-soft);
+  /* the controls adapt to the panel's own width (see the end of the file) */
+  container: pp-panel / inline-size;
 }
 
 .panel-header h1 {
@@ -289,7 +291,8 @@ html[data-theme="dark"] .tool-frame {
 
 .segmented-full { display: flex; }
 
-.segmented label { flex: 1; position: relative; cursor: pointer; }
+/* equal-width options, so the highlighted one is never squeezed thinner than the rest */
+.segmented label { flex: 1 1 0; position: relative; cursor: pointer; }
 .segmented label + label { border-left: var(--border-width) solid var(--color-border-soft); }
 .segmented input { position: absolute; opacity: 0; pointer-events: none; }
 
@@ -455,11 +458,13 @@ html[data-theme="dark"] .tool-frame {
 
 .pp-arcs marker path { fill: var(--pp-hot); }
 
-/* The expression scales with the board's width; JS lowers --pp-fit
-   when a long expression would not fit the board's height. */
+/* The expression scales with the board's width (no rem ceiling: on a
+   big screen the root size stops growing, but the board does not).
+   JS lowers --pp-fit when a long expression would not fit the board,
+   and raises it a little when a short one would leave it mostly empty. */
 .pp-expr {
   width: 100%;
-  font-size: calc(clamp(1.35rem, 5.2cqi, 5rem) * var(--pp-fit, 1));
+  font-size: calc(max(1.35rem, 5.2cqi) * var(--pp-fit, 1));
   font-weight: var(--fw-bold);
   font-variant-numeric: tabular-nums;
   line-height: 1.2;
@@ -703,6 +708,14 @@ html[data-theme="dark"] .tool-frame {
   .pp-banner { font-size: var(--fs-md); }
   .keys { gap: var(--space-1); }
   .field-row { grid-template-columns: 1fr; gap: var(--space-1); }
+  .segmented input + span { padding-inline: .3em; }
+}
+
+/* ---------- narrow control panel (laptops: the projector-sized type
+   leaves the panel only ~20–22rem wide) ---------- */
+@container pp-panel (max-width: 26rem) {
+  /* label above its choices, so the choices get the full width */
+  .field-row { grid-template-columns: minmax(0, 1fr); gap: var(--space-1); }
   .segmented input + span { padding-inline: .3em; }
 }
 

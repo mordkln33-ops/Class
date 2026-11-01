@@ -760,6 +760,18 @@
             }
             if (rowCount() > 1) { ex.style.setProperty("--pp-fit", String(scale)); }
         }
+
+        /* A short expression on one line grows (up to 1.6×) toward 80% of
+           the board's width, so it stays readable on a big screen. */
+        if (scale === 1 && rowCount() === 1) {
+            var row = ex.firstElementChild, kids = row.children;
+            var used = kids[kids.length - 1].getBoundingClientRect().right - kids[0].getBoundingClientRect().left;
+            var grow = Math.min(1.6, 0.8 * ex.clientWidth / used, 0.45 * avail / row.offsetHeight);
+            if (grow > 1.05) {
+                ex.style.setProperty("--pp-fit", String(grow));
+                if (rowCount() > 1 || ex.scrollHeight > avail) { ex.style.setProperty("--pp-fit", "1"); }
+            }
+        }
     }
 
     /* Lines the top-level row wraps onto. */

@@ -1,41 +1,41 @@
-// // Constructors
 
-// function Vehicle(color) {
-//     this.color = color;
-// }
 
-// Vehicle.prototype.go = function (speed) {
-//     this.speed = speed;
-//     console.log(`The car is driving at ${this.speed} miles per hour`);
-// }
+function Vehicle(color) {
+    this.color = color;
+}
 
-// Vehicle.prototype.print = function () {
-//     console.log(`The vehicle is ${this.color}, The vehicle's speed is ${this.speed}.`);
-// }
-// function Airplane(color) {
-//     this.color = color;
-// }
+Vehicle.prototype.go = function (speed) {
+    this.speed = speed;
+    console.log(`The car is driving at ${this.speed} miles per hour`);
+}
 
-// Airplane.prototype = Object.create(Vehicle.prototype);
+Vehicle.prototype.print = function () {
+    console.log(`The vehicle is ${this.color}, The vehicle's speed is ${this.speed}.`);
+}
+function Airplane(color) {
+    this.color = color;
+}
 
-// Airplane.prototype.constructor = Airplane;
-// Airplane.prototype.go = function (speed) {
-//     this.speed = speed;
-//     console.log(`The airplane is flying at ${this.speed} miles per hour.`);
-// }
+Airplane.prototype = Object.create(Vehicle.prototype);
 
-// const car = new Vehicle('red');
-// car.print();
-// car.go(50);
-// car.print();
+Airplane.prototype.constructor = Airplane;
+Airplane.prototype.go = function (speed) {
+    this.speed = speed;
+    console.log(`The airplane is flying at ${this.speed} miles per hour.`);
+}
 
-// const plane = new Airplane('blue');
-// plane.print();
-// plane.go(540);
-// plane.print();
+const car = new Vehicle('red');
+car.print();
+car.go(50);
+car.print();
 
-// console.log(car);
-// console.log(plane);
+const plane = new Airplane('blue');
+plane.print();
+plane.go(540);
+plane.print();
+
+console.log(car);
+console.log(plane);
 
 const vehicleFunctions = {
     print() {

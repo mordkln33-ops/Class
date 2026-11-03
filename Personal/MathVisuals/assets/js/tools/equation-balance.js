@@ -40,7 +40,10 @@
 
   var MATH_MESSAGES = {
     zero: 'You can’t divide by zero.',
-    big: 'That number is too big to show on the scale.'
+    big: 'That number is too big to show on the scale.',
+    log: 'A logarithm only works on a positive number, and that side isn’t positive.',
+    root: 'An even root (like a square root) needs a number that isn’t negative.',
+    exp: 'A negative number can’t be raised to a power that isn’t a whole number.'
   };
 
   function gcd(a, b) {
@@ -90,6 +93,74 @@
     return div(a, b);
   }
 
+  /* any whole-number power, negative ones too: 2^−3 = 1/8 */
+  function powInt(a, e) {
+    if (e >= 0) { return powR(a, e); }
+    if (a.n === 0) { throw new MathError('zero'); }
+    return div(ONE, powR(a, -e));
+  }
+
+  /* ---------- values that can't be exact: roots, logarithms ----------
+     They are kept to 6 decimal places and flagged approx; anything worked
+     out from an approx value is approx too. Two values count as equal when
+     both are exact and the same, or (if either is approx) when they agree
+     to about 3 decimal places, the rounding shown on the scale. */
+
+  function approxRat(f) {
+    if (!isFinite(f) || Math.abs(f) > 1e9) { throw new MathError('big'); }
+    var r = rat(Math.round(f * 1e6), 1e6);
+    r.approx = true;
+    return r;
+  }
+
+  /* to the nearest thousandth, as an exact fraction (1.585 = 317/200) */
+  function round3(a) { return rat(Math.round(toFloat(a) * 1000), 1000); }
+
+  function sameVal(a, b) {
+    if (!a.approx && !b.approx) { return eqR(a, b); }
+    var fa = toFloat(a), fb = toFloat(b);
+    return Math.abs(fa - fb) <= 6e-4 * Math.max(1, Math.abs(fa), Math.abs(fb));
+  }
+
+  function cmpVal(a, b) { return sameVal(a, b) ? 0 : cmpR(a, b); }
+
+  function opVal(op, a, b) {
+    if (!a.approx && !b.approx) { return opApply(op, a, b); }
+    if (op === DIVIDE && b.n === 0) { throw new MathError('zero'); }
+    var fa = toFloat(a), fb = toFloat(b);
+    return approxRat(op === '+' ? fa + fb : op === MINUS ? fa - fb : op === TIMES ? fa * fb : fa / fb);
+  }
+
+  function powVal(a, e) { return a.approx ? approxRat(Math.pow(toFloat(a), e)) : powR(a, e); }
+
+  /* b to the power p, where p can be any value (2^x) */
+  function epowVal(b, p) {
+    if (isInt(p) && !p.approx && !b.approx) { return powInt(b, p.n); }
+    if (b.n < 0 || (b.n === 0 && p.n <= 0)) { throw new MathError(b.n < 0 ? 'exp' : 'zero'); }
+    return approxRat(Math.pow(toFloat(b), toFloat(p)));
+  }
+
+  /* log base b of a: exact when a is a whole power of b (log₂ 8 = 3, log₂ ¼ = −2) */
+  function logR(b, a) {
+    if (a.n <= 0) { throw new MathError('log'); }
+    var f = Math.log(toFloat(a)) / Math.log(toFloat(b)), p = Math.round(f);
+    if (!a.approx && Math.abs(p) <= 50) {
+      try { if (eqR(powInt(b, p), a)) { return rat(p); } } catch (e) { if (!(e instanceof MathError)) { throw e; } }
+    }
+    return approxRat(f);
+  }
+
+  /* the k-th root of a: exact for a perfect power (∛−8 = −2, √(9/4) = 3/2), the positive one for even k */
+  function rootR(a, k) {
+    if (a.n < 0 && k % 2 === 0) { throw new MathError('root'); }
+    var s = a.n < 0 ? -1 : 1;
+    if (!a.approx) {
+      var n = Math.round(Math.pow(Math.abs(a.n), 1 / k)), d = Math.round(Math.pow(a.d, 1 / k));
+      if (eqR(powR(rat(n, d), k), rat(Math.abs(a.n), a.d))) { return rat(s * n, d); }
+    }
+    return approxRat(s * Math.pow(Math.abs(toFloat(a)), 1 / k));
+  }
+
   /* decimal places needed, or -1 if the decimal never ends */
   function decimalPlaces(d) {
     var twos = 0, fives = 0;
@@ -115,8 +186,10 @@
 
   /* ===================================================================
      2. EXPRESSION TREES
-     Nodes: num {v}, var (x), bin {op, l, r, implicit}, pow {base, e},
-     paren {inner}. Trees are never changed in place; a step builds a
+     Nodes: num {v}, var (x), bin {op, l, r, implicit}, pow {base, e}
+     (e a whole number), epow {base, ex} (an exponent with x in it: 2^x),
+     log {b, arg} (log base b), root {k, arg} (k-th root), paren {inner}.
+     Trees are never changed in place; a step builds a
      new tree that shares the untouched branches (and their ids, so
      highlights can follow a node from one step to the next).
      =================================================================== */
@@ -127,6 +200,12 @@
   function mkBin(op, l, r, implicit) { return { t: 'bin', op: op, l: l, r: r, implicit: !!implicit, id: ++uid }; }
   function mkParen(inner) { return { t: 'paren', inner: inner, id: ++uid }; }
   function mkPow(base, e) { return { t: 'pow', base: base, e: e, id: ++uid }; }
+  function mkEPow(base, ex) { return { t: 'epow', base: base, ex: ex, id: ++uid }; }
+  function mkLog(b, arg) { return { t: 'log', b: b, arg: arg, id: ++uid }; }
+  function mkRoot(k, arg) { return { t: 'root', k: k, arg: arg, id: ++uid }; }
+
+  /* a power, root or log: written as one piece, so it needs no ( ) of its own */
+  function isFnAtom(n) { return n.t === 'pow' || n.t === 'epow' || n.t === 'log' || n.t === 'root'; }
 
   function copyNode(n, changes) {
     var o = {}, k;
@@ -156,6 +235,8 @@
     switch (n.t) {
       case 'paren': return findById(n.inner, id);
       case 'pow': return findById(n.base, id);
+      case 'epow': return findById(n.base, id) || findById(n.ex, id);
+      case 'log': case 'root': return findById(n.arg, id);
       case 'bin': return findById(n.l, id) || findById(n.r, id);
       default: return null;
     }
@@ -167,6 +248,8 @@
       case 'num': return false;
       case 'paren': return hasVar(n.inner);
       case 'pow': return hasVar(n.base);
+      case 'epow': return hasVar(n.base) || hasVar(n.ex);
+      case 'log': case 'root': return hasVar(n.arg);
       default: return hasVar(n.l) || hasVar(n.r);
     }
   }
@@ -177,6 +260,8 @@
       case 'num': return 0;
       case 'paren': return countVar(n.inner);
       case 'pow': return countVar(n.base);
+      case 'epow': return countVar(n.base) + countVar(n.ex);
+      case 'log': case 'root': return countVar(n.arg);
       default: return countVar(n.l) + countVar(n.r);
     }
   }
@@ -186,8 +271,11 @@
       case 'num': return n.v;
       case 'var': return x;
       case 'paren': return evaluate(n.inner, x);
-      case 'pow': return powR(evaluate(n.base, x), n.e);
-      default: return opApply(n.op, evaluate(n.l, x), evaluate(n.r, x));
+      case 'pow': return powVal(evaluate(n.base, x), n.e);
+      case 'epow': return epowVal(evaluate(n.base, x), evaluate(n.ex, x));
+      case 'log': return logR(n.b, evaluate(n.arg, x));
+      case 'root': return rootR(evaluate(n.arg, x), n.k);
+      default: return opVal(n.op, evaluate(n.l, x), evaluate(n.r, x));
     }
   }
 
@@ -201,6 +289,8 @@
       case 'num': return n;
       case 'paren': return copyNode(n, { inner: substitute(n.inner, x, ids) });
       case 'pow': return copyNode(n, { base: substitute(n.base, x, ids) });
+      case 'epow': return copyNode(n, { base: substitute(n.base, x, ids), ex: substitute(n.ex, x, ids) });
+      case 'log': case 'root': return copyNode(n, { arg: substitute(n.arg, x, ids) });
       default: return copyNode(n, { l: substitute(n.l, x, ids), r: substitute(n.r, x, ids) });
     }
   }
@@ -253,10 +343,21 @@
     } else if (n.t === 'paren') {
       /* a value put in for x keeps its parentheses, even inside a fraction */
       h = (dropParens && ctx.hl[n.id] !== 'm-sub') ? render(n.inner, ctx) : paren(render(n.inner, ctx));
-    } else if (n.t === 'pow') {
+    } else if (n.t === 'pow' || n.t === 'epow') {
       var b = n.base, bh = render(b, ctx);
-      if ((b.t === 'num' && (b.v.n < 0 || !showsAsDecimal(b.v) || b.v.d !== 1)) || b.t === 'bin' || b.t === 'pow') { bh = paren(bh); }
-      h = bh + '<sup class="m-sup">' + n.e + '</sup>';
+      if ((b.t === 'num' && (b.v.n < 0 || !showsAsDecimal(b.v) || b.v.d !== 1)) || b.t === 'bin' || isFnAtom(b)) { bh = paren(bh); }
+      h = bh + '<sup class="m-sup">' + (n.t === 'pow' ? n.e : render(n.ex, ctx, true)) + '</sup>';
+    } else if (n.t === 'log') {
+      h = '<span class="m-log">log<sub class="m-logb">' + numHtml(n.b) + '</sub></span>' + paren(render(n.arg, ctx, true));
+    } else if (n.t === 'root') {
+      /* the sign is drawn, so it stretches to the height of what's under the
+         bar and meets it; the index sits in its crook */
+      h = '<span class="m-root' + (n.k !== 2 ? ' has-k' : '') + '">' +
+        (n.k !== 2 ? '<span class="m-root-k" aria-hidden="true">' + n.k + '</span>' : '') +
+        '<span class="sr-only">' + (n.k === 2 ? 'square root of' : n.k === 3 ? 'cube root of' : n.k + 'th root of') + '</span>' +
+        '<svg class="m-root-sign" viewBox="0 0 12 24" preserveAspectRatio="none" aria-hidden="true" focusable="false">' +
+        '<path d="M0.5 14.5 L3.5 12.5 L7 23.5 L12 0.5"/></svg>' +
+        '<span class="m-root-arg">' + render(n.arg, ctx, true) + '</span></span>';
     } else if (isAddSub(n)) {
       /* a sum is written term by term, each term wrapped with the sign in
          front of it, so a term can be marked or picked along with its sign */
@@ -282,7 +383,8 @@
       else if (L.t === 'num' && eqR(L.v, ONE) && !ctx.hl[L.id]) { lh = ''; }
       else { lh = render(L, ctx); }
       var rh = render(n.r, ctx);
-      if (n.r.t === 'num' || n.r.t === 'bin') { rh = paren(rh); }
+      /* 3(2ˣ), not 32ˣ */
+      if (n.r.t === 'num' || n.r.t === 'bin' || (n.r.t === 'epow' && isNum(n.r.base))) { rh = paren(rh); }
       h = lh + rh;
     } else {
       var lh2 = render(n.l, ctx), rh2 = render(n.r, ctx), oh = '<span class="m-op">' + n.op + '</span>';
@@ -376,8 +478,14 @@
     return T;
   }
 
+  /* an exponent item: a digit, or (Solve for x) x, + or − */
+  function isSupDigit(it) { return !!it && it.t === 'sup' && /^[0-9]$/.test(it.c); }
+  function isSupOp(it) { return !!it && it.t === 'sup' && (it.c === '+' || it.c === MINUS); }
+
   function itemHtml(it, i) {
     var a = ' data-i="' + i + '"';
+    if (it.t === 'sup' && it.c === 'x') { return '<i class="m-var"' + a + '>x</i>'; }
+    if (isSupOp(it)) { return '<span class="m-op"' + a + '>' + it.c + '</span>'; }
     if (it.t === 'd' || it.t === 'sup') { return '<span' + a + '>' + it.c + '</span>'; }
     if (it.t === 'neg') { return '<span' + a + '>' + MINUS + '</span>'; }
     if (it.t === 'op') { return '<span class="m-op"' + a + '>' + it.v + '</span>'; }
@@ -468,9 +576,11 @@
     if (/^[0-9]$/.test(k)) {
       if (this.expOpen) {
         var n = 0, j;
-        for (j = this.pos - 1; j >= 0 && I[j].t === 'sup'; j--) { n++; }
-        for (j = this.pos; j < I.length && I[j].t === 'sup'; j++) { n++; }
+        for (j = this.pos - 1; j >= 0 && isSupDigit(I[j]); j--) { n++; }
+        for (j = this.pos; j < I.length && isSupDigit(I[j]); j++) { n++; }
         if (n >= 2) { return 'Exponents can have up to 2 digits.'; }
+        if (a && a.t === 'sup' && a.c === 'x') { return 'Choose an operation before the next number.'; }
+        if (this.supRun().length >= 8) { return 'That exponent is long enough.'; }
         return this.insert({ t: 'sup', c: k });
       }
       var s = this.pos, e = this.pos;
@@ -507,6 +617,11 @@
       return true;
     }
 
+    if (this.expOpen && this.allowX) {
+      var r = this.supKey(k, a);
+      if (r !== null) { return r; }
+    }
+
     this.leaveExp();
     a = this.prev();
     b = this.next();
@@ -535,6 +650,32 @@
     }
 
     return 'Only numbers come from the keyboard.';
+  };
+
+  /* the exponent the caret is in: its items, in order */
+  Builder.prototype.supRun = function () {
+    var I = this.items, s = this.pos, e = this.pos;
+    while (s > 0 && I[s - 1].t === 'sup') { s--; }
+    while (e < I.length && I[e].t === 'sup') { e++; }
+    return I.slice(s, e);
+  };
+
+  /* Solve for x: x, + and − inside an exponent (2^x, 3^(x + 1), 2^−x).
+     + and − stay up only once the exponent has an x in it, so x² + 3
+     still comes back down at the +. null: the key isn't for the exponent */
+  Builder.prototype.supKey = function (k, a) {
+    var run = this.supRun(), inSup = !!a && a.t === 'sup';
+    var hasX = run.some(function (it) { return it.c === 'x'; });
+    if (k !== 'x' && k !== '+' && k !== MINUS) { return null; }
+    if (k !== 'x' && !hasX && !(k === MINUS && !run.length)) { return null; }
+    if (run.length >= 8) { return 'That exponent is long enough.'; }
+    if (k === 'x') {
+      if (inSup && a.c === 'x') { return 'Choose an operation before x.'; }
+      return this.insert({ t: 'sup', c: 'x' });
+    }
+    if (isSupOp(a)) { a.c = k; return true; }                         /* swap the operation */
+    if (!inSup && k !== MINUS) { return 'Type the exponent first, then its operation.'; }
+    return this.insert({ t: 'sup', c: k });
   };
 
   Builder.prototype.key = function (k) {
@@ -650,7 +791,7 @@
       var t = peek();
       if (t && t.t === 'pow') {
         i++;
-        return mkPow(n, parseInt(t.s, 10));
+        return /^[0-9]+$/.test(t.s) ? mkPow(n, parseInt(t.s, 10)) : mkEPow(n, parseExponent(t.s));
       }
       return n;
     }
@@ -682,6 +823,20 @@
     var root = expr();
     if (i < tokens.length) { fail(); }
     return root;
+  }
+
+  /* an exponent with x in it, from its characters ("x+1", "−x", "2x"):
+     turned back into builder items and parsed like any expression */
+  function parseExponent(s) {
+    var items = [];
+    s.split('').forEach(function (c) {
+      var last = items[items.length - 1];
+      if (/[0-9]/.test(c)) { items.push({ t: 'd', c: c }); }
+      else if (c === 'x') { items.push({ t: 'x' }); }
+      else if (c === MINUS && (!last || last.t === 'op')) { items.push({ t: 'neg' }); }
+      else { items.push({ t: 'op', v: c }); }
+    });
+    return parseTokens(toTokens(items), false);
   }
 
   /* ---------- 4b. A number field (value of x, the Undo number) ---------- */
@@ -770,6 +925,15 @@
         if (isNum(n.base)) { consider(n, depth, 3, ord); } else { walk(n.base, depth); }
         return;
       }
+      /* an exponent, or what's under a root or log, is worked out first, like ( ) */
+      if (n.t === 'epow') {
+        if (isNum(n.base) && isNum(n.ex)) { consider(n, depth, 3, ord); } else { walk(n.base, depth); walk(n.ex, depth + 1); }
+        return;
+      }
+      if (n.t === 'log' || n.t === 'root') {
+        if (isNum(n.arg)) { consider(n, depth, 3, ord); } else { walk(n.arg, depth + 1); }
+        return;
+      }
       if (n.t === 'bin') {
         if (isNum(n.l) && isNum(n.r)) { consider(n, depth, LEVEL[n.op], ord); }
         else { walk(n.l, depth); walk(n.r, depth); }
@@ -791,6 +955,14 @@
       c = replaceNode(n.base, target, repl);
       return c === n.base ? n : copyNode(n, { base: c });
     }
+    if (n.t === 'epow') {
+      var bs = replaceNode(n.base, target, repl), ex = replaceNode(n.ex, target, repl);
+      return (bs === n.base && ex === n.ex) ? n : copyNode(n, { base: bs, ex: ex });
+    }
+    if (n.t === 'log' || n.t === 'root') {
+      c = replaceNode(n.arg, target, repl);
+      return c === n.arg ? n : copyNode(n, { arg: c });
+    }
     if (n.t === 'bin') {
       var l = replaceNode(n.l, target, repl), r = replaceNode(n.r, target, repl);
       return (l === n.l && r === n.r) ? n : copyNode(n, { l: l, r: r });
@@ -804,9 +976,9 @@
       var nx = findNext(cur, ltr);
       if (!nx) { break; }
       var n = nx.node, value, verb, cat;
-      if (n.t === 'pow') {
-        value = powR(valOf(n.base), n.e);
-        verb = 'Exponent';
+      if (n.t !== 'bin') {
+        value = evaluate(n);
+        verb = n.t === 'log' ? 'Logarithm' : n.t === 'root' ? 'Root' : 'Exponent';
         cat = 'E';
       } else {
         value = opApply(n.op, valOf(n.l), valOf(n.r));
@@ -832,7 +1004,7 @@
   function coef(c, other) {
     var o = unwrap(other);
     if (eqR(c, ONE)) { return o; }
-    var atom = o.t === 'var' || o.t === 'pow';
+    var atom = o.t === 'var' || isFnAtom(o);
     return mkBin(TIMES, mkNum(c), atom ? o : mkParen(o), true);
   }
 
@@ -944,38 +1116,47 @@
     };
   }
 
-  /* ---------- Simplify: one tidy-up at a time ----------
+  /* ---------- Simplify: tidy-ups, stage by stage ----------
      Each rule looks at one node and returns null, or
-     { target, repl, cls, label, nodes / terms / ops: what to mark, newId }.
-     The first rule that finds something anywhere on a side wins:
+     { target, repl, cls, label, nodes / terms / ops / groups: what to mark,
+       newId, keep: the parts that stay }.
+     Rules 1–3 are done all at once, every match on both sides (findAllCancels);
+     after that, the first rule that finds something anywhere on a side wins:
        1. terms that cancel out ........ 3x + 4 − 4 → 3x
        2. operations that do nothing ... + 0, × 1, ÷ 1, an exponent of 1
        3. × and ÷ that undo each other . 3x ÷ 3 → x,  x ÷ 2 × 2 → x
-       4. arithmetic on two numbers .... 19 − 4 → 15
+          a root or log undoing a power  √(x²) → x,  log₂(2^x) → x
+       4. arithmetic on two numbers .... 19 − 4 → 15,  log₂ 3 ≈ 1.585
        5. adding a negative ............ x + (−2) → x − 2
        6. numbers in a sum, combined ... 3x + 4 − 1 → 3x + 3
        7. a number put next to x ....... x × 3 → 3x,  3x × 2 → 6x
      x terms are not combined here: that's Combine like terms. */
 
+  /* every pair in the sum that cancels, each pair its own group (own color) */
   function ruleCancel(n) {
     if (!isAddSub(n)) { return null; }
-    var list = sumTerms(n);
+    var list = sumTerms(n), used = [], groups = [], labels = [];
     for (var i = 0; i < list.length; i++) {
+      if (used.indexOf(i) >= 0) { continue; }
       var ki = termKind(list[i].node);
       if (!ki) { continue; }
       var vi = termVal(list[i]);
       if (vi.n === 0) { continue; }
       for (var j = i + 1; j < list.length; j++) {
-        if (termKind(list[j].node) === ki && eqR(termVal(list[j]), neg(vi))) {
-          return {
-            target: n, repl: joinTerms(without(list, [i, j])), cls: 'm-redundant',
-            terms: [list[i].node.id, list[j].node.id],
-            label: termText(list[i], i) + ' and ' + termText(list[j], j) + ' cancel out'
-          };
+        if (used.indexOf(j) < 0 && termKind(list[j].node) === ki && eqR(termVal(list[j]), neg(vi))) {
+          used.push(i, j);
+          groups.push([list[i].node.id, list[j].node.id]);
+          labels.push(termText(list[i], i) + ' and ' + termText(list[j], j) + ' cancel out');
+          break;
         }
       }
     }
-    return null;
+    if (!groups.length) { return null; }
+    var kept = without(list, used);
+    return {
+      target: n, repl: joinTerms(kept), cls: 'm-redundant', groups: groups, labels: labels,
+      label: labels.join(' · '), keep: kept.map(function (e) { return e.node; })
+    };
   }
 
   function ruleNothing(n) {
@@ -984,27 +1165,30 @@
       var list = sumTerms(n);
       for (i = 0; i < list.length; i++) {
         if (termKind(list[i].node) && termVal(list[i]).n === 0) {
+          var rest = without(list, [i]);
           return {
-            target: n, repl: joinTerms(without(list, [i])), cls: 'm-redundant',
-            terms: [list[i].node.id], label: termText(list[i], i) + ' changes nothing'
+            target: n, repl: joinTerms(rest), cls: 'm-redundant',
+            terms: [list[i].node.id], label: termText(list[i], i) + ' changes nothing',
+            keep: rest.map(function (e) { return e.node; })
           };
         }
       }
       return null;
     }
     if (n.t === 'pow' && n.e === 1) {
-      return { target: n, repl: n.base, cls: 'm-redundant', nodes: [n.id], label: 'An exponent of 1 changes nothing' };
+      return { target: n, repl: n.base, cls: 'm-redundant', nodes: [n.id], label: 'An exponent of 1 changes nothing', keep: [n.base] };
     }
     if (n.t !== 'bin' || (n.op !== TIMES && n.op !== DIVIDE)) { return null; }
     if (isNum(n.r) && eqR(valOf(n.r), ONE) && !isNum(n.l)) {
       return {
         target: n, repl: n.l, cls: 'm-redundant', ops: [{ id: n.id, side: 'r' }],
-        label: '<span class="m-op">' + n.op + '</span>1 changes nothing'
+        label: '<span class="m-op">' + n.op + '</span>1 changes nothing', keep: [n.l]
       };
     }
     if (n.op === TIMES && isNum(n.l) && eqR(valOf(n.l), ONE) && !isNum(n.r)) {
       var m = n.implicit ? { nodes: [n.l.id] } : { ops: [{ id: n.id, side: 'l' }] };
       m.target = n; m.repl = n.r; m.cls = 'm-redundant'; m.label = '1<span class="m-op">' + TIMES + '</span> changes nothing';
+      m.keep = [n.r];
       return m;
     }
     return null;
@@ -1026,26 +1210,49 @@
     return null;
   }
 
-  function mulDivResult(n, repl, cls, extra) {
+  function mulDivResult(n, repl, cls, extra, keep) {
     var ctx = plainCtx(alg.frac);
     return {
       target: n, repl: repl, cls: cls, nodes: extra || [], ops: [{ id: n.id, side: mulDivParts(n).side }],
-      label: render(n, ctx) + '<span class="m-op">=</span>' + render(repl, ctx), newId: repl.id
+      label: render(n, ctx) + '<span class="m-op">=</span>' + render(repl, ctx), newId: repl.id, keep: keep
     };
   }
 
+  /* short banner text for × and ÷ that undo each other: "× 2 and ÷ 2 cancel out", "6 ÷ 3 = 2" */
+  function opNum(op, k) { return '<span class="m-op">' + op + '</span>' + numHtml(k); }
+
+  function undoLabel(op1, k1, op2, k2, rest) {
+    if (eqR(k1, k2)) { return opNum(op1, k1) + ' and ' + opNum(op2, k2) + ' cancel out'; }
+    return opNum(op1, k1) + opNum(op2, k2) + '<span class="m-op">=</span>' + rest;
+  }
+
   function ruleUndo(n) {
-    var p = mulDivParts(n);
+    var p = mulDivParts(n), r;
     if (!p) { return null; }
     var cp = coefParts(p.a);
     if (cp && p.op === DIVIDE) {                          /* 3x ÷ 3 → x,  6x ÷ 3 → 2x */
       var q = div(cp.c, p.k);
-      if (isInt(q)) { return mulDivResult(n, coef(q, cp.b), 'm-redundant', [cp.cNode.id]); }
+      if (isInt(q)) {
+        r = mulDivResult(n, coef(q, cp.b), 'm-redundant', p.a.implicit ? [cp.cNode.id] : [], [cp.b]);
+        if (!p.a.implicit) { r.ops.push({ id: p.a.id, side: isNum(p.a.l) ? 'l' : 'r' }); }   /* the × goes with its number */
+        r.label = undoLabel(TIMES, cp.c, DIVIDE, p.k, opNum(TIMES, q));
+        return r;
+      }
     }
     if (p.op === TIMES && p.a.t === 'bin' && p.a.op === DIVIDE && isNum(p.a.r)) {
       var d = valOf(p.a.r), q2 = div(d, p.k), inv = div(p.k, d);
-      if (isInt(q2)) { return mulDivResult(n, divBy(p.a.l, q2), 'm-redundant', [unwrap(p.a.r).id]); }   /* x ÷ 2 × 2 → x */
-      if (isInt(inv)) { return mulDivResult(n, coef(inv, p.a.l), 'm-redundant', [unwrap(p.a.r).id]); }   /* x ÷ 2 × 6 → 3x */
+      if (isInt(q2)) {                                    /* x ÷ 2 × 2 → x */
+        r = mulDivResult(n, divBy(p.a.l, q2), 'm-redundant', [], [p.a.l]);
+        r.ops.push({ id: p.a.id, side: 'r' });
+        r.label = undoLabel(DIVIDE, d, TIMES, p.k, opNum(DIVIDE, q2));
+        return r;
+      }
+      if (isInt(inv)) {                                   /* x ÷ 2 × 6 → 3x */
+        r = mulDivResult(n, coef(inv, p.a.l), 'm-redundant', [], [p.a.l]);
+        r.ops.push({ id: p.a.id, side: 'r' });
+        r.label = undoLabel(DIVIDE, d, TIMES, p.k, opNum(TIMES, inv));
+        return r;
+      }
     }
     return null;
   }
@@ -1054,11 +1261,37 @@
     var v;
     if (n.t === 'bin' && isNum(n.l) && isNum(n.r)) { v = opApply(n.op, valOf(n.l), valOf(n.r)); }
     else if (n.t === 'pow' && isNum(n.base)) { v = powR(valOf(n.base), n.e); }
+    else if ((n.t === 'epow' && isNum(n.base) && isNum(n.ex)) || ((n.t === 'log' || n.t === 'root') && isNum(n.arg))) { v = evaluate(n); }
     else { return null; }
+    var approx = !!v.approx;
+    if (approx) { v = round3(v); }
     var repl = mkNum(v);
     return {
       target: n, repl: repl, cls: 'm-next', nodes: [n.id], newId: repl.id,
-      label: render(n, plainCtx(alg.frac)) + '<span class="m-op">=</span>' + numHtml(v)
+      label: render(n, plainCtx(alg.frac)) + '<span class="m-op">' + (approx ? '≈' : '=') + '</span>' + numHtml(v)
+    };
+  }
+
+  /* the root or log that undoes a power: log₂(2^(x + 1)) → x + 1, ∛(x³) → x.
+     An even root gives the positive one: √(x²) is x, or −x when x is negative. */
+  function undoPow(n) {
+    var a = n.arg && unwrap(n.arg);
+    if (n.t === 'log' && a.t === 'epow' && isNum(a.base) && eqR(valOf(a.base), n.b)) { return tidyTree(a.ex, true); }
+    if (n.t === 'root' && a.t === 'pow' && a.e === n.k) {
+      var base = tidyTree(a.base, true);
+      if (n.k % 2 === 0 && alg.x && evaluate(base, alg.x).n < 0) { return coef(rat(-1), base); }
+      return base;
+    }
+    return null;
+  }
+
+  function ruleUndoPow(n) {
+    var p = (n.t === 'log' || n.t === 'root') ? undoPow(n) : null;
+    if (!p) { return null; }
+    var ctx = plainCtx(alg.frac);
+    return {
+      target: n, repl: p, cls: 'm-redundant', nodes: [n.id], keep: [p],
+      label: render(n, ctx) + '<span class="m-op">=</span>' + render(p, ctx)
     };
   }
 
@@ -1099,17 +1332,26 @@
     return repl ? mulDivResult(n, repl, 'm-next') : null;
   }
 
-  var TIDY_RULES = [ruleCancel, ruleNothing, ruleUndo, ruleArith, ruleSigns, ruleNumbers, ruleCoef];
+  var TIDY_RULES = [ruleCancel, ruleNothing, ruleUndo, ruleUndoPow, ruleArith, ruleSigns, ruleNumbers, ruleCoef];
+
+  /* the parts of a node to look inside: a sum's terms, or its pieces */
+  function kidsOf(n) {
+    switch (n.t) {
+      case 'paren': return [n.inner];
+      case 'pow': return [n.base];
+      case 'epow': return [n.base, n.ex];
+      case 'log': case 'root': return [n.arg];
+      case 'bin': return isAddSub(n) ? sumTerms(n).map(function (e) { return e.node; }) : [n.l, n.r];
+      default: return [];
+    }
+  }
 
   /* the first node (reading order) a rule applies to; a sum is visited
      once, as a whole, then its terms */
   function walkFind(n, fn) {
     var r = fn(n);
     if (r) { return r; }
-    if (n.t === 'paren') { return walkFind(n.inner, fn); }
-    if (n.t === 'pow') { return walkFind(n.base, fn); }
-    if (n.t !== 'bin') { return null; }
-    var kids = isAddSub(n) ? sumTerms(n).map(function (e) { return e.node; }) : [n.l, n.r];
+    var kids = kidsOf(n);
     for (var i = 0; i < kids.length; i++) {
       r = walkFind(kids[i], fn);
       if (r) { return r; }
@@ -1125,6 +1367,28 @@
     return null;
   }
 
+  /* rules 1–3 (what cancels or changes nothing) are cleared away all at
+     once: every match on a side, in reading order. After a match only the
+     parts that stay (r.keep) are searched, so no two matches overlap. */
+  var CANCEL_RULES = [ruleCancel, ruleNothing, ruleUndo, ruleUndoPow];
+
+  function findAllCancels(tree) {
+    var out = [];
+    (function walk(n) {
+      for (var i = 0; i < CANCEL_RULES.length; i++) {
+        var r = CANCEL_RULES[i](n);
+        if (r) {
+          r.rule = CANCEL_RULES[i];
+          out.push(r);
+          (r.keep || []).forEach(walk);
+          return;
+        }
+      }
+      kidsOf(n).forEach(walk);
+    })(tree);
+    return out;
+  }
+
   /* after a change: ( ) where a sum needs them, none around a lone
      number, x or power, and none around a whole side */
   function tidyTree(n, top) {
@@ -1132,13 +1396,19 @@
     if (n.t === 'paren') {
       c = tidyTree(n.inner, false);
       if (top) { return tidyTree(c, true); }
-      if (c.t === 'num' || c.t === 'var' || c.t === 'pow' || c.t === 'paren') { return c; }
+      if (c.t === 'num' || c.t === 'var' || isFnAtom(c) || c.t === 'paren') { return c; }
       return c === n.inner ? n : copyNode(n, { inner: c });
     }
-    if (n.t === 'pow') {
+    if (n.t === 'pow' || n.t === 'epow') {
       c = tidyTree(n.base, false);
       if (isAddSub(c)) { c = mkParen(c); }
-      return c === n.base ? n : copyNode(n, { base: c });
+      var ex = n.t === 'epow' ? tidyTree(n.ex, true) : n.ex;
+      return (c === n.base && ex === n.ex) ? n : copyNode(n, { base: c, ex: ex });
+    }
+    /* a root's bar and a log's ( ) already group what's inside */
+    if (n.t === 'log' || n.t === 'root') {
+      c = tidyTree(n.arg, true);
+      return c === n.arg ? n : copyNode(n, { arg: c });
     }
     if (n.t !== 'bin') { return n; }
     l = tidyTree(n.l, false);
@@ -1183,7 +1453,7 @@
   /* how a generated equation writes each operation onto x */
   function buildOp(node, op, k) {
     if (op === '+' || op === MINUS) { return mkBin(op, node, mkNum(k)); }
-    if (op === TIMES) { return mkBin(TIMES, mkNum(k), (node.t === 'var' || node.t === 'pow') ? node : mkParen(node), true); }
+    if (op === TIMES) { return mkBin(TIMES, mkNum(k), (node.t === 'var' || isFnAtom(node)) ? node : mkParen(node), true); }
     return mkBin(DIVIDE, isAddSub(node) ? mkParen(node) : node, mkNum(k));
   }
 
@@ -1215,6 +1485,45 @@
       if (ok) { return { x: rat(x), left: node, right: val }; }
     }
     return { x: rat(5), left: buildOp(buildOp(mkVar(), TIMES, rat(3)), '+', rat(4)), right: rat(19) };
+  }
+
+  /* With exponents: x², x³ or bˣ, undone by a root or a log. 1 step: the
+     power alone (x² = 49, 2ˣ = 32). 2 steps: one more operation around it
+     (3x² = 75, 2ˣ + 5 = 37). 3 steps: one inside it as well ((x + 2)² − 4 = 45,
+     3(2^(x + 1)) = 48). Every value is whole; x is positive under an even power. */
+  function generatePow(steps, negOk) {
+    for (var tries = 0; tries < 5000; tries++) {
+      var kind = pick(['sq', 'sq', 'cube', 'exp', 'exp']);
+      var x = kind === 'sq' ? randInt(1, 12) : kind === 'cube' ? randInt(negOk ? -5 : 1, 5) : randInt(negOk ? -3 : 1, 6);
+      if (x === 0) { continue; }
+      var node = mkVar(), val = rat(x), op, k;
+      if (steps === 3) {
+        op = pick(['+', MINUS]);
+        k = randInt(1, 6);
+        val = opApply(op, val, rat(k));
+        node = mkBin(op, node, mkNum(rat(k)));
+      }
+      if (kind === 'exp') {
+        var b = pick([2, 2, 3, 5, 10]);
+        if (val.n < 1 || val.n > (b === 2 ? 8 : b === 3 ? 5 : b === 5 ? 4 : 3)) { continue; }
+        node = mkEPow(mkNum(rat(b)), node);
+        val = powInt(rat(b), val.n);
+      } else {
+        var e = kind === 'sq' ? 2 : 3;
+        if ((e === 2 && val.n <= 0) || val.n === 0 || Math.abs(val.n) > (e === 2 ? 15 : 6)) { continue; }
+        node = mkPow(steps === 3 ? mkParen(node) : node, e);
+        val = powR(val, e);
+      }
+      if (steps >= 2) {
+        op = pick(['+', MINUS, TIMES]);
+        k = op === TIMES ? randInt(2, 5) : randInt(1, 20);
+        val = opApply(op, val, rat(k));
+        node = buildOp(node, op, rat(k));
+      }
+      if (!isInt(val) || (!negOk && val.n <= 0) || Math.abs(val.n) > 2000) { continue; }
+      return { x: rat(x), left: node, right: val };
+    }
+    return { x: rat(7), left: mkPow(mkVar(), 2), right: rat(49) };
   }
 
   /* ===================================================================
@@ -1358,7 +1667,7 @@
     } else if (r === null || l === 'some') {
       target = -8; rel = '?'; empty = true;
     } else {
-      var c = cmpR(l, r);
+      var c = cmpVal(l, r);
       if (c === 0) {
         target = 0; level = true;
       } else {
@@ -1561,7 +1870,7 @@
     source: 'random', frac: true, ready: false, everShown: false,
     x: null, origLeft: null, origRight: null, left: null, right: null,
     history: [], log: [], solved: false, revealed: false,
-    simp: null, picking: null, newMark: null, checking: null, subView: null
+    simp: null, picking: null, newMark: null, checking: null, subView: null, fnEval: null
   };
 
   var algLog = $('algLog');
@@ -1605,11 +1914,11 @@
   });
 
   function balanced() {
-    return cmpR(evaluate(alg.left, alg.x), evaluate(alg.right, alg.x)) === 0;
+    return cmpVal(evaluate(alg.left, alg.x), evaluate(alg.right, alg.x)) === 0;
   }
 
   function relOf(l, r) {
-    var c = cmpR(evaluate(l, alg.x), evaluate(r, alg.x));
+    var c = cmpVal(evaluate(l, alg.x), evaluate(r, alg.x));
     return c === 0 ? '=' : '≠';
   }
 
@@ -1632,7 +1941,7 @@
     $('algCheck').disabled = false;
   }
 
-  function algStopAll() { finishSimplify(); stopCheck(); endPicking(); alg.subView = null; alg.newMark = null; }
+  function algStopAll() { finishFnEval(); finishSimplify(); stopCheck(); endPicking(); alg.subView = null; alg.newMark = null; }
 
   function algCanAct() {
     if (alg.ready) { return true; }
@@ -1677,7 +1986,7 @@
 
   function algNew() {
     say('');
-    var g = generate(parseInt(radioVal('algSteps'), 10), $('algNeg').checked);
+    var g = ($('algPow').checked ? generatePow : generate)(parseInt(radioVal('algSteps'), 10), $('algNeg').checked);
     algSetEquation(g.left, mkNum(g.right), g.x);
   }
 
@@ -1696,6 +2005,21 @@
     }
   }
 
+  /* otherwise (x², 2ˣ …): the whole number from −50 to 50 that makes L = R
+     exactly, trying 1, 2, 3 … first, then 0 and the negatives */
+  function searchFor(L, R) {
+    for (var i = 1; i <= 101; i++) {
+      var t = rat(i <= 50 ? i : 50 - i);
+      try {
+        var l = evaluate(L, t), r = evaluate(R, t);
+        if (!l.approx && !r.approx && eqR(l, r)) { return t; }
+      } catch (e) {
+        if (!(e instanceof MathError)) { throw e; }
+      }
+    }
+    return null;
+  }
+
   function algPlace() {
     var p = algBuilder.parse(false);
     if (p.msg) { reject(algBuilder, p.msg); return; }
@@ -1706,12 +2030,12 @@
         if (!X) { reject(xField, 'Type a value for x first (it stays hidden), or press = and type the right side too.'); xField.el.focus(); return; }
         right = mkNum(evaluate(p.tree, X));
       } else if (X) {
-        if (cmpR(evaluate(p.tree, X), evaluate(right, X)) !== 0) {
+        if (cmpVal(evaluate(p.tree, X), evaluate(right, X)) !== 0) {
           reject(algBuilder, 'With that value of x the two sides aren’t equal. Change x or the equation, or clear x to have it worked out.');
           return;
         }
       } else {
-        X = solveFor(p.tree, right);
+        X = solveFor(p.tree, right) || searchFor(p.tree, right);
         if (!X) { reject(xField, 'x can’t be worked out from this equation. Type the value x should have.'); xField.el.focus(); return; }
         worked = true;
       }
@@ -1749,7 +2073,13 @@
     algStopAll();
     var op = radioVal('algOp'), side = radioVal('algSide'), kv = amtField.number(), isX = !!amtField.suffix;
     if (kv === null && isX) { kv = amtField.value === '-' ? -1 : 1; }
-    if (kv === null) { reject(amtField, 'Type the number to use first.'); amtField.el.focus(); return; }
+    if (kv === null) {
+      reject(amtField, op === 'root' ? 'Type which root first: 2 for a square root, 3 for a cube root.'
+        : op === 'log' ? 'Type the base of the logarithm first, like 2 or 10.' : 'Type the number to use first.');
+      amtField.el.focus();
+      return;
+    }
+    if (op === 'root' || op === 'log') { algApplyFn(op, side, kv, isX); return; }
     if (isX && (op === TIMES || op === DIVIDE)) {
       reject(amtField, 'x terms can only be added or subtracted. Choose + or −, or turn x off.');
       return;
@@ -1780,16 +2110,160 @@
     algAfterMove({ side: side, wasBalanced: wasBalanced });
   }
 
+  /* ---------- roots and logarithms ----------
+     Submit takes the root or log of the side(s). Where it undoes a power,
+     the power goes straight away (log₂(2^(x + 1)) → x + 1, √(x²) → x); a
+     side that is just a number shows it written out (log₂ 32) for 3
+     seconds, then its value, to the nearest thousandth if it isn't whole. */
+
+  var FN_WAIT = 3000;
+
+  function rootName(k) {
+    return k === 2 ? 'square root' : k === 3 ? 'cube root' : k + 'th root';
+  }
+
+  function fnSign(op, k) {
+    if (op === 'log') { return 'log<sub>' + k + '</sub>'; }
+    return k === 2 ? '√' : k === 3 ? '∛' : '<sup>' + k + '</sup>√';
+  }
+
+  function fnText(op, k, side) {
+    var what = op === 'log' ? 'log base <b>' + k + '</b>' : 'the <b>' + rootName(k) + '</b>';
+    if (side === 'both') { return 'Take ' + what + ' of both sides'; }
+    return 'Take ' + what + ' of the ' + side + ' side only';
+  }
+
+  function fnSide(S, op, k) {
+    var w = op === 'log' ? mkLog(rat(k), S) : mkRoot(k, S);
+    return tidyTree(undoPow(w) || w, true);
+  }
+
+  function algApplyFn(op, side, k, isX) {
+    if (isX) { reject(amtField, 'Turn x off: ' + (op === 'log' ? 'the base of a logarithm' : 'which root to take') + ' is a plain number.'); return; }
+    if (op === 'root' && (k < 2 || k > 9)) { reject(amtField, 'Take a root from 2 to 9: 2 is a square root, 3 a cube root.'); return; }
+    if (op === 'log' && (k < 2 || k > 100)) { reject(amtField, 'A logarithm’s base is a whole number from 2 to 100.'); return; }
+    var L = alg.left, R = alg.right, nl = L, nr = R;
+    try {
+      if (side !== 'right') { nl = fnSide(L, op, k); }
+      if (side !== 'left') { nr = fnSide(R, op, k); }
+      evaluate(nl, alg.x);
+      evaluate(nr, alg.x);
+    } catch (e) {
+      if (e instanceof MathError) { reject(amtField, MATH_MESSAGES[e.code]); return; }
+      throw e;
+    }
+    say('');
+    var wasBalanced = balanced();
+    alg.history.push(snapshot());
+    alg.left = nl;
+    alg.right = nr;
+    alg.log.push({ type: 'move', html: '<b>' + fnSign(op, k) + '</b> · ' + fnText(op, k, side), warn: side !== 'both' });
+    alg.log.push(eqEntry());
+    algRender(true);
+    algAfterMove({ side: side, wasBalanced: wasBalanced });
+    startFnEval();
+  }
+
+  /* roots and logs of a plain number, outermost first */
+  function fnNums(tree) {
+    var out = [];
+    (function walk(n) {
+      if ((n.t === 'log' || n.t === 'root') && !hasVar(n.arg)) { out.push(n); return; }
+      kidsOf(n).forEach(walk);
+    })(tree);
+    return out;
+  }
+
+  function startFnEval() {
+    var list = fnNums(alg.left).concat(fnNums(alg.right));
+    if (!list.length) { return; }
+    alg.fnEval = { timer: setTimeout(finishFnEval, reduceMotion ? 1500 : FN_WAIT) };
+    if (balanced()) {
+      var ctx = plainCtx(alg.frac);
+      setBanner('alg', '<span class="b-tag">Work it out</span> ' + list.map(function (n) { return render(n, ctx); }).join(' <span class="b-small">and</span> ') +
+        ' <span class="b-small">is worked out next…</span>', 'step');
+    }
+  }
+
+  /* the number side(s) of the root or log: written out → its value */
+  function evalFns(tree, side, labels, marks) {
+    var ctx = plainCtx(alg.frac);
+    fnNums(tree).forEach(function (n) {
+      var v = evaluate(n), approx = !!v.approx;
+      if (approx) { v = round3(v); }
+      var repl = mkNum(v);
+      labels.push(render(n, ctx) + '<span class="m-op">' + (approx ? '≈' : '=') + '</span>' + numHtml(v));
+      marks.push({ side: side, id: repl.id });
+      tree = replaceNode(tree, n, repl);
+    });
+    return tidyTree(tree, true);
+  }
+
+  function finishFnEval() {
+    var f = alg.fnEval;
+    if (!f) { return; }
+    clearTimeout(f.timer);
+    alg.fnEval = null;
+    var labels = [], marks = [];
+    try {
+      alg.left = evalFns(alg.left, 'L', labels, marks);
+      alg.right = evalFns(alg.right, 'R', labels, marks);
+    } catch (e) {
+      if (e instanceof MathError) { say(MATH_MESSAGES[e.code]); return; }
+      throw e;
+    }
+    var label = labels.join(' <span class="b-small">·</span> ');
+    alg.newMark = marks;
+    alg.log.push({ type: 'move', html: '<b>Work it out</b> · ' + label });
+    alg.log.push(eqEntry());
+    algRender(true);
+    algAfterMove({ side: 'fneval', wasBalanced: true, label: label });
+  }
+
   /* ---------- Simplify: mark, pause, tidy, pause, … ---------- */
 
+  /* one stage = a list of tidy-ups per side: everything that cancels, all
+     at once (each pair numbered for its own color), or else the first
+     other tidy-up on each side */
   function tidyStage() {
-    var L = findTidy(alg.left), R = findTidy(alg.right);
-    return (L || R) ? { L: L, R: R } : null;
+    var L = findAllCancels(alg.left), R = findAllCancels(alg.right);
+    if (L.length || R.length) {
+      var k = 0;
+      L.concat(R).forEach(function (r) { r.pair = k; k += r.groups ? r.groups.length : 1; });
+      return { L: L, R: R };
+    }
+    var l = findTidy(alg.left), r = findTidy(alg.right);
+    return (l || r) ? { L: l ? [l] : [], R: r ? [r] : [] } : null;
+  }
+
+  /* outer tidy-ups come first in the list; an inner one is found again by
+     id in the changed side and its rule run again there */
+  function applySide(tree, items) {
+    items.forEach(function (it) {
+      var node = findById(tree, it.target.id);
+      var fresh = node && (it.rule ? it.rule(node) : it);
+      if (!fresh) { return; }
+      tree = replaceNode(tree, node, fresh.repl);
+      it.newId = fresh.newId;
+    });
+    return tidyTree(tree, true);
   }
 
   function applyStage(st) {
-    if (st.L) { alg.left = tidyTree(replaceNode(alg.left, st.L.target, st.L.repl), true); }
-    if (st.R) { alg.right = tidyTree(replaceNode(alg.right, st.R.target, st.R.repl), true); }
+    if (st.L.length) { alg.left = applySide(alg.left, st.L); }
+    if (st.R.length) { alg.right = applySide(alg.right, st.R); }
+  }
+
+  function pairCls(r, k) { return r.pair == null ? r.cls : r.cls + ' pair-' + ((r.pair + k) % 6); }
+
+  function stageLabel(items) {
+    return items.map(function (r) {
+      if (r.pair == null) { return r.label; }
+      var ls = r.labels || [r.label];
+      return ls.map(function (l, g) {
+        return '<span class="pair-tag ' + pairCls(r, g) + '">' + l + '</span>';
+      }).join(' <span class="b-small">·</span> ');
+    }).join(' <span class="b-small">·</span> ');
   }
 
   function algSimplify() {
@@ -1808,8 +2282,8 @@
     var s = alg.simp, st = s.stage, marking = s.phase === 'mark';
     algRender(!marking);
     var parts = [];
-    if (st.L) { parts.push('<span class="b-small">Left:</span> ' + st.L.label); }
-    if (st.R) { parts.push('<span class="b-small">Right:</span> ' + st.R.label); }
+    if (st.L.length) { parts.push('<span class="b-small">Left:</span> ' + stageLabel(st.L)); }
+    if (st.R.length) { parts.push('<span class="b-small">Right:</span> ' + stageLabel(st.R)); }
     setBanner('alg', '<span class="b-tag">Simplify</span> ' + parts.join(' <span class="b-small">·</span> '), 'step');
     s.timer = setTimeout(simpStep, marking ? 1500 : 1000);
   }
@@ -1973,6 +2447,9 @@
       setBanner('alg', eq + ' <span class="b-small">Simplified. Nothing is left to clear away.</span>');
     } else if (move.side === 'combine') {
       setBanner('alg', eq + ' <span class="b-small">Like terms combined: ' + move.label + '</span>');
+    } else if (move.side === 'fneval') {
+      setBanner('alg', eq + ' <span class="b-small">Worked out: ' + move.label +
+        (tidyStage() ? '. Press Simplify to tidy up.' : '') + '</span>');
     } else {
       setBanner('alg', eq + ' <span class="b-small">' + (move.side === 'both' ? 'Still balanced: the same thing was done to both sides.' : 'Balanced.') +
         (tidyStage() ? ' Press Simplify to tidy up.' : '') + '</span>');
@@ -2030,16 +2507,29 @@
         k = valOf(e.l);
         why = 'Here x is being taken away from ' + fmt(k) + '. Subtract ' + fmt(k) +
           ' from both sides first, then divide by −1.';
+      } else if (e.t === 'pow' && hasVar(e.base) && e.e >= 2 && e.e <= 9) {
+        op = 'root';
+        k = rat(e.e);
+        why = 'The last thing done to x is the power ' + e.e + '. Undo it with the ' + rootName(e.e) + ' of both sides.';
+      } else if (e.t === 'epow' && isNum(e.base) && hasVar(e.ex) && isInt(valOf(e.base)) && valOf(e.base).n >= 2) {
+        op = 'log';
+        k = valOf(e.base);
+        why = 'x is up in the exponent of ' + fmt(k) + '. Bring it down with log base ' + fmt(k) + ' of both sides.';
+      } else if ((e.t === 'log' || e.t === 'root') && hasVar(e.arg)) {
+        say('That ' + (e.t === 'log' ? 'log' : 'root') + ' doesn’t undo anything yet. Take back the move: undo the + − × ÷ around the power first, then take the ' +
+          (e.t === 'log' ? 'log with the same base as the power.' : 'root that matches the power.'), 'info');
+        return;
       } else if (countVar(xs) > 1) {
         say('x shows up more than once, in a way Combine like terms can’t reach.', 'info');
         return;
       } else {
-        say('This one needs more than + − × ÷ to undo (an exponent needs a root).', 'info');
+        say('This one needs more than these moves to undo.', 'info');
         return;
       }
     }
     if (isInt(k)) {
       setRadio('algOp', op);
+      opChanged();
       setRadio('algSide', 'both');
       amtField.set(String(k.n));
       setAmtX(isX);
@@ -2192,21 +2682,29 @@
   /* highlights for one side of the scale: operations waiting for
      Simplify, what Simplify is about to tidy, terms being picked */
   function sideCtx(side) {
-    var ctx = plainCtx(alg.frac), s = alg.simp, st = s && s.stage[side];
+    var ctx = plainCtx(alg.frac), s = alg.simp, items = (s && s.stage[side]) || [];
     ctx.pending = true;
     ctx.terms = {};
     ctx.marks = {};
-    if (st && s.phase === 'mark') {
-      (st.nodes || []).forEach(function (id) { ctx.hl[id] = st.cls; });
-      (st.terms || []).forEach(function (id) { ctx.terms[id] = st.cls; });
-      (st.ops || []).forEach(function (o) { ctx.marks[o.id] = { side: o.side, cls: st.cls }; });
-    } else if (st && st.newId) {
-      ctx.hl[st.newId] = 'm-new';
-    }
+    items.forEach(function (r) {
+      if (s.phase !== 'mark') {
+        if (r.newId) { ctx.hl[r.newId] = 'm-new'; }
+        return;
+      }
+      var cls = pairCls(r, 0);
+      (r.nodes || []).forEach(function (id) { ctx.hl[id] = cls; });
+      (r.terms || []).forEach(function (id) { ctx.terms[id] = cls; });
+      (r.ops || []).forEach(function (o) { ctx.marks[o.id] = { side: o.side, cls: cls }; });
+      (r.groups || []).forEach(function (g, gi) {
+        g.forEach(function (id) { ctx.terms[id] = pairCls(r, gi); });
+      });
+    });
     if (alg.picking && alg.picking.side === side) {
       alg.picking.ids.forEach(function (id) { ctx.terms[id] = 'm-picked'; });
     }
-    if (alg.newMark && alg.newMark.side === side) { ctx.hl[alg.newMark.id] = 'm-new'; }
+    [].concat(alg.newMark || []).forEach(function (m) {
+      if (m.side === side) { ctx.hl[m.id] = 'm-new'; }
+    });
     return ctx;
   }
 
@@ -2277,14 +2775,36 @@
 
   $('amtX').addEventListener('click', function () {
     setAmtX(!amtField.suffix);
-    if (amtField.suffix && (radioVal('algOp') === TIMES || radioVal('algOp') === DIVIDE)) { setRadio('algOp', MINUS); }
+    if (amtField.suffix && !/^[+−]$/.test(radioVal('algOp'))) { setRadio('algOp', MINUS); opChanged(); }
   });
 
-  /* × and ÷ don't go with x terms */
+  /* √ and log: the number is which root, or the base, with quick picks
+     for the common ones. × ÷ √ log don't go with x terms. */
+  var fnRow = $('fnRow');
+
+  function opChanged() {
+    var op = radioVal('algOp'), fn = op === 'root' || op === 'log', was = fnRow.getAttribute('data-op');
+    if (amtField.suffix && !/^[+−]$/.test(op)) { setAmtX(false); }
+    fnRow.hidden = !fn;
+    fnRow.setAttribute('data-op', fn ? op : '');
+    amtField.placeholder = op === 'root' ? 'root' : op === 'log' ? 'base' : 'number';
+    if (fn) {
+      $('fnLabel').textContent = op === 'root' ? 'Which root?' : 'Which base?';
+      fnRow.querySelectorAll('[data-fn]').forEach(function (b) { b.hidden = b.getAttribute('data-fn') !== op; });
+      if (was !== op) { amtField.set(op === 'root' ? '2' : '10'); }
+    } else if (was) {
+      amtField.set('');
+    }
+    amtField.render();
+  }
+
   document.querySelectorAll('input[name="algOp"]').forEach(function (r) {
-    r.addEventListener('change', function () {
-      if (amtField.suffix && (r.value === TIMES || r.value === DIVIDE)) { setAmtX(false); }
-    });
+    r.addEventListener('change', opChanged);
+  });
+
+  fnRow.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-fn-k]');
+    if (b) { amtField.set(b.getAttribute('data-fn-k')); }
   });
 
   $('algReveal').addEventListener('click', function () {

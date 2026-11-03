@@ -270,6 +270,7 @@
                 </div>
               </div>
               <label class="check"><input type="checkbox" id="algNeg"> Include negative numbers</label>
+              <label class="check"><input type="checkbox" id="algPow"> Include exponents (<i>x</i>², 2<sup><i>x</i></sup>), solved with roots and logs</label>
               <button id="algNew" class="btn btn-primary btn-lg btn-block" type="button">New equation</button>
             </div>
 
@@ -284,7 +285,9 @@
                    aria-label="Equation" aria-describedby="algBuilderHint"></div>
               <p class="hint" id="algBuilderHint">Build the left side with x. Press = to type the right side as well
                 (x can be on both sides), or leave it off and the right side is worked out from x.
-                With both sides typed, the value of x is optional: leave it blank and it is worked out.</p>
+                With both sides typed, the value of x is optional: leave it blank and it is worked out.
+                An exponent can hold x too (2<sup><i>x</i></sup>, 3<sup><i>x</i>+1</sup>): once it has an x, + and − stay up
+                in the exponent, so press a<sup>n</sup> to come back down.</p>
               <div class="keys" data-target="algBuilder">
                 <button class="btn key key-op" type="button" data-key="+" aria-label="Plus">+</button>
                 <button class="btn key key-op" type="button" data-key="−" aria-label="Minus">−</button>
@@ -320,9 +323,21 @@
                 <label><input type="radio" name="algOp" value="−" checked><span aria-label="Subtract">−</span></label>
                 <label><input type="radio" name="algOp" value="×"><span aria-label="Multiply by">×</span></label>
                 <label><input type="radio" name="algOp" value="÷"><span aria-label="Divide by">÷</span></label>
+                <label><input type="radio" name="algOp" value="root"><span aria-label="Take a root">√</span></label>
+                <label><input type="radio" name="algOp" value="log"><span class="seg-log" aria-label="Take a logarithm">log</span></label>
               </div>
               <div class="keyfield keyfield-amt" id="amtField" tabindex="0" role="textbox" aria-label="Number to use"></div>
               <button id="amtX" class="btn key key-x amt-x" type="button" aria-pressed="false" aria-label="Make it an x term" title="Make it an x term, like 2x (for + and − only)"><i>x</i></button>
+            </div>
+
+            <!-- √ and log: which root, or which base (type another in the number field) -->
+            <div class="fn-row" id="fnRow" hidden>
+              <span class="field-label" id="fnLabel">Which root?</span>
+              <button class="btn btn-sm" type="button" data-fn="root" data-fn-k="2">Square √</button>
+              <button class="btn btn-sm" type="button" data-fn="root" data-fn-k="3">Cube ∛</button>
+              <button class="btn btn-sm" type="button" data-fn="log" data-fn-k="10">Base 10</button>
+              <button class="btn btn-sm" type="button" data-fn="log" data-fn-k="2">Base 2</button>
+              <span class="fn-note">or type another</span>
             </div>
 
             <div class="segmented segmented-full" role="radiogroup" aria-label="Which side of the scale">
@@ -342,6 +357,8 @@
             <p class="inverse-pairs" aria-label="Inverse operations">
               <span class="pair"><b>+</b> undoes <b>−</b></span>
               <span class="pair"><b>×</b> undoes <b>÷</b></span>
+              <span class="pair"><b>√</b> undoes <b><i>x</i>²</b></span>
+              <span class="pair"><b>log<sub>b</sub></b> undoes <b>b<sup><i>x</i></sup></b></span>
               <span class="pair-note">Undo the last thing done to x first.</span>
             </p>
 
@@ -446,6 +463,12 @@
           or <strong>Right side</strong>, and press <strong>Submit</strong>. Turn on the <i>x</i> button next to the
           number to add or subtract an x term (like 2<i>x</i>) instead. The operation is written onto the pan and
           stays there, marked, and the Work list writes the move the way it would look on paper.</p>
+        <p>Turn on <strong>Include exponents</strong> for equations like <i>x</i>² = 49, 3<i>x</i>² = 75 or
+          2<sup><i>x</i> + 1</sup> = 32. Undo a power with <strong>√</strong> (choose square, cube, or type the root)
+          and an exponent with x in it with <strong>log</strong> (choose the base). The power goes away at once
+          (log<sub>2</sub>(2<sup><i>x</i> + 1</sup>) becomes <i>x</i> + 1), and the number side shows the root or log written
+          out for 3 seconds before it is worked out, to the nearest thousandth if it isn’t whole. Even roots give
+          the positive answer.</p>
         <ul>
           <li><strong>Simplify</strong> looks through both sides, marks what can go (operations that cancel out, like
             + 4 − 4, or × 3 ÷ 3, and ones that change nothing, like × 1), pauses, then clears them away. It works

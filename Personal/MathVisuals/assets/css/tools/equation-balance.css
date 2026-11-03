@@ -35,6 +35,14 @@
   --eb-new-line:   #166534;
   --eb-pend-bg:    #ede9fe;
   --eb-pend-line:  #6d28d9;
+
+  /* Simplify: one color per pair that cancels (line, fill) */
+  --eb-pair-0: #b91c1c;  --eb-pair-0-bg: #fee2e2;
+  --eb-pair-1: #1d4ed8;  --eb-pair-1-bg: #dbeafe;
+  --eb-pair-2: #0f766e;  --eb-pair-2-bg: #ccfbf1;
+  --eb-pair-3: #be185d;  --eb-pair-3-bg: #fce7f3;
+  --eb-pair-4: #c2410c;  --eb-pair-4-bg: #ffedd5;
+  --eb-pair-5: #4d7c0f;  --eb-pair-5-bg: #ecfccb;
 }
 
 /* ---------- scale palette: DARK theme ---------- */
@@ -58,6 +66,13 @@ html[data-theme="dark"] .tool-frame {
   --eb-new-line:   #4ade80;
   --eb-pend-bg:    #2a1d52;
   --eb-pend-line:  #a78bfa;
+
+  --eb-pair-0: #f87171;  --eb-pair-0-bg: #3b1414;
+  --eb-pair-1: #60a5fa;  --eb-pair-1-bg: #13254a;
+  --eb-pair-2: #2dd4bf;  --eb-pair-2-bg: #0b2e2b;
+  --eb-pair-3: #f472b6;  --eb-pair-3-bg: #3a1028;
+  --eb-pair-4: #fb923c;  --eb-pair-4-bg: #3a1f0a;
+  --eb-pair-5: #a3e635;  --eb-pair-5-bg: #1f2e0a;
 }
 
 /* ---------- overall split: controls | scale ---------- */
@@ -432,11 +447,14 @@ html[data-theme="dark"] .tool-frame {
 
 .segmented-full { display: flex; }
 
-.segmented label { flex: 1; position: relative; cursor: pointer; }
+/* the label is a flex box so its span (which carries the highlight) fills
+   the whole cell, even when a taller sibling (the a-over-b option) sets the height */
+.segmented label { flex: 1; display: flex; position: relative; cursor: pointer; }
 .segmented label + label { border-left: var(--border-width) solid var(--color-border-soft); }
 .segmented input { position: absolute; opacity: 0; pointer-events: none; }
 
 .segmented input + span {
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -464,6 +482,19 @@ html[data-theme="dark"] .tool-frame {
 
 .segmented-ops { flex: none; }
 .segmented-ops input + span { min-width: 1.6em; padding-inline: .25em; font-size: var(--fs-xl); }
+.segmented-ops .seg-log { font-size: var(--fs-md); }
+
+/* √ and log: quick picks for which root, or which base */
+.fn-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.fn-row[hidden] { display: none; }
+
+.fn-note { font-size: var(--fs-sm); color: var(--color-ink-muted); }
 
 .field-row {
   display: flex;
@@ -680,6 +711,54 @@ html[data-theme="dark"] .tool-frame {
   margin-left: .04em;
 }
 
+/* log₂( … ): the base sits low and small */
+.m-log { font-weight: var(--fw-bold); }
+.m-logb { font-size: .6em; vertical-align: -.35em; line-height: 0; margin-left: .03em; }
+
+/* a root: the index in the crook of the sign, a bar over what's under it */
+.m-root {
+  position: relative;
+  display: inline-flex;
+  align-items: stretch;
+  vertical-align: middle;
+  margin: 0 .05em;
+}
+
+.m-root.has-k { padding-left: .22em; }
+
+.m-root-k {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-115%);
+  font-size: .48em;
+  line-height: 1;
+}
+
+.m-root-sign {
+  flex: none;
+  width: .55em;
+  height: auto;
+  overflow: visible;
+}
+
+.m-root-sign path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: .07em;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+
+/* the bar: its top edge lines up with the top of the sign */
+.m-root-arg {
+  display: inline-flex;
+  align-items: center;
+  padding: .08em .12em 0 .06em;
+  border-top: .07em solid currentColor;
+}
+
 .m-frac {
   display: inline-flex;
   flex-direction: column;
@@ -736,10 +815,28 @@ html[data-theme="dark"] .tool-frame {
   align-items: center;
   border-radius: .2em;
   padding: 0 .08em;
-  color: var(--color-danger);
-  background: var(--color-danger-soft);
-  box-shadow: 0 0 0 .06em var(--color-danger);
+  color: var(--pair, var(--color-danger));
+  background: var(--pair-bg, var(--color-danger-soft));
+  box-shadow: 0 0 0 .06em var(--pair, var(--color-danger));
 }
+
+/* each pair that cancels gets its own color, on the scale and in the banner */
+.pair-0 { --pair: var(--eb-pair-0); --pair-bg: var(--eb-pair-0-bg); }
+.pair-1 { --pair: var(--eb-pair-1); --pair-bg: var(--eb-pair-1-bg); }
+.pair-2 { --pair: var(--eb-pair-2); --pair-bg: var(--eb-pair-2-bg); }
+.pair-3 { --pair: var(--eb-pair-3); --pair-bg: var(--eb-pair-3-bg); }
+.pair-4 { --pair: var(--eb-pair-4); --pair-bg: var(--eb-pair-4-bg); }
+.pair-5 { --pair: var(--eb-pair-5); --pair-bg: var(--eb-pair-5-bg); }
+
+.pair-tag {
+  white-space: nowrap;
+  color: var(--pair);
+  border-bottom: .12em solid var(--pair);
+}
+
+/* the banner tag shows the color, not the crossed-out mark */
+.pair-tag.m-redundant { display: inline; background: none; box-shadow: none; padding: 0; border-radius: 0; }
+.pair-tag.m-redundant::after { content: none; }
 
 .m-redundant::after {
   content: "";

@@ -22,6 +22,12 @@ ballButton.addEventListener('click', addBall);
 
 clearBalls.addEventListener('click', () => {
     ballArr.length = 0;
+    ballColor.value = '#0000';
+    radiusBall.value = '';
+    ballSpeed.value = '';
+    ballAngle.value = '';
+    xInput.value = '';
+    yInput.value = '';
 })
 setInterval(function () {
     context.clearRect(0, 0, canvasArea.width, canvasArea.height);
@@ -31,14 +37,21 @@ setInterval(function () {
 }, 10)
 
 function addBall() {
+    let fract = 1;
+    let r = 50;
+    let x = r + 1;
+    let y = r + 1;
+    let s = 1;
+
+    if (parseFloat(ballAngle.value) > 0 && parseFloat(ballAngle.value) < 91) { fract = 1 - parseFloat(ballAngle.value) / 91 }
     const ball = {
         color: ballColor.value,
         radius: parseFloat(radiusBall.value),
         startX: parseFloat(xInput.value) + parseFloat(radiusBall.value) + 1,
         startY: parseFloat(yInput.value) + parseFloat(radiusBall.value) + 1,
-        xMove: parseFloat(ballAngle.value),
-        Ymove: parseFloat(ballSpeed.value),
-        bounces: 0,
+        xMove: (1 - fract + .0001) * parseFloat(ballSpeed.value),
+        Ymove: fract * parseFloat(ballSpeed.value),
+        bounces: 1,
 
         draw: function () {
             drawBall(this);
@@ -50,10 +63,16 @@ function addBall() {
             }
             if (this.startY < (this.radius + 1 + (this.bounces)) || this.startY >= window.innerHeight - (this.radius + 1)) {
                 this.Ymove = -(this.Ymove);
-
+                this.yMove = this.yMove / 2;
             }
             if (this.startY >= window.innerHeight - (this.radius + 1)) {
-                this.bounces = this.bounces + 50;
+                this.bounces = this.bounces * 2;
+
+                console.log(this.bounces)
+            }
+            if (this.bounces > (window.innerHeight - 1)) {
+                this.xMove = 0;
+                this.Ymove = 0;
             }
         }
     }

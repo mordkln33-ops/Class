@@ -1,8 +1,9 @@
 /* ============================================================
    Shape Transformations — Geometry
-   Draw a circle, triangle, quadrilateral or polygon on a
-   four-quadrant plane; read its coordinates, side lengths and
-   area; then translate, reflect, rotate, dilate and stretch it.
+   Draw a line segment, line, circle, triangle, quadrilateral or
+   polygon on a four-quadrant plane; read its coordinates, lengths
+   and area (or slope); then translate, reflect, rotate, dilate and
+   stretch it.
 
    One rule holds everywhere: every point of every shape sits on
    whole-number coordinates. Dragging, turning, resizing and the
@@ -33,7 +34,7 @@ const colorOf = idx => `var(${COLORS[idx % COLORS.length]})`;
 
 const LETTERS = 'ABCDEFGHIJ';
 const POLY_NAMES = { 3: 'Triangle', 4: 'Quadrilateral', 5: 'Pentagon', 6: 'Hexagon', 7: 'Heptagon', 8: 'Octagon', 9: 'Nonagon', 10: 'Decagon' };
-const TYPE_WORDS = { circle: 'circle', triangle: 'triangle', quad: 'quadrilateral', custom: 'polygon' };
+const TYPE_WORDS = { segment: 'line segment', line: 'line', circle: 'circle', triangle: 'triangle', quad: 'quadrilateral', custom: 'polygon' };
 const PRIMES = ['', '′', '″', '‴', '⁗'];
 const SUBSCRIPTS = '₀₁₂₃₄₅₆₇₈₉';
 const MIN_SIDES = 3;
@@ -49,9 +50,9 @@ const MOVE_WORDS = { translate: 'translation', reflect: 'reflection', rotate: 'r
    ------------------------------------------------------------ */
 
 const state = {
-  mode: 'triangle',   // 'circle' | 'triangle' | 'quad' | 'custom'
+  mode: 'triangle',   // 'segment' | 'line' | 'circle' | 'triangle' | 'quad' | 'custom'
   sides: 5,           // number of points for 'custom'
-  pts: [],            // the base shape; a circle is [center, point on the circle]
+  pts: [],            // the base shape; a circle is [center, point on the circle], a segment or line its two points
   complete: false,    // every point placed
   chain: [],          // transformations; each maps the previous shape to the next
   view: 'all',
@@ -66,7 +67,11 @@ let geo = null;       // pixel geometry of the plane
 let statusFlash = null;
 let selected = -1;    // shape showing its Delete button
 
-const maxPts = () => ({ circle: 2, triangle: 3, quad: 4 })[state.mode] || state.sides;
+const maxPts = () => ({ segment: 2, line: 2, circle: 2, triangle: 3, quad: 4 })[state.mode] || state.sides;
+
+/* A segment or line: two points, nothing inside, no area. */
+const isLinearKind = kind => kind === 'segment' || kind === 'line';
+const isLinearMode = () => isLinearKind(state.mode);
 
 /* ------------------------------------------------------------
    3. DOM references
@@ -254,6 +259,48 @@ function insidePoly(w, P) {
   return inside;
 }
 
+/** Slope of line AB as a fraction, or null when it is vertical. */
+function slopeOf(A, B) { return A.x === B.x ? null : frac(B.y - A.y, B.x - A.x); }
+
+const slopeText = m => (m ? fmtFrac(m) : 'undefined');
+
+/** Slope worked out: "m = −4/2 = −2". */
+function slopeWork(A, B) {
+  const dy = B.y - A.y, dx = B.x - A.x, m = slopeOf(A, B);
+  const shown = fmtInt(dy) + '/' + fmtInt(dx);
+  if (!m) return `m = ${shown}, undefined`;
+  return m.n === dy && m.d === dx && dx !== 1 ? `m = ${shown}` : `m = ${shown} = ${fmtFrac(m)}`;
+}
+
+/** Line AB as an equation: "y = 2x + 1", "y = (3/4)x − 1/2", "y = 3", "x = −2". */
+function lineEqText(A, B) {
+  const m = slopeOf(A, B);
+  if (!m) return `x = ${fmtInt(A.x)}`;
+  const b = frac(A.y * m.d - m.n * A.x, m.d);
+  if (m.n === 0) return `y = ${fmtFrac(b)}`;
+  const mag = Math.abs(m.n);
+  const co = (m.n < 0 ? MINUS : '') + (m.d === 1 ? (mag === 1 ? '' : mag) : `(${mag}/${m.d})`);
+  const tail = b.n === 0 ? '' : ` ${b.n < 0 ? MINUS : '+'} ${fmtFrac(frac(Math.abs(b.n), b.d))}`;
+  return `y = ${co}x${tail}`;
+}
+
+/** The two ends of the part of line AB that is in view, or null if it misses the view. */
+function lineInView(A, B) {
+  const v = view(), D = sub(B, A);
+  let t0 = -Infinity, t1 = Infinity;
+  for (const [a, d, lo, hi] of [[A.x, D.x, v.x0, v.x1], [A.y, D.y, v.y0, v.y1]]) {
+    if (d === 0) {
+      if (a < lo || a > hi) return null;
+    } else {
+      const s = (lo - a) / d, e = (hi - a) / d;
+      t0 = Math.max(t0, Math.min(s, e));
+      t1 = Math.min(t1, Math.max(s, e));
+    }
+  }
+  if (t0 >= t1) return null;
+  return [{ x: A.x + t0 * D.x, y: A.y + t0 * D.y }, { x: A.x + t1 * D.x, y: A.y + t1 * D.y }];
+}
+
 /** Foot of the perpendicular from Pt to line AB; t = 0 at A, 1 at B. */
 function footOf(Pt, A, B) {
   const d = sub(B, A), t = dot(sub(Pt, A), d) / dot(d, d);
@@ -424,7 +471,7 @@ function baseOK(pts, final) {
   for (let i = 0; i < pts.length; i++) {
     for (let j = i + 1; j < pts.length; j++) if (same(pts[i], pts[j])) return false;
   }
-  if ((state.complete || final) && state.mode !== 'circle' &&
+  if ((state.complete || final) && state.mode !== 'circle' && !isLinearMode() &&
     shoelace2(selfIntersects(pts) ? untangle(pts) : pts) === 0) return false;
   return !state.chain.length || !!chainFrom(pts);
 }
@@ -463,7 +510,7 @@ function heightAux(label, from, A, B, L, note) {
 }
 
 function describe(pts, idx) {
-  const kind = state.mode === 'circle' ? 'circle' : 'poly';
+  const kind = state.mode === 'circle' || isLinearMode() ? state.mode : 'poly';
   const complete = idx > 0 || state.complete;
   const sh = {
     idx, pts, kind, complete, color: colorOf(idx), T: state.chain[idx - 1] || null,
@@ -474,14 +521,31 @@ function describe(pts, idx) {
     const word = TYPE_WORDS[state.mode];
     sh.name = `${cap(word)} in progress`;
     sh.tag = `${pts.length} of ${maxPts()} points`;
-    if (kind === 'poly') for (let i = 0; i + 1 < pts.length; i++) sh.sides.push(sideRec(sh, i, i + 1));
+    if (kind === 'poly' || kind === 'segment') for (let i = 0; i + 1 < pts.length; i++) sh.sides.push(sideRec(sh, i, i + 1));
     return sh;
   }
   if (kind === 'circle') analyzeCircle(sh);
+  else if (isLinearKind(kind)) analyzeLinear(sh);
   else if (pts.length === 3) analyzeTriangle(sh);
   else if (pts.length === 4) analyzeQuad(sh);
   else analyzePolygon(sh);
   return sh;
+}
+
+/** A segment has a length and a midpoint; a line never ends, so it has an equation instead. Neither has an area. */
+function analyzeLinear(sh) {
+  const [A, B] = sh.pts, side = sideRec(sh, 0, 1);
+  sh.sides = [side];
+  sh.tag = sh.kind === 'line' ? 'goes on forever' : 'two endpoints';
+  sh.name = (sh.kind === 'line' ? 'Line ' : 'Segment ') + side.label;
+  sh.eqText = lineEqText(A, B);
+  sh.extras = [{ key: 'm', text: slopeWork(A, B), note: slopeOf(A, B) ? 'slope' : 'slope of a vertical line' }];
+  if (sh.kind === 'line') {
+    side.note = `distance from ${sh.labels[0]} to ${sh.labels[1]}`;
+    sh.extras.push({ key: 'q', text: sh.eqText, note: 'equation' });
+  } else {
+    sh.extras.push({ key: 'mid', text: `M = ${pair({ x: (A.x + B.x) / 2, y: (A.y + B.y) / 2 })}`, note: 'midpoint' });
+  }
 }
 
 function analyzeCircle(sh) {
@@ -648,9 +712,33 @@ function shoelaceArea(sh) {
   };
 }
 
+/** How a segment or line sits against the one it came from: same line, parallel, perpendicular or neither. */
+function slopeRelation(sh, prev) {
+  const u = sub(prev.pts[1], prev.pts[0]), v = sub(sh.pts[1], sh.pts[0]);
+  if (cross(u, v) === 0) {
+    if (cross(u, sub(sh.pts[0], prev.pts[0])) !== 0) return `Parallel to ${prev.name}: the same slope.`;
+    return sh.kind === 'line' ? `The same line as ${prev.name}: this ${MOVE_WORDS[sh.T.type]} maps it onto itself.`
+      : `On the same line as ${prev.name}.`;
+  }
+  if (dot(u, v) === 0) return `Perpendicular to ${prev.name}.`;
+  return `The slope changes from ${slopeText(slopeOf(prev.pts[0], prev.pts[1]))} to ${slopeText(slopeOf(sh.pts[0], sh.pts[1]))}.`;
+}
+
 /** Notes that tie an image back to the shape it came from. */
 function relate(sh, prev) {
   const T = sh.T;
+  if (isLinearKind(sh.kind)) {
+    let size = '';
+    if (sh.kind === 'segment') {
+      if (T.type === 'dilate') size = `Its length is ${fmtFrac(T.p.k)} times the length of ${prev.name}. `;
+      else if (T.type === 'stretch') {
+        const [along, across] = T.p.dir === 'h' ? ['Horizontal', 'vertical'] : ['Vertical', 'horizontal'];
+        size = `${along} distances are ${fmtFrac(T.p.k)} times those in ${prev.name}; ${across} distances stay the same. `;
+      } else size = `Same length as ${prev.name}: a ${MOVE_WORDS[T.type]} doesn't change size. `;
+    }
+    sh.lenNote = size + slopeRelation(sh, prev);
+    return;
+  }
   if (T.type === 'dilate') {
     const k = fmtFrac(T.p.k);
     sh.lenNote = `Every length is ${k} times the length in ${prev.name}.`;
@@ -945,9 +1033,24 @@ function drawRightMark(g, mk) {
   }, g);
 }
 
+/** A line runs across the whole view, with an arrowhead at each edge to show it keeps going. */
+function drawLine(g, sh, cls) {
+  const key = `s${sh.idx}:e0`, ends = lineInView(sh.pts[0], sh.pts[1]);
+  if (!ends) return;
+  const [a, b] = ends;
+  el('line', { class: 'side-glow', 'data-key': key, x1: X(a.x), y1: Y(a.y), x2: X(b.x), y2: Y(b.y) }, g);
+  el('line', { class: 'side' + cls, c: sh.color, 'data-key': key, x1: X(a.x), y1: Y(a.y), x2: X(b.x), y2: Y(b.y) }, g);
+  arrowHead(g, a, b, sh.color);
+  arrowHead(g, b, a, sh.color);
+}
+
 function drawShapeBody(g, sh) {
   const c = sh.color, k = 's' + sh.idx, P = sh.pts;
   const cls = (sh.idx === newIdx ? ' is-new' : '') + (sh.idx === selected ? ' is-selected' : '');
+  if (sh.kind === 'line') {
+    if (P.length === 2) drawLine(g, sh, cls);
+    return;
+  }
   if (sh.kind === 'circle') {
     if (P.length === 2) {
       const r = Math.sqrt(d2(P[0], P[1])) * geo.unit;
@@ -957,7 +1060,7 @@ function drawShapeBody(g, sh) {
     }
     return;
   }
-  if (sh.complete) el('polygon', { class: 'shape-fill' + cls, c, 'data-key': k, points: polyPoints(P) }, g);
+  if (sh.complete && sh.kind !== 'segment') el('polygon', { class: 'shape-fill' + cls, c, 'data-key': k, points: polyPoints(P) }, g);
   sh.sides.forEach(s => {
     const a = P[s.i], b = P[s.j];
     el('line', { class: 'side-glow', 'data-key': `${k}:${s.key}`, x1: X(a.x), y1: Y(a.y), x2: X(b.x), y2: Y(b.y) }, g);
@@ -996,6 +1099,11 @@ function labelPos(sh, i) {
     const o = toPx(sh.pts[0]), a = toPx(sh.pts[1]);
     dx = a.x - o.x; dy = a.y - o.y;
     if (i === 0) { dx = -dx; dy = -dy; }
+  } else if (isLinearKind(sh.kind) && sh.pts.length === 2) {
+    // Beside the line, not on it: above it, or to the right of a vertical one.
+    const a = toPx(sh.pts[0]), b = toPx(sh.pts[1]);
+    dx = b.y - a.y; dy = a.x - b.x;
+    if (dy > 0 || (dy === 0 && dx < 0)) { dx = -dx; dy = -dy; }
   } else if (sh.pts.length >= 2) {
     const c = toPx(centroid(sh.pts));
     dx = P.x - c.x; dy = P.y - c.y;
@@ -1021,6 +1129,9 @@ function drawGhost(g, pts, sh, labels) {
   const c = sh.color;
   if (sh.kind === 'circle') {
     el('circle', { class: 'ghost', c, cx: X(pts[0].x), cy: Y(pts[0].y), r: Math.sqrt(d2(pts[0], pts[1])) * geo.unit }, g);
+  } else if (isLinearKind(sh.kind)) {
+    const ends = sh.kind === 'line' ? lineInView(pts[0], pts[1]) : pts;
+    if (ends) el('line', { class: 'ghost', c, x1: X(ends[0].x), y1: Y(ends[0].y), x2: X(ends[1].x), y2: Y(ends[1].y) }, g);
   } else {
     el('polygon', { class: 'ghost', c, points: polyPoints(pts) }, g);
   }
@@ -1127,12 +1238,23 @@ function groupHead(sh, withDesc) {
   return html;
 }
 
+/** What the Area field says while it has no area to show. */
+function noAreaText() {
+  if (state.mode === 'segment') return 'A line segment has a length but no area.';
+  if (state.mode === 'line') return 'A line has no area, and since it never ends, it has no length either.';
+  return 'The area and its formula appear when the shape is finished.';
+}
+
 function renderInfo() {
+  const noLens = isLinearMode() ? 'The slope and the distance between the points appear when both points are placed.'
+    : 'Side lengths appear as soon as two points are placed.';
   if (!shapes.length) {
     const word = TYPE_WORDS[state.mode];
-    coordsList.innerHTML = `<p class="field-empty">Click grid points on the plane to place the ${state.mode === 'circle' ? 'center of the circle, then a point on it' : 'corners of the ' + word}.</p>`;
-    lengthsList.innerHTML = '<p class="field-empty">Side lengths appear as soon as two points are placed.</p>';
-    areaList.innerHTML = '<p class="field-empty">The area and its formula appear when the shape is finished.</p>';
+    const what = state.mode === 'circle' ? 'center of the circle, then a point on it'
+      : isLinearMode() ? 'two points of the ' + word : 'corners of the ' + word;
+    coordsList.innerHTML = `<p class="field-empty">Click grid points on the plane to place the ${what}.</p>`;
+    lengthsList.innerHTML = `<p class="field-empty">${noLens}</p>`;
+    areaList.innerHTML = `<p class="field-empty">${noAreaText()}</p>`;
     return;
   }
   let coords = '', lens = '', areas = '';
@@ -1142,7 +1264,7 @@ function renderInfo() {
       sh.pts.map((P, i) => `<li class="coord" data-key="${k}:p${i}"><b>${sh.labels[i]}</b> ${pair(P)}</li>`).join('') + '</ul></div>';
 
     const rows = [];
-    sh.sides.forEach(s => rows.push(`<li class="len" data-key="${k}:${s.key}"><span class="len-swatch" aria-hidden="true"></span><span class="len-text">${esc(s.text)}</span></li>`));
+    sh.sides.forEach(s => rows.push(`<li class="len" data-key="${k}:${s.key}"><span class="len-swatch" aria-hidden="true"></span><span class="len-text">${esc(s.text)}</span>${s.note ? `<span class="len-tag">${esc(s.note)}</span>` : ''}</li>`));
     sh.aux.forEach(ax => rows.push(`<li class="len is-aux" data-key="${k}:x${ax.key}"><span class="len-swatch" aria-hidden="true"></span><span class="len-text">${esc(ax.text)}</span><span class="len-tag">${esc(ax.note)}</span></li>`));
     sh.extras.forEach(x => rows.push(`<li class="len is-derived"${x.graph ? ` data-key="${k}:${x.key}"` : ''}><span class="len-swatch" aria-hidden="true"></span><span class="len-text">${esc(x.text)}</span><span class="len-tag">${esc(x.note)}</span></li>`));
     if (rows.length) {
@@ -1163,8 +1285,8 @@ function renderInfo() {
     }
   });
   coordsList.innerHTML = coords;
-  lengthsList.innerHTML = lens || '<p class="field-empty">Side lengths appear as soon as two points are placed.</p>';
-  areaList.innerHTML = areas || '<p class="field-empty">The area and its formula appear when the shape is finished.</p>';
+  lengthsList.innerHTML = lens || `<p class="field-empty">${noLens}</p>`;
+  areaList.innerHTML = areas || `<p class="field-empty">${noAreaText()}</p>`;
 }
 
 infoBody.addEventListener('mouseover', ev => {
@@ -1213,6 +1335,8 @@ function renderControls() {
       : `<b>${left}</b> more ${left === 1 ? 'point' : 'points'} to go. Drag a point to move it.`;
   } else if (state.mode === 'circle') {
     msg = '<b>Drag inside</b> to move the circle · <b>drag point A</b> to change its size';
+  } else if (isLinearMode()) {
+    msg = `<b>Drag the ${TYPE_WORDS[state.mode]}</b> to slide it · <b>drag a point</b> to change it`;
   } else {
     msg = '<b>Drag inside</b> to move · <b>drag a side</b> to rotate · <b>drag a corner</b> to grow or shrink';
   }
@@ -1262,6 +1386,13 @@ function hitTest(p, baseOnly) {
       const o = toPx(sh.pts[0]), r = Math.sqrt(d2(sh.pts[0], sh.pts[1])) * geo.unit;
       if (Math.abs(Math.hypot(o.x - p.x, o.y - p.y) - r) <= geo.tol) return { sh, kind: 'c' };
     }
+    if (sh.kind === 'line') {
+      if (!sh.sides.length || !inView(toWorld(p))) continue;
+      const A = toPx(sh.pts[0]), B = toPx(sh.pts[1]);
+      const off = Math.abs((B.x - A.x) * (p.y - A.y) - (B.y - A.y) * (p.x - A.x)) / Math.hypot(B.x - A.x, B.y - A.y);
+      if (off <= geo.tol) return { sh, kind: 'e', s: sh.sides[0] };
+      continue;
+    }
     for (const s of sh.sides) if (segDist(sh.pts[s.i], sh.pts[s.j]) <= geo.tol) return { sh, kind: 'e', s };
   }
   if (!baseOnly) {
@@ -1269,7 +1400,7 @@ function hitTest(p, baseOnly) {
   }
   const w = toWorld(p);
   for (const sh of order) {
-    if (!sh.complete) continue;
+    if (!sh.complete || isLinearKind(sh.kind)) continue;
     const inside = sh.kind === 'circle' ? d2(w, sh.pts[0]) <= d2(sh.pts[0], sh.pts[1]) : insidePoly(w, sh.pts);
     if (inside) return { sh, kind: 'in' };
   }
@@ -1319,10 +1450,13 @@ function onHover(p) {
       else if (isBase && sh.kind === 'circle') {
         cursor = h.i === 1 ? 'cur-resize' : 'cur-move';
         tip += h.i === 1 ? ' · drag to change the size' : ' · drag to move';
+      } else if (isBase && isLinearKind(sh.kind)) {
+        cursor = 'cur-grab'; tip += ' · drag to move this point';
       } else if (isBase) { cursor = 'cur-resize'; tip += ' · drag to grow or shrink'; }
     } else if (h.kind === 'e') {
-      tip = `<span class="tip-math">${esc(h.s.label)} = ${esc(fmtLenFull(h.s.L))}</span>`;
-      if (isBase && state.complete) { cursor = 'cur-rotate'; tip += ' · drag to rotate'; }
+      tip = `<span class="tip-math">${esc(sh.kind === 'line' ? sh.eqText : h.s.label + ' = ' + fmtLenFull(h.s.L))}</span>`;
+      if (isBase && state.complete && isLinearKind(sh.kind)) { cursor = 'cur-move'; tip += ' · drag to slide, click to delete'; }
+      else if (isBase && state.complete) { cursor = 'cur-rotate'; tip += ' · drag to rotate'; }
     } else if (h.kind === 'c') {
       tip = `<span class="tip-math">${esc(sh.extras[1].text)}</span>`;
       if (isBase) { cursor = 'cur-move'; tip += ' · drag to move'; }
@@ -1377,6 +1511,8 @@ function onDown(ev) {
     else
     if (state.mode === 'circle') {
       d = h.kind === 'p' && h.i === 1 ? { type: 'point', i: 1 } : { type: 'move', P0, start: w };
+    } else if (isLinearMode()) {
+      d = h.kind === 'p' ? { type: 'point', i: h.i } : { type: 'move', P0, start: w };
     } else if (h.kind === 'p') d = startDilate(h.i, P0);
     else if (h.kind === 'e') d = startRotate(P0, w);
     else d = { type: 'move', P0, start: w };
@@ -1479,6 +1615,8 @@ function dragFeedback(p) {
     const P = state.pts[drag.i];
     tip = `<span class="tip-math">${esc(labelsFor(state.pts.length, 0)[drag.i])} ${pair(P)}</span>`;
     if (state.mode === 'circle' && state.complete) tip += ` · r = ${esc(fmtLenFull(lenSq(d2(state.pts[0], state.pts[1]))))}`;
+    if (state.mode === 'segment' && state.complete) tip += ` · length ${esc(fmtLenFull(lenSq(d2(state.pts[0], state.pts[1]))))}`;
+    if (state.mode === 'line' && state.complete) tip += ` · ${esc(lineEqText(state.pts[0], state.pts[1]))}`;
     setHL(`s0:p${drag.i}`, true);
   } else if (drag.type === 'move') {
     const D = drag.D || { x: 0, y: 0 };
@@ -1720,9 +1858,9 @@ document.getElementById('helpBtn').addEventListener('click', () => {
   openModal({
     title: 'How it works',
     html: `<ol class="help-list">
-      <li><strong>Pick a shape</strong> beside the graph, then click grid points: 2 for a circle (center, then a point on it), 3 for a triangle, 4 for a quadrilateral, or set your own number with <strong>Custom</strong>.</li>
+      <li><strong>Pick a shape</strong> beside the graph, then click grid points: 2 for a line segment or a line, 2 for a circle (center, then a point on it), 3 for a triangle, 4 for a quadrilateral, or set your own number with <strong>Custom</strong>.</li>
       <li>Until the last point is in, <strong>drag any point</strong> to move it. Points always snap to whole coordinates.</li>
-      <li>When the shape is done: <strong>drag inside</strong> to move it, <strong>drag a side</strong> to rotate it in quarter turns, and <strong>drag a corner</strong> to grow or shrink it. For a circle, drag point A to change the radius.</li>
+      <li>When the shape is done: <strong>drag inside</strong> to move it, <strong>drag a side</strong> to rotate it in quarter turns, and <strong>drag a corner</strong> to grow or shrink it. For a circle, drag point A to change the radius. For a line segment or a line, drag it to slide it and drag a point to change it.</li>
       <li>Use <strong>Translate, Reflect, Rotate, Dilate or Stretch</strong> on the left to make an image of the newest shape. Press one again to transform that image.</li>
       <li><strong>Hover</strong> a point, side or dashed helper line to light up its row in Measurements, and the other way round.</li>
       <li><strong>Click a shape</strong> without dragging it to delete it. Deleting an image also deletes the images made from it.</li>

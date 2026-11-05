@@ -482,9 +482,8 @@ html[data-theme="dark"] .tool-frame {
 
 .segmented-ops { flex: none; }
 .segmented-ops input + span { min-width: 1.6em; padding-inline: .25em; font-size: var(--fs-xl); }
-.segmented-ops .seg-log { font-size: var(--fs-md); }
 
-/* √ and log: quick picks for which root, or which base */
+/* √: quick picks for which root */
 .fn-row {
   display: flex;
   flex-wrap: wrap;
@@ -711,9 +710,6 @@ html[data-theme="dark"] .tool-frame {
   margin-left: .04em;
 }
 
-/* log₂( … ): the base sits low and small */
-.m-log { font-weight: var(--fw-bold); }
-.m-logb { font-size: .6em; vertical-align: -.35em; line-height: 0; margin-left: .03em; }
 
 /* a root: the index in the crook of the sign, a bar over what's under it */
 .m-root {

@@ -30,7 +30,7 @@ clearBalls.addEventListener('click', () => {
     yInput.value = '';
 })
 setInterval(function () {
-    context.clearRect(0, 0, canvasArea.width, canvasArea.height);
+    // context.clearRect(0, 0, canvasArea.width, canvasArea.height);
     for (let i = 0; i < ballArr.length; i++) {
         ballArr[i].draw();
     }
@@ -66,14 +66,14 @@ function addBall() {
                 this.yMove = this.yMove / 2;
                 this.xMove = this.xMove - this.xMove / 400;
             }
-            if (this.startY >= window.innerHeight - (this.radius + 1)) {
-                if (this.bounces < 1) {
-                    this.bounces += 1;
-                }
-                this.bounces = this.bounces * 2;
+            // if (this.startY >= window.innerHeight - (this.radius + 1)) {
+            //     if (this.bounces < 1) {
+            //         this.bounces += 1;
+            //     }
+            //     this.bounces = this.bounces * 2;
 
-                console.log(this.bounces)
-            }
+            //     console.log(this.bounces)
+            // }
             if (this.bounces > (window.innerHeight - 1)) {
                 // this.xMove = 0;
                 // this.Ymove = 0;

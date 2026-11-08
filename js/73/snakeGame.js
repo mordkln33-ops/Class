@@ -9,10 +9,38 @@ const crash = new Audio('assets/sounds/03_crash.mp3');
 const gameOver = new Audio('assets/sounds/04_game_over_sad.mp3');
 const music = new Audio('assets/sounds/13_gameplay_music_loop.mp3');
 const scoreCard = document.querySelector('#score');
+const GOMessage = document.querySelector('#gameOver');
+const playButton = document.querySelector('#playButton');
 const squares = [];
+const snakeLocations = [{
+  top: 0,
+  bottom: 64,
+  left: 0,
+  right: 64,
+  direction: 'down'
+}];
+const snakeParts = [];
+let currentApple;
 let muted = false;
 let currentScore = 0;
+let gameIsOn;
+let onBoard = false;
+let drawSnake = true;
 
+
+
+const gameOverScore = function (myscore) {
+  const cardTitle = document.createElement('h2');
+  cardTitle.innerText = 'Game Over';
+  GOMessage.appendChild(cardTitle);
+  const card = document.createElement('p');
+  card.innerText = `You scored ${myscore} points!`;
+  GOMessage.appendChild(card);
+  GOMessage.style.display = 'block';
+  setTimeout(() => {
+    GOMessage.style.display = 'none';
+  }, 2000)
+};
 
 const apple = {
   top: 0,
@@ -20,27 +48,33 @@ const apple = {
   left: 0,
   right: 64,
   square: 0,
-  onBoard: false,
-  src: 'assets/images/apple_1.png',
+  // onBoard: false,
+  src: 'assets/images/apple_3.png',
   draw: function () {
     const app = document.createElement('img');
     app.src = this.src;
     app.onload = () => {
       context.drawImage(app, this.left, this.top);
-      this.onBoard = true;
+      // onBoard = true;
     }
   },
   generate: function () {
-    const sq = Math.floor(Math.random() * squares.length);
-    this.top = squares[sq].top;
-    this.bottom = squares[sq].bottom;
-    this.left = squares[sq].left;
-    this.right = squares[sq].right;
-    this.square = sq;
-    squares[sq].status = 'apple'
+    while (!onBoard) {
+      const sq = Math.floor(Math.random() * squares.length);
+      if (squares[sq].status == "empty") {
+        this.top = squares[sq].top;
+        this.bottom = squares[sq].bottom;
+        this.left = squares[sq].left;
+        this.right = squares[sq].right;
+        this.square = sq;
+        squares[sq].status = "apple";
+        onBoard = true;
+        currentApple = sq;
+      }
+    }
   },
   newApple: function () {
-    if (!this.onBoard) {
+    if (!onBoard) {
       this.generate();
       this.draw();
     }
@@ -60,8 +94,185 @@ const snakeHead = {
   srcD: 'assets/images/head_1_d.png',
   srcL: 'assets/images/head_1_l.png',
   srcR: 'assets/images/head_1_r.png',
+  srcOU: 'assets/images/head_2.png',
+  srcOD: 'assets/images/head_2_d.png',
+  srcOR: 'assets/images/head_2_r.png',
+  srcOL: 'assets/images/head_2_l.png',
   square: 0,
   direction: 'down',
+  draw: function () {
+    const snake = document.createElement('img');
+
+    switch (this.direction) {
+      case 'down':
+        snake.src = this.srcD;
+        if (this.square == currentApple) {
+          snake.src = this.srcOD;
+        }
+        break;
+      case 'up':
+        snake.src = this.srcU;
+        if (this.square == currentApple) {
+          snake.src = this.srcOU;
+        }
+        break;
+      case 'left':
+        snake.src = this.srcL;
+        if (this.square == currentApple) {
+          snake.src = this.srcOL;
+        }
+        break;
+      case 'right':
+        snake.src = this.srcR;
+        if (this.square == currentApple) {
+          snake.src = this.srcOR;
+        }
+        break;
+    }
+    snake.onload = () => {
+      context.drawImage(snake, this.left, this.top);
+    }
+  },
+  move: function () {
+    context.clearRect(this.left, this.top, SNAKE_SIZE, SNAKE_SIZE);
+
+    switch (this.direction) {
+      case 'right':
+        if (this.right + SNAKE_SIZE > parseFloat(theCanvas.width)) {
+          clearInterval(gameIsOn);
+          if (!muted) {
+            crash.play();
+          }
+          gameOverScore(currentScore);
+          drawSnake = false;
+          break;
+        }
+        this.left = this.right;
+        this.right = this.right + SNAKE_SIZE;
+        squares[this.square].status = 'empty';
+        this.square = findSquareNum(this.top, this.left);
+        if (squares[this.square].status == "snake") {
+          clearInterval(gameIsOn);
+          if (!muted) {
+            crash.play();
+          }
+          gameOverScore(currentScore);
+          // drawSnake = false;
+          break;
+        }
+        squares[this.square].status = 'snake';
+        break;
+      case 'left':
+        if (this.left - SNAKE_SIZE < 0) {
+          clearInterval(gameIsOn);
+          if (!muted) {
+            crash.play();
+          }
+          gameOverScore(currentScore);
+          drawSnake = false;
+          break;
+        }
+        this.right = this.left;
+        this.left = this.left - SNAKE_SIZE;
+        squares[this.square].status = 'empty';
+        this.square = findSquareNum(this.top, this.left);
+        if (squares[this.square].status == "snake") {
+          clearInterval(gameIsOn);
+          if (!muted) {
+            crash.play();
+          }
+          gameOverScore(currentScore);
+          // drawSnake = false;
+          break;
+        }
+        squares[this.square].status = 'snake';
+        break;
+      case 'up':
+        if ((this.top - SNAKE_SIZE) < 0) {
+          clearInterval(gameIsOn);
+          if (!muted) {
+            crash.play();
+          }
+          gameOverScore(currentScore);
+          drawSnake = false;
+          break;
+        }
+        this.bottom = this.top;
+        this.top = this.top - SNAKE_SIZE;
+        squares[this.square].status = 'empty';
+        this.square = findSquareNum(this.top, this.left);
+        if (squares[this.square].status == "snake") {
+          clearInterval(gameIsOn);
+          if (!muted) {
+            crash.play();
+          }
+          gameOverScore(currentScore);
+          // drawSnake = false;
+          break;
+        }
+        squares[this.square].status = 'snake';
+
+        break;
+      case 'down':
+        if ((this.bottom + SNAKE_SIZE) > (parseFloat(theCanvas.height))) {
+          clearInterval(gameIsOn);
+          if (!muted) {
+            crash.play();
+          }
+          gameOverScore(currentScore);
+          drawSnake = false;
+          break;
+        }
+        this.top = this.bottom;
+        this.bottom = this.bottom + SNAKE_SIZE;
+        squares[this.square].status = 'empty';
+        this.square = findSquareNum(this.top, this.left);
+        if (squares[this.square].status == "snake") {
+          clearInterval(gameIsOn);
+          if (!muted) {
+            crash.play();
+          }
+          gameOverScore(currentScore);
+          // drawSnake = false;
+          break;
+        }
+        squares[this.square].status = 'snake';
+        break;
+    }
+    if (this.square == apple.square) {
+      onBoard = false;
+      if (!muted) {
+        chomp.play();
+        score.play();
+      }
+      currentScore += 10;
+      scoreCard.textContent = `Score: ${currentScore}`;
+      const part = new SnakePart(this.top, this.bottom, this.left, this.right, this.direction);
+      snakeParts.push(part);
+      // console.log(snakeParts);
+      // console.log(snakeLocations);
+    }
+    // if(!findSquareNum()){
+    //   clearInterval(playGame);
+    //   return;
+    // }
+    this.draw();
+    const loc = new Locations(this.top, this.bottom, this.left, this.right, this.direction);
+    snakeLocations.push(loc);
+
+  }
+}
+const tail = {
+  top: 0,
+  bottom: 64,
+  left: 0,
+  right: 64,
+  direction: 'down',
+  square: 0,
+  srcU: 'assets/images/tail.png',
+  srcD: 'assets/images/tail_d.png',
+  srcL: 'assets/images/tail_l.png',
+  srcR: 'assets/images/tail_r.png',
   draw: function () {
     const snake = document.createElement('img');
 
@@ -83,51 +294,61 @@ const snakeHead = {
       context.drawImage(snake, this.left, this.top);
     }
   },
-  move: function () {
+  move: function (top, bottom, left, right, direction) {
     context.clearRect(this.left, this.top, SNAKE_SIZE, SNAKE_SIZE);
-    switch (this.direction) {
-      case 'right':
-        this.left = this.right;
-        this.right = this.right + SNAKE_SIZE;
-        squares[this.square].status = 'empty';
-        this.square = findSquareNum(this.top, this.left);
-        squares[this.square].status = 'snake';
-        break;
-      case 'left':
-        this.right = this.left;
-        this.left = this.left - SNAKE_SIZE;
-        squares[this.square].status = 'empty';
-        this.square = findSquareNum(this.top, this.left);
-        squares[this.square].status = 'snake';
-        break;
-      case 'up':
-        this.bottom = this.top;
-        this.top = this.top - SNAKE_SIZE;
-        squares[this.square].status = 'empty';
-        this.square = findSquareNum(this.top, this.left);
-        squares[this.square].status = 'snake';
-        break;
-      case 'down':
-        this.top = this.bottom;
-        this.bottom = this.bottom + SNAKE_SIZE;
-        squares[this.square].status = 'empty';
-        this.square = findSquareNum(this.top, this.left);
-        squares[this.square].status = 'snake';
-        break;
-    }
-    if (this.square == apple.square) {
-      apple.onBoard = false;
-      if (!muted) {
-        chomp.play();
-        score.play();
-      }
-      currentScore += 10;
-      scoreCard.textContent = `Score: ${currentScore}`;
-    }
+    squares[this.square].status = "empty";
+    this.top = top;
+    this.bottom = bottom;
+    this.left = left;
+    this.right = right;
+    this.direction = direction;
+    this.square = findSquareNum(this.top, this.left);
+    squares[this.square].status = 'snake';
     this.draw();
   }
-}
+};
+class SnakePart {
+  constructor(top, bottom, left, right, direction) {
+    this.top = top;
+    this.bottom = bottom;
+    this.left = left;
+    this.right = right;
+    this.direction = direction;
+    this.srcV = 'assets/images/body_3.png';
+    this.srcH = 'assets/images/body_3_h.png'
+    this.square = 0;
+    this.draw = function () {
+      const snakePart = document.createElement('img');
 
+      switch (this.direction) {
+        case 'down':
+        case 'up':
+          snakePart.src = this.srcV;
+          break;
+        case 'left':
+        case 'right':
+          snakePart.src = this.srcH;
+          break;
+      }
+      this.square = findSquareNum(this.top, this.left);
+      squares[this.square].status = 'snake';
+      snakePart.onload = () => {
+        context.drawImage(snakePart, this.left, this.top);
+      }
+    };
+    this.move = function (top, bottom, left, right) {
+      context.clearRect(this.left, this.top, SNAKE_SIZE, SNAKE_SIZE);
+      squares[this.square].status = "empty";
+      this.top = top;
+      this.bottom = bottom;
+      this.left = left;
+      this.right = right;
+      this.square = findSquareNum(this.top, this.left);
+      squares[this.square].status = 'snake';
+      this.draw();
+    }
+  }
+};
 
 class Square {
   constructor(top, bottom, left, right) {
@@ -138,12 +359,30 @@ class Square {
 
     this.status = 'empty';
   }
-}
+};
 
+function moveSnakeParts() {
+  let j;
+  let i;
+  for (i = snakeParts.length - 1, j = snakeLocations.length - 2; i >= 0; i--, j--) {
+    snakeParts[i].direction = snakeLocations[j].direction;
+    snakeParts[i].move(snakeLocations[j].top, snakeLocations[j].bottom, snakeLocations[j].left, snakeLocations[j].right);
+  }
+  tail.move(snakeLocations[j].top, snakeLocations[j].bottom, snakeLocations[j].left, snakeLocations[j].right, snakeLocations[j].direction);
+};
+class Locations {
+  constructor(top, bottom, left, right, direction) {
+    this.top = top;
+    this.bottom = bottom;
+    this.left = left;
+    this.right = right;
+    this.direction = direction;
+  }
+};
 function sizeCanvas() {
   theCanvas.width = window.innerWidth - (window.innerWidth % SNAKE_SIZE);
   theCanvas.height = window.innerHeight - (window.innerHeight % SNAKE_SIZE);
-}
+};
 
 sizeCanvas();
 console.log(theCanvas.width, theCanvas.height)
@@ -159,14 +398,39 @@ console.log(snakeHead);
 snakeHead.draw();
 music.loop = true;
 music.volume = 0.25;
-if (!muted) {
-  music.play();
-}
-setInterval(() => {
+
+// playGame();
+
+function game() {
   snakeHead.move();
   apple.newApple();
-}, 500);
+  if (drawSnake) {
+    moveSnakeParts();
+  }
 
+};
+
+playButton.addEventListener('click', playGame);
+function playGame() {
+  if (!muted) {
+    music.play();
+  }
+  fillSquaresArr();
+  drawSnake = true;
+  snakeParts.length = 0;
+  GOMessage.innerHTML = '';
+  currentScore = 0;
+  scoreCard.textContent = `Score: ${currentScore}`
+  clearInterval(gameIsOn);
+  onBoard = false;
+  context.clearRect(0, 0, theCanvas.width, theCanvas.height);
+  positionSetter(snakeHead, squares[0]);
+  // positionSetter(tail, squares[0]);
+  snakeHead.direction = 'down';
+  snakeHead.draw();
+  gameIsOn = setInterval(game, 500);
+};
+// const playGame = setInterval(game, 500)
 
 window.addEventListener('keydown', e => {
   switch (e.key) {
@@ -192,16 +456,17 @@ mute.addEventListener('click', () => {
   unMute.style.display = 'block';
   music.pause();
   muted = true;
-})
+});
 
 unMute.addEventListener('click', () => {
   unMute.style.display = 'none';
   mute.style.display = 'block';
   music.play();
   muted = false;
-})
+});
 
 function fillSquaresArr() {
+  squares.length = 0;
   const columns = parseFloat(theCanvas.width) / SNAKE_SIZE;
   const rows = parseFloat(theCanvas.height) / SNAKE_SIZE;
 
@@ -213,17 +478,29 @@ function fillSquaresArr() {
 
   }
   console.log(squares);
-}
+};
 
 function findSquareNum(top, left) {
 
   const columns = parseFloat(theCanvas.width) / SNAKE_SIZE;
-  const rows = parseFloat(theCanvas.height) / SNAKE_SIZE;
+  // const rows = parseFloat(theCanvas.height) / SNAKE_SIZE;
 
   const c = left / SNAKE_SIZE;
   const r = top / SNAKE_SIZE;
 
   const num = r * columns + c;
-  console.log(num);
+  // console.log(num);
   return num;
-}
+};
+
+crash.addEventListener('ended', () => {
+  gameOver.play();
+});
+
+function positionSetter(obj, square) {
+  obj.top = square.top;
+  obj.bottom = square.bottom;
+  obj.left = square.left;
+  obj.right = square.right;
+};
+

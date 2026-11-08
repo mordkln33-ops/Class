@@ -13,7 +13,21 @@ body {
 .muteButton {
   position: absolute;
   top: 15px;
-  left: 25px;
+  left: 128px;
+  width: 128px;
+  height: 64px;
+  opacity: 75%;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: medium;
+  background-color: #002900;
+  color: white;
+  border-radius: 5px;
+}
+
+.playButton {
+  position: absolute;
+  top: 15px;
+  left: 270px;
   width: 128px;
   height: 64px;
   opacity: 75%;
@@ -25,10 +39,41 @@ body {
 }
 
 .score {
+  margin: 0;
+  padding: 0;
   position: absolute;
   top: 0px;
   right: 128px;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   font-size: 48px;
   opacity: 75%;
+}
+
+.gameOver {
+  position: absolute;
+  top: 37.5%;
+  left: 50%;
+  width: 350px;
+  height: 200px;
+  background-color: rgb(112, 11, 31);
+  font-family: monospace;
+  color: white;
+  border-radius: 25px;
+  opacity: 75%;
+  text-align: center;
+  display: none;
+}
+
+.gameOver h2 {
+  font-size: 36px;
+}
+
+.gmaeTitle {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 72px;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #002900;
+  opacity: 65%;
 }

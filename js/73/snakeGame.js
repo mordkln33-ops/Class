@@ -27,7 +27,7 @@ let currentScore = 0;
 let gameIsOn;
 let onBoard = false;
 let drawSnake = true;
-let interval = 500;
+let interval = 400;
 
 
 
@@ -323,26 +323,28 @@ class SnakePart {
 
       switch (this.direction) {
         case 'down':
-          snakePart.src = this.srcV;
-        // if (!this.change) { snakePart.src = this.srcV; };
-        // if (this.nextDirection == 'left') { snakePart.src = 'assets/images/turn_u.png'; };
-        // if (this.nextDirection == 'right') { snakePart.src = 'assets/images/turn_l.png'; };
+          // snakePart.src = this.srcV;
+          if (!this.change) { snakePart.src = this.srcV; };
+          if (this.nextDirection == 'left') { snakePart.src = 'assets/images/turn_3.png'; };
+          if (this.nextDirection == 'right') { snakePart.src = 'assets/images/turn_2.png'; };
+          break;
         case 'up':
-          snakePart.src = this.srcV;
-          // if (!this.change) { snakePart.src = this.srcV; };
-          // if (this.nextDirection == 'left') { snakePart.src = 'assets/images/turn_d.png'; };
-          // if (this.nextDirection == 'right') { snakePart.src = 'assets/images/turn.png'; };
+          // snakePart.src = this.srcV;
+          if (!this.change) { snakePart.src = this.srcV; };
+          if (this.nextDirection == 'left') { snakePart.src = 'assets/images/turn_4.png'; };
+          if (this.nextDirection == 'right') { snakePart.src = 'assets/images/turn.png'; };
           break;
         case 'left':
-          snakePart.src = this.srcH;
-        // if (!this.change) { snakePart.src = this.srcH; };
-        // if (this.nextDirection == 'up') { snakePart.src = 'assets/images/turn_l.png'; };
-        // if (this.nextDirection == 'down') { snakePart.src = 'assets/images/turn.png'; };
+          // snakePart.src = this.srcH;
+          if (!this.change) { snakePart.src = this.srcH; };
+          if (this.nextDirection == 'up') { snakePart.src = 'assets/images/turn_2.png'; };
+          if (this.nextDirection == 'down') { snakePart.src = 'assets/images/turn.png'; };
+          break;
         case 'right':
-          snakePart.src = this.srcH;
-          // if (!this.change) { snakePart.src = this.srcH; };
-          // if (this.nextDirection == 'up') { snakePart.src = 'assets/images/turn_u.png'; };
-          // if (this.nextDirection == 'down') { snakePart.src = 'assets/images/turn_d.png'; };
+          // snakePart.src = this.srcH;
+          if (!this.change) { snakePart.src = this.srcH; };
+          if (this.nextDirection == 'up') { snakePart.src = 'assets/images/turn_3.png'; };
+          if (this.nextDirection == 'down') { snakePart.src = 'assets/images/turn_4.png'; };
           break;
       }
       this.square = findSquareNum(this.top, this.left);
@@ -351,7 +353,7 @@ class SnakePart {
         context.drawImage(snakePart, this.left, this.top);
       }
     };
-    this.move = function (top, bottom, left, right, direction, nextDirectio) {
+    this.move = function (top, bottom, left, right, direction, nextDirection) {
       this.change = false;
       context.clearRect(this.left, this.top, SNAKE_SIZE, SNAKE_SIZE);
       squares[this.square].status = "empty";
@@ -359,13 +361,15 @@ class SnakePart {
       this.bottom = bottom;
       this.left = left;
       this.right = right;
-      this.nextDirection = nextDirectio;
+      this.nextDirection = nextDirection;
       this.direction = direction;
       if (this.nextDirection != this.direction) {
         this.change = true;
       }
       this.square = findSquareNum(this.top, this.left);
       squares[this.square].status = 'snake';
+      console.log(this.direction);
+      console.log(this.nextDirection);
       this.draw();
     }
   }

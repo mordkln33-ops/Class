@@ -134,6 +134,15 @@ const snakeHead = {
     snake.onload = () => {
       context.drawImage(snake, this.left, this.top);
     }
+    if (squares[this.square].status == "snake") {
+      clearInterval(gameIsOn);
+      if (!muted) {
+        crash.play();
+      }
+      gameOverScore(currentScore);
+      drawSnake = false;
+    }
+    squares[this.square].status = 'snake';
   },
   move: function () {
     context.clearRect(this.left, this.top, SNAKE_SIZE, SNAKE_SIZE);
@@ -153,16 +162,6 @@ const snakeHead = {
         this.right = this.right + SNAKE_SIZE;
         squares[this.square].status = 'empty';
         this.square = findSquareNum(this.top, this.left);
-        if (squares[this.square].status == "snake") {
-          clearInterval(gameIsOn);
-          if (!muted) {
-            crash.play();
-          }
-          gameOverScore(currentScore);
-          // drawSnake = false;
-          break;
-        }
-        squares[this.square].status = 'snake';
         break;
       case 'left':
         if (this.left - SNAKE_SIZE < 0) {
@@ -178,16 +177,6 @@ const snakeHead = {
         this.left = this.left - SNAKE_SIZE;
         squares[this.square].status = 'empty';
         this.square = findSquareNum(this.top, this.left);
-        if (squares[this.square].status == "snake") {
-          clearInterval(gameIsOn);
-          if (!muted) {
-            crash.play();
-          }
-          gameOverScore(currentScore);
-          // drawSnake = false;
-          break;
-        }
-        squares[this.square].status = 'snake';
         break;
       case 'up':
         if ((this.top - SNAKE_SIZE) < 0) {
@@ -203,17 +192,6 @@ const snakeHead = {
         this.top = this.top - SNAKE_SIZE;
         squares[this.square].status = 'empty';
         this.square = findSquareNum(this.top, this.left);
-        if (squares[this.square].status == "snake") {
-          clearInterval(gameIsOn);
-          if (!muted) {
-            crash.play();
-          }
-          gameOverScore(currentScore);
-          // drawSnake = false;
-          break;
-        }
-        squares[this.square].status = 'snake';
-
         break;
       case 'down':
         if ((this.bottom + SNAKE_SIZE) > (parseFloat(theCanvas.height))) {
@@ -229,16 +207,6 @@ const snakeHead = {
         this.bottom = this.bottom + SNAKE_SIZE;
         squares[this.square].status = 'empty';
         this.square = findSquareNum(this.top, this.left);
-        if (squares[this.square].status == "snake") {
-          clearInterval(gameIsOn);
-          if (!muted) {
-            crash.play();
-          }
-          gameOverScore(currentScore);
-          // drawSnake = false;
-          break;
-        }
-        squares[this.square].status = 'snake';
         break;
     }
     if (this.square == apple.square) {
@@ -255,7 +223,7 @@ const snakeHead = {
       clearInterval(gameIsOn);
       gameIsOn = setInterval(game, interval);
     }
-    this.draw();
+    // this.draw();
     const loc = new Locations(this.top, this.bottom, this.left, this.right, this.direction);
     snakeLocations.push(loc);
 
@@ -303,7 +271,7 @@ const tail = {
     this.direction = direction;
     this.square = findSquareNum(this.top, this.left);
     squares[this.square].status = 'snake';
-    this.draw();
+    // this.draw();
   }
 };
 class SnakePart {
@@ -370,7 +338,7 @@ class SnakePart {
       squares[this.square].status = 'snake';
       console.log(this.direction);
       console.log(this.nextDirection);
-      this.draw();
+      // this.draw();
     }
   }
 };
@@ -427,11 +395,16 @@ music.volume = 0.25;
 
 function game() {
   snakeHead.move();
+
   apple.newApple();
   if (drawSnake) {
     moveSnakeParts();
+  };
+  snakeHead.draw();
+  for (let i = snakeParts.length - 1; i >= 0; i--) {
+    snakeParts[i].draw();
   }
-
+  tail.draw();
 };
 
 playButton.addEventListener('click', playGame);
@@ -447,6 +420,7 @@ function playGame() {
     right: 64,
     direction: 'down'
   }];
+  interval = 400;
   fillSquaresArr();
   drawSnake = true;
   snakeParts.length = 0;
@@ -460,6 +434,10 @@ function playGame() {
   // positionSetter(tail, squares[0]);
   snakeHead.direction = 'down';
   snakeHead.draw();
+  // snakeHead.move();
+  // snakeHead.draw();
+  // moveSnakeParts();
+  // tail.draw();
   gameIsOn = setInterval(game, interval);
 };
 // const playGame = setInterval(game, 500)

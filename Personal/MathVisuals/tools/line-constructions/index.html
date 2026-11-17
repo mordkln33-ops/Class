@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en" class="is-tool">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+  <!-- ===== SEO: title + description are unique to this page ===== -->
+  <title>Line Constructions: Perpendicular &amp; Parallel Lines, Lengths &amp; Angles | MathVisuals</title>
+  <meta name="description" content="Build line segments by length, join points and midpoints, drop perpendiculars and draw parallel lines, snap them into triangles and quadrilaterals, then measure any length or angle. Free and projector-ready.">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <link rel="canonical" href="https://mathvisuals.online/tools/line-constructions/">
+  <meta name="author" content="Mordechai Klein">
+
+  <!-- ===== Social sharing (Open Graph + X/Twitter) ===== -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="MathVisuals">
+  <meta property="og:title" content="Line Constructions: Perpendicular &amp; Parallel Lines, Lengths &amp; Angles | MathVisuals">
+  <meta property="og:description" content="Build line segments by length, join points and midpoints, drop perpendiculars and draw parallel lines, snap them into triangles and quadrilaterals, then measure any length or angle. Free and projector-ready.">
+  <meta property="og:url" content="https://mathvisuals.online/tools/line-constructions/">
+  <meta property="og:image" content="https://mathvisuals.online/assets/img/og/line-constructions.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="A right triangle built from line segments on graph paper, with its altitude, a right-angle mark and measured angles">
+  <meta property="og:locale" content="en_US">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- ===== Theme + icons ===== -->
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#111a2e" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="../../assets/img/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" href="../../assets/img/apple-touch-icon.png">
+  <link rel="manifest" href="../../site.webmanifest">
+
+  <!-- Applies saved light/dark mode before the page paints (must not be deferred) -->
+  <script src="../../assets/js/theme-init.js"></script>
+
+  <!-- ===== Styles: font → global style guide → this page ===== -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&amp;display=swap">
+  <link rel="stylesheet" href="../../assets/css/site.css">
+  <link rel="stylesheet" href="../../assets/css/tools/line-constructions.css">
+
+  <!-- ===== Scripts (deferred: run after the HTML is parsed) ===== -->
+  <script src="../../assets/js/tools/line-constructions.js" defer></script>
+  <script src="../../assets/js/site.js" defer></script>
+
+  <!-- ===== Structured data (schema.org JSON-LD) for search engines ===== -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": [
+      "WebApplication",
+      "LearningResource"
+    ],
+    "name": "Line Constructions",
+    "url": "https://mathvisuals.online/tools/line-constructions/",
+    "description": "Build line segments by length, join points and midpoints, drop perpendiculars and draw parallel lines, snap them into triangles and quadrilaterals, then measure any length or angle. Free and projector-ready.",
+    "image": "https://mathvisuals.online/assets/img/og/line-constructions.jpg",
+    "applicationCategory": "EducationalApplication",
+    "operatingSystem": "Any (runs in a web browser)",
+    "browserRequirements": "Requires JavaScript",
+    "inLanguage": "en",
+    "isAccessibleForFree": true,
+    "copyrightYear": 2026,
+    "copyrightHolder": { "@id": "https://mathvisuals.online/#person" },
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "learningResourceType": "Interactive simulation",
+    "educationalUse": [
+      "Classroom demonstration",
+      "Whole-class instruction"
+    ],
+    "educationalLevel": "Grades 4–10 (Geometry)",
+    "teaches": [
+      "Points, line segments, lines and rays",
+      "Perpendicular and parallel lines",
+      "Measuring lengths and angles",
+      "Building triangles and quadrilaterals from given sides",
+      "Altitudes and the distance from a point to a line",
+      "Midpoints, medians and midsegments",
+      "Angles formed by parallel lines and a transversal"
+    ],
+    "audience": {
+      "@type": "EducationalAudience",
+      "educationalRole": "teacher"
+    },
+    "author": {
+      "@id": "https://mathvisuals.online/#person"
+    },
+    "publisher": {
+      "@id": "https://mathvisuals.online/#person"
+    }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://mathvisuals.online/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Geometry",
+        "item": "https://mathvisuals.online/#geometry"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": "Line Constructions",
+        "item": "https://mathvisuals.online/tools/line-constructions/"
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#tool">Skip to the tool</a>
+
+  <!-- ===== Site header: brand, breadcrumb, navigation, dark-mode toggle ===== -->
+  <header class="site-header">
+    <div class="site-header__inner container">
+      <a class="brand" href="../../" aria-label="MathVisuals home">
+        <img class="brand__mark" src="../../assets/img/logo.svg" alt="" width="32" height="32">
+        <span class="brand__name">Math<span>Visuals</span></span>
+      </a>
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ol>
+          <li><a href="../../">Home</a></li>
+          <li><a href="../../#geometry">Geometry</a></li>
+          <li><span aria-current="page">Line Constructions</span></li>
+        </ol>
+      </nav>
+
+      <div class="site-nav">
+        <nav aria-label="Main">
+          <ul class="site-nav__list" id="site-nav-list">
+            <li><a class="site-nav__link" href="#about-tool">Teacher notes</a></li>
+            <li><a class="site-nav__link" href="../../#tools">All tools</a></li>
+            <li><a class="site-nav__link" href="../../#contact">Suggest a tool</a></li>
+          </ul>
+        </nav>
+
+        <!-- Dark-mode switch (wired up in site.js) -->
+        <button class="theme-toggle" type="button" aria-pressed="false" aria-label="Switch to dark mode">
+          <span class="theme-toggle__thumb">
+            <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></svg>
+            <svg class="icon-moon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M20.5 14.6A8.6 8.6 0 0 1 9.4 3.5a8.6 8.6 0 1 0 11.1 11.1z"/></svg>
+          </span>
+        </button>
+
+        <!-- Menu button: only visible on narrow screens -->
+        <button class="nav-toggle btn btn-ghost btn-icon" type="button" aria-expanded="false" aria-controls="site-nav-list" aria-label="Open menu">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+  <!-- =============================================================
+       TOOL: Line Constructions
+       Three panels: the tools that make and measure lines (left), the
+       graph-paper canvas (middle), and the side panel (right, or under
+       the canvas on narrower screens) where each tool's pop-up opens,
+       so a pop-up never covers the canvas.
+       ============================================================= -->
+  <div class="tool-frame" id="tool">
+    <header class="app-header">
+      <div class="brand-tool">
+        <span class="brand-logo" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2.5 7h19M2.5 17h19"/><path d="M9 3v18"/><path d="M9 13.5h3.5V17"/>
+          </svg>
+        </span>
+        <div class="brand-text">
+          <h1>Line Constructions</h1>
+          <p>Build lines &middot; join them into shapes &middot; measure them</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button id="gridBtn" class="btn btn-ghost grid-btn" type="button" aria-pressed="false" aria-label="Grid" title="Show or hide the grid">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="1.5"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg>
+          <span class="grid-word">Grid</span>
+        </button>
+        <button id="helpBtn" class="btn btn-ghost" type="button">
+          <span aria-hidden="true">?</span> How it works
+        </button>
+        <button id="clearBtn" class="btn btn-danger" type="button">Clear all</button>
+      </div>
+    </header>
+
+    <div class="layout">
+
+      <!-- ===== LEFT: make a line, measure ===== -->
+      <section class="panel panel-tools" aria-labelledby="createHeading">
+        <div class="panel-head">
+          <h2 id="createHeading">New line</h2>
+        </div>
+        <div class="panel-body tools-body">
+          <div class="tools-list" role="group" aria-labelledby="createHeading">
+            <button class="tool-btn" type="button" data-tool="length" aria-pressed="false">
+              <span class="tool-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><rect x="2.5" y="8" width="19" height="8" rx="1.5"/><path d="M6.5 8v3M10.5 8v4.5M14.5 8v3M18.5 8v4.5"/></svg>
+              </span>
+              <span class="tool-name">By length</span>
+            </button>
+            <button class="tool-btn" type="button" data-tool="connect" aria-pressed="false">
+              <span class="tool-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M5 18.5L19 5.5"/><circle class="fill" cx="5" cy="18.5" r="2.6"/><circle class="fill" cx="19" cy="5.5" r="2.6"/></svg>
+              </span>
+              <span class="tool-name">Connect</span>
+            </button>
+            <button class="tool-btn" type="button" data-tool="parallel" aria-pressed="false">
+              <span class="tool-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M3.5 15.5L13.5 4M10.5 20L20.5 8.5"/></svg>
+              </span>
+              <span class="tool-name">Parallel</span>
+            </button>
+          </div>
+          <h2 class="tools-sub" id="measureHeading">Measure</h2>
+          <div class="tools-list" role="group" aria-labelledby="measureHeading">
+            <button class="tool-btn" type="button" data-tool="mlen" aria-pressed="false">
+              <span class="tool-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M3 12h18M3 7.5v9M21 7.5v9"/><path d="M7 9.5L4.5 12 7 14.5M17 9.5l2.5 2.5-2.5 2.5"/></svg>
+              </span>
+              <span class="tool-name">Length</span>
+            </button>
+            <button class="tool-btn" type="button" data-tool="mang" aria-pressed="false">
+              <span class="tool-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M3.5 19.5h17M3.5 19.5L15 5"/><path d="M10.5 19.5a7 7 0 0 0-2.1-5"/></svg>
+              </span>
+              <span class="tool-name">Angle</span>
+            </button>
+          </div>
+          <button id="undoBtn" class="btn btn-ghost btn-sm undo-btn" type="button" disabled>Undo</button>
+        </div>
+      </section>
+
+      <!-- ===== MIDDLE: the canvas ===== -->
+      <section class="panel panel-canvas" aria-labelledby="canvasHeading">
+        <h2 id="canvasHeading" class="sr-only">Canvas</h2>
+        <div class="canvas-body">
+          <div class="stage" id="stage">
+            <svg id="canvas" role="application" aria-label="Canvas. Make lines with the buttons on the left; drag the middle of a line to move it and an end to turn it."></svg>
+            <div id="tags" class="tags" aria-label="Measures"></div>
+            <p id="emptyMsg" class="empty-msg" hidden>Press <b>By length</b> on the left to draw your first line.</p>
+            <div id="snapMsg" class="snap-msg" role="status" aria-live="polite" hidden></div>
+            <div id="canvasTip" class="canvas-tip" hidden></div>
+            <div id="lineAction" class="line-action" hidden></div>
+          </div>
+        </div>
+        <p id="canvasStatus" class="canvas-status" aria-live="polite"></p>
+      </section>
+
+      <!-- ===== RIGHT (or under the canvas): the guide, or the open pop-up ===== -->
+      <section class="panel panel-side" aria-labelledby="sideTitle">
+        <div class="panel-head">
+          <h2 id="sideTitle">Guide</h2>
+          <button id="sideClose" class="close-btn" type="button" aria-label="Close" hidden>×</button>
+        </div>
+        <div class="panel-body side-body" id="sideBody"></div>
+      </section>
+
+    </div><!-- /.layout -->
+
+    <div id="ctxMenu" class="ctx-menu" role="dialog" hidden></div>
+    <div id="modalRoot" class="modal-root" aria-hidden="true"></div>
+  </div>
+
+  <!-- =============================================================
+       TEACHER NOTES (below the tool)
+       ============================================================= -->
+  <section class="tool-info" id="about-tool" aria-labelledby="about-tool-title">
+    <div class="container tool-info__grid">
+      <article class="prose">
+        <p class="overline">Teacher notes</p>
+        <h2 id="about-tool-title">Build segments, perpendiculars and parallels, then measure them</h2>
+        <p class="lead">Line Constructions is a set of line segments that students can build, join into shapes
+          and measure. Make a segment a whole number of units long, join two points or midpoints, drop a
+          perpendicular from a point to a line or copy a line in parallel, then drag the pieces together into
+          triangles and quadrilaterals and measure every length and angle.</p>
+
+        <h3>Make a line</h3>
+        <p>The three buttons under <em>New line</em> each open a pop-up beside the canvas, never on top of it,
+          and the new line shows as a dotted line until you press <em>Create line</em>. <em>By length</em> makes a
+          segment a whole number of units long, in the middle of the canvas or, if something is already there, in
+          the nearest free spot above it. <em>Connect</em> joins two points, or, given a point and a line, draws
+          the perpendicular from the point to the line, with a right-angle mark at its foot. While it is open,
+          the middle of every line shows as a hollow dot, so a line's midpoint can be picked like any other
+          point: join a vertex of a triangle to the midpoint of the opposite side for a median, or join the
+          midpoints of two sides for a midsegment. <em>Parallel</em>
+          copies the direction of a line you pick, at whatever whole length you choose, with arrow marks showing
+          that the two lines are parallel.</p>
+
+        <h3>Move, turn and join</h3>
+        <p>Drag the middle of a line to move it, and drag an end to turn the line about its other end. When an end
+          touches another point, the two points snap together and become one, keeping the first point's letter.
+          They only join if no length has to change, so a triangle with sides 3, 4 and 5 closes up exactly when
+          the angle between the 3 and the 4 is a right angle. Joined lines move together like one shape. A line
+          turned so that its end lands on another line near a right angle snaps perpendicular, and its length
+          becomes the distance from its pivot to that line. A line turned close to a nearly parallel line snaps
+          parallel. While you hold a snap, a message at the top of the canvas says what it does.</p>
+
+        <h3>Change or delete a line</h3>
+        <p>Right-click a line or an end (on a touchscreen, press and hold it) to change the line's length or
+          color, rename the point, add the line's midpoint, continue the line past that point as a dotted line to
+          the edge of the canvas, or open a shape at that point so the two lines come apart. A midpoint stays at
+          the middle of its line, even when the line gets longer or shorter, and tick marks show the two equal
+          halves. Click a line or an end without dragging to delete it.</p>
+
+        <h3>Measure</h3>
+        <p><em>Length</em> and <em>Angle</em> under <em>Measure</em> work the same way: click the line, or click
+          inside the angle near its corner, or pick it from a list written in geometry notation
+          (<em>AB</em> with a bar for segment AB, <em>∠ABC</em> for an angle). Each measure stays on the canvas,
+          and updates as you move things, until you click it. Where two lines cross without a point, measuring an
+          angle there names the crossing with the next free letter.</p>
+
+        <div class="callout">
+          <p><strong>Projector tip:</strong> build the figure first and ask the class to predict a length or an
+            angle before you measure it. The grid starts hidden, so students can't simply count squares; press
+            <em>Grid</em> (top right) when counting units helps.</p>
+        </div>
+
+        <h2>Frequently asked questions</h2>
+        <div class="faq">
+          <details>
+            <summary>Why are some lengths not whole numbers?</summary>
+            <div><p>A segment made with <em>By length</em> is always a whole number of units. A segment that joins
+              two points, or a perpendicular from a point to a line, is as long as the distance it covers, which is
+              often not a whole number. That's a good moment for the Pythagorean theorem: the distance between
+              points 3 units across and 4 units up is exactly 5.</p></div>
+          </details>
+          <details>
+            <summary>Why didn't two ends join when I dragged them together?</summary>
+            <div><p>Points only join when no length would change. Sliding a line never changes its length, so its
+              end always joins a point it reaches. Turning a line only joins its end to a point that is exactly as
+              far from the pivot as the line is long. Otherwise the line would have to stretch or shrink.</p></div>
+          </details>
+          <details>
+            <summary>How do I build a triangle with sides 3, 4 and 5?</summary>
+            <div><p>Make segments of 3, 4 and 5 units. Drag the 4 so that one end joins an end of the 3, then turn
+              it until it snaps to a right angle. Drag the 5 so that one end joins the other end of the 3, and turn
+              it until its free end meets the 4: the two ends join and the triangle closes. Try it with sides 3, 4
+              and 6 and the triangle never closes at a right angle.</p></div>
+          </details>
+          <details>
+            <summary>What do the small squares, arrows and tick marks mean?</summary>
+            <div><p>They are the usual textbook marks. A small square appears wherever two lines meet at exactly
+              90°. Matching arrow marks (&gt; or &gt;&gt;) appear on lines made or snapped parallel to each other.
+              Matching tick marks (| or ||) on the two halves of a line show that it has a midpoint, so the halves
+              are equal.</p></div>
+          </details>
+          <details>
+            <summary>How do I show that a midsegment is half the third side?</summary>
+            <div><p>Build a triangle, open <em>Connect</em> and pick the hollow midpoints of two of its sides, then
+              press <em>Create line</em>. Measure the new segment and the third side: it is exactly half as long.
+              Measure the angles it makes with the other two sides and compare them with the triangle's own angles
+              to see that it is parallel to the third side.</p></div>
+          </details>
+          <details>
+            <summary>How do I take a shape apart again?</summary>
+            <div><p>Right-click the point where two lines meet and choose <em>Open the shape</em>. The line's end
+              becomes a separate point with its own letter and swings slightly away.</p></div>
+          </details>
+          <details>
+            <summary>Does it work on a touchscreen or interactive whiteboard?</summary>
+            <div><p>Yes. Drag lines with a finger or stylus. Press and hold an end for the options a right-click
+              would open, or click a line and use the <em>⋯</em> button in the bubble that appears.</p></div>
+          </details>
+        </div>
+      </article>
+
+      <aside aria-label="About this tool">
+        <section class="aside-card">
+          <h2>At a glance</h2>
+          <dl class="facts">
+            <div><dt>Grade level</dt><dd>Grades 4–10, Geometry</dd></div>
+            <div><dt>Topics</dt><dd>Points, segments, lines and rays, perpendicular and parallel lines, midpoints, measuring lengths and angles, triangles and quadrilaterals, medians and midsegments, transversals</dd></div>
+            <div><dt>Common Core</dt><dd>4.G.A.1, 4.G.A.2, 4.MD.C.5, 7.G.A.2, 8.G.A.5, 8.G.B.7, HSG-CO.A.1, HSG-CO.C.9, HSG-CO.C.10, HSG-CO.D.12</dd></div>
+            <div><dt>Works on</dt><dd>Projectors, smartboards, laptops, tablets</dd></div>
+            <div><dt>Cost</dt><dd><span class="tag tag--free">Free</span></dd></div>
+          </dl>
+        </section>
+        <section class="aside-card">
+          <h2>Related tools</h2>
+          <ul class="link-list">
+            <li><a href="../shape-transformations/">Shape Transformations<small>Measure and transform shapes</small></a></li>
+            <li><a href="../graphing-explorer/">Graphing Explorer<small>Points, lines and y = mx + b</small></a></li>
+          </ul>
+        </section>
+      </aside>
+    </div>
+  </section>
+
+  </main>
+
+  <!-- ===== Site footer ===== -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="site-footer__grid">
+        <div class="site-footer__about">
+          <a class="brand" href="../../">
+            <img class="brand__mark" src="../../assets/img/logo.svg" alt="" width="32" height="32">
+            <span class="brand__name">Math<span>Visuals</span></span>
+          </a>
+          <p>Free interactive math visuals for projectors and smartboards, designed by a math teacher with a UX/UI background.</p>
+        </div>
+        <nav aria-label="Number Sense & Operations tools">
+          <h2>Number Sense</h2>
+          <ul>
+            <li><a href="../../tools/integer-number-line/">Integer Number Line</a></li>
+            <li><a href="../../tools/fraction-visualizer/">Fraction Visualizer</a></li>
+          </ul>
+        </nav>
+        <nav aria-label="Algebra & Graphing tools">
+          <h2>Algebra & Graphing</h2>
+          <ul>
+            <li><a href="../../tools/equation-balance/">Equation Balance</a></li>
+            <li><a href="../../tools/polynomial-playground/">Polynomial Playground</a></li>
+            <li><a href="../../tools/graphing-explorer/">Graphing Explorer</a></li>
+            <li><a href="../../tools/real-life-graphs/">Graphs in Real Life</a></li>
+          </ul>
+        </nav>
+        <nav aria-label="Probability & Statistics tools">
+          <h2>Statistics</h2>
+          <ul>
+            <li><a href="../../tools/probability-manipulator/">Probability Manipulator</a></li>
+            <li><a href="../../tools/bell-curve-simulator/">Bell Curve Simulator</a></li>
+          </ul>
+        </nav>
+        <nav aria-label="Geometry tools">
+          <h2>Geometry</h2>
+          <ul>
+            <li><a href="../../tools/shape-transformations/">Shape Transformations</a></li>
+            <li><a href="../../tools/line-constructions/">Line Constructions</a></li>
+          </ul>
+        </nav>
+      </div>
+      <div class="site-footer__bottom">
+        <p>© <span data-year>2026</span> Mordechai Klein. All rights reserved. The tools are free to use for now, but their design and code are my copyright and may not be copied or republished.</p>
+        <p><a href="../../#about">About</a> · <a href="../../#contact">Suggest a tool</a> · <a href="../../privacy.html">Privacy</a></p>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

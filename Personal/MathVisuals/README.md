@@ -23,7 +23,8 @@ MathVisuals/
 │   ├── real-life-graphs/
 │   ├── probability-manipulator/
 │   ├── bell-curve-simulator/
-│   └── shape-transformations/
+│   ├── shape-transformations/
+│   └── line-constructions/
 ├── assets/
 │   ├── css/
 │   │   ├── site.css           THE style guide in code: tokens + shared components

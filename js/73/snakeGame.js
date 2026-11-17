@@ -32,6 +32,7 @@ let interval = 400;
 
 
 const gameOverScore = function (myscore) {
+  GOMessage.innerHTML = '';
   const cardTitle = document.createElement('h2');
   cardTitle.innerText = 'Game Over';
   GOMessage.appendChild(cardTitle);
@@ -235,42 +236,102 @@ const tail = {
   left: 0,
   right: 64,
   direction: 'down',
+  nextDirection: 'down',
   square: 0,
   srcU: 'assets/images/tail.png',
   srcD: 'assets/images/tail_d.png',
   srcL: 'assets/images/tail_l.png',
   srcR: 'assets/images/tail_r.png',
+  srct1: 'assets/images/t1.png',
+  srct1_1: 'assets/images/t1-1.png',
+  srct2: 'assets/images/t2.png',
+  srct2_2: 'assets/images/t2-2.png',
+  srct3: 'assets/images/t3.png',
+  srct3_3: 'assets/images/t3-3.png',
+  srct4: 'assets/images/t4.png',
+  srct4_4: 'assets/images/t4-4.png',
   draw: function () {
-    const snake = document.createElement('img');
+    const snakePart = document.createElement('img');
 
     switch (this.direction) {
       case 'down':
-        snake.src = this.srcD;
+        if (!this.change) { snakePart.src = this.srcD; };
+        if (this.nextDirection == 'left') { snakePart.src = this.srct2_2; };
+        if (this.nextDirection == 'right') { snakePart.src = this.srct4; };
         break;
       case 'up':
-        snake.src = this.srcU;
+        if (!this.change) { snakePart.src = this.srcU; };
+        if (this.nextDirection == 'left') { snakePart.src = this.srct2; };
+        if (this.nextDirection == 'right') { snakePart.src = this.srct4_4; };
         break;
       case 'left':
-        snake.src = this.srcL;
+        if (!this.change) { snakePart.src = this.srcL; };
+        if (this.nextDirection == 'up') { snakePart.src = this.srct3_3; };
+        if (this.nextDirection == 'down') { snakePart.src = this.srct1; };
         break;
       case 'right':
-        snake.src = this.srcR;
+        if (!this.change) { snakePart.src = this.srcR; };
+        if (this.nextDirection == 'up') { snakePart.src = this.srct3; };
+        if (this.nextDirection == 'down') { snakePart.src = this.srct1_1; };
         break;
     }
-    snake.onload = () => {
-      context.drawImage(snake, this.left, this.top);
+    this.square = findSquareNum(this.top, this.left);
+    squares[this.square].status = 'snake';
+    snakePart.onload = () => {
+      context.drawImage(snakePart, this.left, this.top);
     }
   },
-  move: function (top, bottom, left, right, direction) {
+  // draw: function () {
+  //   const snake = document.createElement('img');
+
+  //   switch (this.direction) {
+  //     case 'down':
+  //       snake.src = this.srcD;
+  //       break;
+  //     case 'up':
+  //       snake.src = this.srcU;
+  //       break;
+  //     case 'left':
+  //       snake.src = this.srcL;
+  //       break;
+  //     case 'right':
+  //       snake.src = this.srcR;
+  //       break;
+  //   }
+  //   snake.onload = () => {
+  //     context.drawImage(snake, this.left, this.top);
+  //   }
+  // },
+  //   move: function (top, bottom, left, right, direction) {
+  //     context.clearRect(this.left, this.top, SNAKE_SIZE, SNAKE_SIZE);
+  //     squares[this.square].status = "empty";
+  //     this.top = top;
+  //     this.bottom = bottom;
+  //     this.left = left;
+  //     this.right = right;
+  //     this.direction = direction;
+  //     this.square = findSquareNum(this.top, this.left);
+  //     squares[this.square].status = 'snake';
+  //     // this.draw();
+  //   }
+  // };
+  move: function (top, bottom, left, right, direction, nextDirection) {
+    this.change = false;
     context.clearRect(this.left, this.top, SNAKE_SIZE, SNAKE_SIZE);
     squares[this.square].status = "empty";
     this.top = top;
     this.bottom = bottom;
     this.left = left;
     this.right = right;
+    this.nextDirection = nextDirection;
     this.direction = direction;
+    if (this.nextDirection != this.direction) {
+      this.change = true;
+    }
     this.square = findSquareNum(this.top, this.left);
     squares[this.square].status = 'snake';
+    console.log(this.direction);
+    console.log(this.nextDirection);
     // this.draw();
   }
 };
@@ -360,7 +421,7 @@ function moveSnakeParts() {
   for (i = snakeParts.length - 1, j = snakeLocations.length - 2; i >= 0; i--, j--) {
     snakeParts[i].move(snakeLocations[j].top, snakeLocations[j].bottom, snakeLocations[j].left, snakeLocations[j].right, snakeLocations[j].direction, snakeLocations[j + 1].direction);
   }
-  tail.move(snakeLocations[j].top, snakeLocations[j].bottom, snakeLocations[j].left, snakeLocations[j].right, snakeLocations[j].direction);
+  tail.move(snakeLocations[j].top, snakeLocations[j].bottom, snakeLocations[j].left, snakeLocations[j].right, snakeLocations[j].direction, snakeLocations[j + 1].direction);
 };
 class Locations {
   constructor(top, bottom, left, right, direction) {
@@ -445,16 +506,24 @@ function playGame() {
 window.addEventListener('keydown', e => {
   switch (e.key) {
     case 'ArrowUp':
-      snakeHead.direction = 'up';
+      if (snakeHead.direction != 'down') {
+        snakeHead.direction = 'up';
+      }
       break;
     case 'ArrowDown':
-      snakeHead.direction = 'down';
+      if (snakeHead.direction != 'up') {
+        snakeHead.direction = 'down';
+      }
       break;
     case 'ArrowLeft':
-      snakeHead.direction = 'left';
+      if (snakeHead.direction != 'right') {
+        snakeHead.direction = 'left';
+      }
       break;
     case 'ArrowRight':
-      snakeHead.direction = 'right';
+      if (snakeHead.direction != 'left') {
+        snakeHead.direction = 'right';
+      }
       break;
     default:
       console.log(`${e.key} not processed`);

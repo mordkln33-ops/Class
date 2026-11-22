@@ -457,7 +457,7 @@ music.volume = 0.25;
 function game() {
   snakeHead.move();
 
-  apple.newApple();
+  // apple.newApple();
   if (drawSnake) {
     moveSnakeParts();
   };
@@ -466,6 +466,7 @@ function game() {
     snakeParts[i].draw();
   }
   tail.draw();
+  apple.newApple();
 };
 
 playButton.addEventListener('click', playGame);

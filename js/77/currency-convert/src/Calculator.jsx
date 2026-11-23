@@ -12,8 +12,6 @@ export default function Calculator() {
     const [symbol, setSymbol] = useState('');
     const [fsymbol, setFSymbol] = useState('');
     const [date, setDate] = useState('');
-    const [fFlag, setFFlag] = useState('');
-    const [tFlag, setTFlag] = useState('');
     const currencyFlags = {
         AED: "ae",
         AFN: "af",
@@ -243,6 +241,7 @@ export default function Calculator() {
 
     useEffect(() => {
         (async () => {
+           
             if (fromCur != '' && toCur != '') {
                 try {
                     const response = await fetch(`https://api.frankfurter.dev/v2/rate/${fromCur}/${toCur} `);
@@ -255,8 +254,6 @@ export default function Calculator() {
                     setDate(s.date)
                     setSymbol(currencies.find(item => item.iso_code === toCur).symbol)
                     setFSymbol(currencies.find(item => item.iso_code === fromCur).symbol)
-                    setFFlag(`https://flagcdn.com/w80/${currencyFlags[fromCur]}.png`)
-                    setTFlag(`https://flagcdn.com/w80/${currencyFlags[toCur]}.png`)
                 }
                 catch (e) {
                     console.error('oops', e);
@@ -272,8 +269,14 @@ export default function Calculator() {
         </div>
         <div className="curDiv">
             <div className="sCurDiv" style={{
-                backgroundImage: `url("${fFlag}")`,
-                backgroundSize: "fill",
+                backgroundImage: `
+      linear-gradient(
+        rgba(255, 255, 255, 0.8),
+        rgba(255, 255, 255, 0.8)
+      ),
+      url("https://flagcdn.com/w80/${currencyFlags[fromCur]}.png")
+    `,
+                backgroundSize: "cover",
                 backgroundPosition: "center"
             }}>
                 <h2>From Currency</h2>
@@ -282,8 +285,14 @@ export default function Calculator() {
             </div>
             <button className="switchB" onClick={() => { setFromCur(toCur); setToCur(fromCur) }}>switch</button >
             <div className="sCurDiv" style={{
-                backgroundImage: `url("${tFlag}")`,
-                backgroundSize: "fill",
+                backgroundImage: `
+      linear-gradient(
+        rgba(255, 255, 255, 0.8),
+        rgba(255, 255, 255, 0.8)
+      ),
+      url("https://flagcdn.com/w80/${currencyFlags[toCur]}.png")
+    `,
+                backgroundSize: "cover",
                 backgroundPosition: "center"
             }}>
                 <h2>To Currency</h2>

@@ -10,6 +10,7 @@ export default function Calculator() {
     const [toCur, setToCur] = useState('');
     const [rate, setRate] = useState(0);
     const [symbol, setSymbol] = useState('');
+    const [fsymbol, setFSymbol] = useState('');
     const [date, setDate] = useState('')
 
     useEffect(() => {
@@ -42,6 +43,7 @@ export default function Calculator() {
                     setRate(s.rate)
                     setDate(s.date)
                     setSymbol(currencies.find(item => item.iso_code === toCur).symbol)
+                    setFSymbol(currencies.find(item => item.iso_code === fromCur).symbol)
                 }
                 catch (e) {
                     console.error('oops', e);
@@ -51,14 +53,23 @@ export default function Calculator() {
     }, [fromCur, toCur, currencies])
 
     return <>
-        <h2>From Currency</h2>
-        <Dropdown which='1st' onChange={e => { setFromCur(e.target.value) }} value={fromCur} currencies={currencies}></Dropdown>
-        <br />
-        <br />
-        <button onClick={() => { setFromCur(toCur); setToCur(fromCur) }}>switch</button >
-        <h2>To Currency</h2>
-        <Dropdown which='2nd' onChange={e => { setToCur(e.target.value); console.log({toCur}) }} value={toCur} currencies={currencies}></Dropdown>
-        <input type="number" step="any" value={inputAmount} onChange={e => { setInputAmount(Math.abs(Number(e.target.value))); setTimeout(() => { setAmount(e.target.value) }, 1000) }} />
-        <Calc from={amount} rate={rate} symbol={symbol} date={date}/>
+        <h2>Input Amount</h2>
+        <div className="sCurDiv">
+            <input type="number" step="any" value={inputAmount} onChange={e => { setInputAmount(Math.abs(Number(e.target.value))); setTimeout(() => { setAmount(e.target.value) }, 1000) }} />
+        </div>
+        <div className="curDiv">
+            <div className="sCurDiv">
+                <h2>From Currency</h2>
+                <Dropdown which='1st' onChange={e => { setFromCur(e.target.value) }} value={fromCur} currencies={currencies}></Dropdown>
+                <span>{fsymbol}{amount}</span>
+                </div>
+            <button className="switchB" onClick={() => { setFromCur(toCur); setToCur(fromCur) }}>switch</button >
+            <div className="sCurDiv">
+                <h2>To Currency</h2>
+                <Dropdown which='2nd' onChange={e => { setToCur(e.target.value); console.log({ toCur }) }} value={toCur} currencies={currencies}>
+                </Dropdown>
+                <Calc from={amount} rate={rate} symbol={symbol} date={date} />
+            </div>
+        </div>
     </>
 }

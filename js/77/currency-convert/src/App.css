@@ -1,0 +1,35 @@
+body{
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    text-align: center;
+}
+
+.whiteDiv{
+    background-color: white;
+}
+
+.curDiv{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-content: center;
+    align-items: center;
+    margin: 30px;
+}
+
+.sCurDiv{
+    display: flex;
+    flex-direction: column;
+    align-content: baseline;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+}
+
+.switchB{
+height: 25px;
+width: 50px;
+}
+
+input{
+    width: 50%;
+}

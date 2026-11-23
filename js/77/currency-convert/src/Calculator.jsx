@@ -272,10 +272,7 @@ export default function Calculator() {
         </div>
         <div className="curDiv">
             <div className="sCurDiv" style={{
-                backgroundImage: `linear-gradient(
-                    rgba(255, 255, 255, 0.7),
-                    rgba(255, 255, 255, 0.7),
-                     url("${fFlag}"))`,
+                backgroundImage: `url("${fFlag}")`,
                 backgroundSize: "fill",
                 backgroundPosition: "center"
             }}>
@@ -285,10 +282,7 @@ export default function Calculator() {
             </div>
             <button className="switchB" onClick={() => { setFromCur(toCur); setToCur(fromCur) }}>switch</button >
             <div className="sCurDiv" style={{
-                backgroundImage: `linear-gradient(
-                    rgba(255, 255, 255, 0.7),
-                    rgba(255, 255, 255, 0.7),
-                     url("${tFlag}"))`,
+                backgroundImage: `url("${tFlag}")`,
                 backgroundSize: "fill",
                 backgroundPosition: "center"
             }}>
@@ -297,6 +291,6 @@ export default function Calculator() {
                 </Dropdown>
                 <Calc from={amount} rate={rate} symbol={symbol} date={date} />
             </div>
-        </div >
+        </div>
     </>
 }

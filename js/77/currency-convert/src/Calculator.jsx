@@ -230,7 +230,6 @@ export default function Calculator() {
                     throw new Error(`${response.status} - ${response.statusText}`);
                 }
                 const result = await response.json();
-                console.log(result);
                 setCurrencies(result);
             }
             catch (e) {
@@ -241,7 +240,7 @@ export default function Calculator() {
 
     useEffect(() => {
         (async () => {
-           
+
             if (fromCur != '' && toCur != '') {
                 try {
                     const response = await fetch(`https://api.frankfurter.dev/v2/rate/${fromCur}/${toCur} `);
@@ -280,7 +279,7 @@ export default function Calculator() {
                 backgroundPosition: "center"
             }}>
                 <h2>From Currency</h2>
-                <Dropdown which='1st' onChange={e => { setFromCur(e.target.value) }} value={fromCur} currencies={currencies}></Dropdown>
+                <Dropdown onChange={e => { setFromCur(e.target.value) }} value={fromCur} currencies={currencies}></Dropdown>
                 <span>{fsymbol}{amount}</span>
             </div>
             <button className="switchB" onClick={() => { setFromCur(toCur); setToCur(fromCur) }}>switch</button >
@@ -296,7 +295,7 @@ export default function Calculator() {
                 backgroundPosition: "center"
             }}>
                 <h2>To Currency</h2>
-                <Dropdown which='2nd' onChange={e => { setToCur(e.target.value); console.log({ toCur }) }} value={toCur} currencies={currencies}>
+                <Dropdown onChange={e => { setToCur(e.target.value) }} value={toCur} currencies={currencies}>
                 </Dropdown>
                 <Calc from={amount} rate={rate} symbol={symbol} date={date} />
             </div>

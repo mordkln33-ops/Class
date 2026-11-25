@@ -2,9 +2,10 @@
    Portable build — each tool as ONE self-contained HTML file
    ---------------------------------------------------------------------
    Run:   node portable/build.js        (from the MathVisuals folder)
-   Makes: portable/Equation Balance.html
-          portable/Shape Transformations.html
-          portable/Polynomial Playground.html
+   Makes: one portable/<Tool Name>.html for every tool in TOOLS below.
+          The Integer Number Line has two pages (vertical and
+          horizontal), so it makes two files that link to each other:
+          keep them in the same folder.
 
    Everything a tool needs is put inside its one file: the styles,
    the scripts, the logo and the Atkinson Hyperlegible font (from
@@ -19,11 +20,21 @@ var path = require('path');
 
 var ROOT = path.join(__dirname, '..');
 
-/* [folder under tools/, name]: add a line here to make another tool portable */
+/* [folder under tools/, name, page (default index.html), links to sibling pages]:
+   add a line here to make another tool portable. The links map an href in the
+   page to the name of another portable file, so the two files link to each other. */
 var TOOLS = [
+  ['integer-number-line', 'Integer Number Line', 'index.html', { 'horizontal.html': 'Horizontal Number Line' }],
+  ['integer-number-line', 'Horizontal Number Line', 'horizontal.html', { './': 'Integer Number Line' }],
+  ['fraction-visualizer', 'Fraction Visualizer'],
   ['equation-balance', 'Equation Balance'],
+  ['polynomial-playground', 'Polynomial Playground'],
+  ['graphing-explorer', 'Graphing Explorer'],
+  ['real-life-graphs', 'Real-Life Graphs'],
+  ['probability-manipulator', 'Probability Manipulator'],
+  ['bell-curve-simulator', 'Bell Curve Simulator'],
   ['shape-transformations', 'Shape Transformations'],
-  ['polynomial-playground', 'Polynomial Playground']
+  ['line-constructions', 'Line Constructions']
 ];
 
 function read(rel) { return fs.readFileSync(path.join(ROOT, rel), 'utf8'); }
@@ -53,9 +64,16 @@ var fontCss = FONTS.map(function (f) {
 var logo = 'data:image/svg+xml;base64,' + base64('assets/img/logo.svg');
 var favicon = 'data:image/svg+xml;base64,' + base64('assets/img/favicon.svg');
 
-function build(slug, name) {
-  var page = read('tools/' + slug + '/index.html');
+function build(slug, name, file, links) {
+  var page = read('tools/' + slug + '/' + (file || 'index.html'));
   var body = page.slice(page.indexOf('<body>'), page.indexOf('</body>'));
+
+  /* links between the pages of one tool point at the sibling portable file */
+  Object.keys(links || {}).forEach(function (href) {
+    var target = 'href="' + encodeURI(links[href] + '.html') + '"';
+    var pattern = new RegExp('href="' + href.replace(/[.*+?^${}()|[\]\\\/]/g, '\\$&') + '"', 'g');
+    body = swap(body, pattern, target);
+  });
 
   /* the brand is plain text here: there is no website to go back to */
   body = body.replace(/<a class="brand" href="[^"]*"[^>]*>([\s\S]*?)<\/a>/g, function (m, inner) {
@@ -82,7 +100,11 @@ function build(slug, name) {
     '    </div>\n' +
     '  </footer>');
 
-  if (/(href|src)="\.\.\//.test(body)) { throw new Error(name + ': a link to another file is still in the page.'); }
+  /* anything that isn't inside this file, on the web, or a sibling portable file would lead nowhere */
+  var siblings = Object.keys(links || {}).map(function (h) { return encodeURI(links[h] + '.html'); });
+  var stray = body.match(/(href|src)="(?!#|data:|https?:|mailto:)[^"]*"/g) || [];
+  stray = stray.filter(function (m) { return siblings.indexOf(m.replace(/^(href|src)="|"$/g, '')) < 0; });
+  if (stray.length) { throw new Error(name + ': links to other files are still in the page: ' + stray.join(', ')); }
 
   var html = '<!DOCTYPE html>\n' +
     '<html lang="en" class="is-tool">\n' +
@@ -107,4 +129,4 @@ function build(slug, name) {
   console.log('Built ' + path.relative(ROOT, out) + ' (' + Math.round(html.length / 1024) + ' KB)');
 }
 
-TOOLS.forEach(function (t) { build(t[0], t[1]); });
+TOOLS.forEach(function (t) { build(t[0], t[1], t[2], t[3]); });
